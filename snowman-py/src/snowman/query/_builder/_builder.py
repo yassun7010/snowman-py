@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, NamedTuple
 
-from snowman.protocol.cursor import Cursor
+from snowman.cursor import Cursor
 
 
 class QueryParams(NamedTuple):
