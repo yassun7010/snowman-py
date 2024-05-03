@@ -1,14 +1,14 @@
 import pytest
-from snowman.protocol.connection import Connection
+from snowman.protocol.cursor import Cursor
 
 
 @pytest.fixture
-def connection() -> Connection:
-    class MyConnection:
+def Cursor() -> Cursor:
+    class MyCursor:
         def execute(self, *args, **kwargs) -> None:
             pass
 
         def executemany(self, *args, **kwargs) -> None:
             pass
 
-    return MyConnection()
+    return MyCursor()
