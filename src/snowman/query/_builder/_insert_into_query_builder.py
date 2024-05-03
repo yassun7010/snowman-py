@@ -33,6 +33,6 @@ class InsertIntoValuesQueryBuilder(Generic[GenericTablable], QueryBuilder):
                 {", ".join(['?' for value in self._values])}
             )
             """
-        )
+        ).strip()
 
         return QueryParams(query, {})

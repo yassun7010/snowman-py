@@ -1,15 +1,13 @@
-from typing import Any, Protocol
+from snowflake.connector.cursor import SnowflakeCursor
 
+try:
+    import turu.snowflake
 
-class Cursor(Protocol):
-    """
-    Cursor protocol.
+    TuruSnowflakeConnection = turu.snowflake.Connection
+    TuruSnowflakeCursor = turu.snowflake.Cursor
 
-    This implements the minimum required interface for snowman.
+except ImportError:
+    TuruSnowflakeConnection = SnowflakeCursor
+    TuruSnowflakeCursor = SnowflakeCursor
 
-    Reference: [PEP 249 – Python Database API Specification v2.0](https://peps.python.org/pep-0249/#id20)
-    """
-
-    def execute(self, *args, **kwargs) -> Any: ...
-
-    def executemany(self, *args, **kwargs) -> Any: ...
+Cursor = SnowflakeCursor | TuruSnowflakeConnection | TuruSnowflakeCursor

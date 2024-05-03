@@ -3,7 +3,10 @@ name = "snowman-py"
 version = "0.1.0"
 description = "Add your description here"
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
-dependencies = ["typing-extensions>=4.11.0"]
+dependencies = [
+    "typing-extensions>=4.11.0",
+    "snowflake-connector-python>=3.10.0",
+]
 readme = "README.md"
 requires-python = ">= 3.8"
 
@@ -18,6 +21,10 @@ dev-dependencies = [
     "pyright>=1.1.361",
     "taskipy>=1.12.2",
     "ruff>=0.4.2",
+    "turu[snowflake]>=0.10.5",
+    "pyarrow-stubs>=10.0.1.7",
+    "pandas-stubs>=2.2.1.240316",
+    "pytest-mock>=3.14.0",
 ]
 
 [tool.hatch.metadata]
