@@ -2,7 +2,7 @@ from typing import Generic, Type
 
 from typing_extensions import override
 
-from snowman.schema import GenericTablable
+from snowq.schema import GenericTablable
 
 from ._builder import QueryBuilder, QueryParams
 

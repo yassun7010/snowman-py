@@ -1,5 +1,5 @@
 [project]
-name = "snowman-py"
+name = "snowq"
 version = "0.1.0"
 description = "Add your description here"
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
@@ -31,7 +31,7 @@ dev-dependencies = [
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/snowman"]
+packages = ["src/snowq"]
 
 [tool.taskipy.tasks]
 format = "ruff format ."

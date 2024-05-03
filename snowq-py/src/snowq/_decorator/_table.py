@@ -1,6 +1,6 @@
 from typing import Callable, LiteralString, Type
 
-from snowman.schema.table import Table
+from snowq.schema.table import Table
 
 
 def table(

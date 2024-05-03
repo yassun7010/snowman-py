@@ -64,7 +64,7 @@ ruff==0.4.2
 setuptools==69.5.1
     # via nodeenv
 snowflake-connector-python==3.10.0
-    # via snowman-py
+    # via snowq
     # via turu-snowflake
 sortedcontainers==2.4.0
     # via snowflake-connector-python
@@ -83,7 +83,7 @@ types-pytz==2024.1.0.20240417
     # via pandas-stubs
 typing-extensions==4.11.0
     # via snowflake-connector-python
-    # via snowman-py
+    # via snowq
     # via turu-core
     # via turu-snowflake
 urllib3==2.2.1
