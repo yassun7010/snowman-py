@@ -1,11 +1,9 @@
 [project]
-name = "snowman"
+name = "snowman-py"
 version = "0.1.0"
 description = "Add your description here"
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
-dependencies = [
-    "typing-extensions>=4.11.0",
-]
+dependencies = ["typing-extensions>=4.11.0"]
 readme = "README.md"
 requires-python = ">= 3.8"
 
