@@ -1,3 +1,4 @@
+from textwrap import dedent
 from typing import Generic, Sequence, Type
 
 from typing_extensions import override
@@ -24,4 +25,14 @@ class InsertIntoValuesQueryBuilder(Generic[GenericTablable], QueryBuilder):
 
     @override
     def build(self) -> QueryParams:
-        return QueryParams("", {})
+        query = dedent(
+            f"""
+            INSERT INTO
+                {self._table}
+            VALUES (
+                {", ".join([str(value) for value in self._values])}
+            )
+            """
+        )
+
+        return QueryParams(query, {})
