@@ -30,7 +30,7 @@ class InsertIntoValuesQueryBuilder(Generic[GenericTablable], QueryBuilder):
             INSERT INTO
                 {self._table}
             VALUES (
-                {", ".join([str(value) for value in self._values])}
+                {", ".join(['?' for value in self._values])}
             )
             """
         )
