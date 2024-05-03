@@ -8,8 +8,22 @@ from snowman.schema import GenericTablable
 from ._builder import QueryBuilder, QueryParams
 
 
+class InsertQueryBuilder:
+    @property
+    def overwrite(self) -> "InsertOverwriteQueryBuilder":
+        return InsertOverwriteQueryBuilder()
+
+    def into(self, table: Type[GenericTablable]) -> "InsertIntoQueryBuilder":
+        return InsertIntoQueryBuilder(table)
+
+
+class InsertOverwriteQueryBuilder:
+    def into(self, table: Type[GenericTablable]) -> "InsertIntoQueryBuilder":
+        return InsertIntoQueryBuilder(table)
+
+
 class InsertIntoQueryBuilder(Generic[GenericTablable]):
-    def __init__(self, table: Type[GenericTablable]) -> None:
+    def __init__(self, table: Type[GenericTablable], overwtire: bool = False) -> None:
         self._table = table
 
     def values(
