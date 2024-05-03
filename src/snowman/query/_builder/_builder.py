@@ -13,6 +13,6 @@ class QueryBuilder(ABC):
     @abstractmethod
     def build(self) -> QueryParams: ...
 
-    def execute(self, conn: Cursor) -> None:
+    def execute(self, cursor: Cursor) -> None:
         query, params = self.build()
-        conn.execute(query, params)
+        cursor.execute(query, params)
