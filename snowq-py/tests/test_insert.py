@@ -5,7 +5,7 @@ from conftest import User
 from snowflake.connector.cursor import SnowflakeCursor
 
 
-class TestInsertInto:
+class TestInsertQuery:
     def test_insert_execute_by_snowflake_cursor(
         self, user: User, mock_snowflake_cursor: SnowflakeCursor
     ):

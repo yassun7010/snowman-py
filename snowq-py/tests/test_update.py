@@ -4,8 +4,8 @@ from conftest import User
 from snowflake.connector.cursor import SnowflakeCursor
 
 
-class TestUpdateStatement:
-    def test_update_statement(self, user: User, mock_snowflake_cursor: SnowflakeCursor):
+class TestUpdateQuery:
+    def test_update_query(self, user: User, mock_snowflake_cursor: SnowflakeCursor):
         snowq.query.update(User).set(**user.model_dump()).execute(mock_snowflake_cursor)
 
     def test_update_query_build(self, user: User):
