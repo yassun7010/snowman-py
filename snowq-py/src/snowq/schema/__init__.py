@@ -17,9 +17,9 @@ def full_name(table: Type[Tablable]) -> str:
     return f"{table.__databas_name__}.{table.__schema_name__}.{table.__table_name__}"
 
 
-def field_names(table: Type[Table]) -> list[str]:
+def column_names(table: Type[Table]) -> list[str]:
     if issubclass(table, BaseModel):
-        return [field_name for field_name in table.model_fields.keys()]
+        return [column_name for column_name in table.model_fields.keys()]
 
     else:
         raise ValueError(f"Table {table} is not a Pydantic model")

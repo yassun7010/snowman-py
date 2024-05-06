@@ -3,7 +3,7 @@ from typing import Generic, Sequence, Type
 
 from typing_extensions import override
 
-from snowq.schema import GenericTablable, field_names, full_name
+from snowq.schema import GenericTablable, column_names, full_name
 
 from ._builder import QueryBuilder, QueryParams
 
@@ -61,7 +61,7 @@ class InsertIntoValuesQueryBuilder(Generic[GenericTablable], QueryBuilder):
             INSERT {overwrite}INTO
                 {full_name(self._table)}
             VALUES (
-                {", ".join(['?' for value in field_names(self._table)])}
+                {", ".join(['?' for value in column_names(self._table)])}
             )
             """
         ).strip()
