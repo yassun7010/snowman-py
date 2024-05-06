@@ -7,4 +7,12 @@
             "path": "snowq-py"
         }
     ],
+    "settings": {
+        "[python]": {
+            "editor.codeActionsOnSave": {
+                "source.fixAll.ruff": "explicit",
+                "source.organizeImports.ruff": "explicit"
+            }
+        }
+    }
 }

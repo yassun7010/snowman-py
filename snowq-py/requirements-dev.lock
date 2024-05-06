@@ -8,6 +8,8 @@
 #   with-sources: false
 
 -e file:.
+annotated-types==0.6.0
+    # via pydantic
 asn1crypto==1.5.1
     # via snowflake-connector-python
 certifi==2024.2.2
@@ -48,6 +50,10 @@ psutil==5.9.8
 pyarrow-stubs==10.0.1.7
 pycparser==2.22
     # via cffi
+pydantic==2.7.1
+    # via snowq
+pydantic-core==2.18.2
+    # via pydantic
 pyjwt==2.8.0
     # via snowflake-connector-python
 pyopenssl==24.1.0
@@ -60,7 +66,7 @@ pytz==2024.1
     # via snowflake-connector-python
 requests==2.31.0
     # via snowflake-connector-python
-ruff==0.4.2
+ruff==0.4.3
 setuptools==69.5.1
     # via nodeenv
 snowflake-connector-python==3.10.0
@@ -82,6 +88,8 @@ turu-snowflake==0.10.5
 types-pytz==2024.1.0.20240417
     # via pandas-stubs
 typing-extensions==4.11.0
+    # via pydantic
+    # via pydantic-core
     # via snowflake-connector-python
     # via snowq
     # via turu-core

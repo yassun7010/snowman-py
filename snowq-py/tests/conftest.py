@@ -1,8 +1,10 @@
+from pydantic import BaseModel
 import pytest
 import snowflake.connector.cursor
 import snowq
 import turu.snowflake
 from pytest_mock import MockFixture
+
 from snowq.schema.table import Table
 
 
@@ -27,11 +29,14 @@ def mock_turu_snowflake_cursor(
     return mocker.Mock(spec=turu.snowflake.Cursor)
 
 
-@snowq.table("database", "schema", "users")
-class User(Table):
-    pass
+@snowq.table("database", "public", "users")
+class User(Table, BaseModel):
+    id: int
+    name: str
 
 
 @pytest.fixture
 def user() -> User:
-    return User()
+    user = User(id=1, name="Alice")
+
+    return user

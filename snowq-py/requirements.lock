@@ -8,6 +8,8 @@
 #   with-sources: false
 
 -e file:.
+annotated-types==0.6.0
+    # via pydantic
 asn1crypto==1.5.1
     # via snowflake-connector-python
 certifi==2024.2.2
@@ -33,6 +35,10 @@ platformdirs==4.2.1
     # via snowflake-connector-python
 pycparser==2.22
     # via cffi
+pydantic==2.7.1
+    # via snowq
+pydantic-core==2.18.2
+    # via pydantic
 pyjwt==2.8.0
     # via snowflake-connector-python
 pyopenssl==24.1.0
@@ -48,6 +54,8 @@ sortedcontainers==2.4.0
 tomlkit==0.12.4
     # via snowflake-connector-python
 typing-extensions==4.11.0
+    # via pydantic
+    # via pydantic-core
     # via snowflake-connector-python
     # via snowq
 urllib3==2.2.1

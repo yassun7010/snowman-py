@@ -33,7 +33,7 @@ class TestInsertInto:
             == textwrap.dedent(
                 """
                 INSERT INTO
-                    <class 'conftest.User'>
+                    database.public.users
                 VALUES (
                     ?, ?
                 )
