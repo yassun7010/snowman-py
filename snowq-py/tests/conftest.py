@@ -1,3 +1,4 @@
+from typing import TypedDict
 from pydantic import BaseModel
 import pytest
 import snowflake.connector.cursor
@@ -29,8 +30,13 @@ def mock_turu_snowflake_cursor(
     return mocker.Mock(spec=turu.snowflake.Cursor)
 
 
+class _UserUpdateColumns(TypedDict):
+    id: int
+    name: str
+
+
 @snowq.table("database", "public", "users")
-class User(Table, BaseModel):
+class User(BaseModel, Table[_UserUpdateColumns]):
     id: int
     name: str
 

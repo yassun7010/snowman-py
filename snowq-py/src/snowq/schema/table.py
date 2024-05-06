@@ -1,12 +1,20 @@
-from typing import ClassVar, TypeVar
+from typing import ClassVar, Generic, TypeVar, TypedDict
 
 from typing import Callable, LiteralString, Type
 
 
-class Table:
+class UpdateColumns(TypedDict, total=False):
+    pass
+
+
+GenericUpdateColumns = TypeVar("GenericUpdateColumns", bound=UpdateColumns)
+
+
+class Table(Generic[GenericUpdateColumns]):
     __databas_name__: ClassVar[str]
     __schema_name__: ClassVar[str]
     __table_name__: ClassVar[str]
+    __update_columns__: GenericUpdateColumns | None = None
 
 
 GenericTableModel = TypeVar("GenericTableModel", bound=Table)
