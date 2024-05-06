@@ -20,7 +20,7 @@ class TestUpdateQuery:
                 UPDATE
                     database.public.users
                 SET
-                    id = %(id)s
+                    id = %(id)s,
                     name = %(name)s
                 """
             ).strip()

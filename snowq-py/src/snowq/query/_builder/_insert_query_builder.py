@@ -3,7 +3,7 @@ from typing import Generic, Sequence, Type
 
 from typing_extensions import override
 
-from snowq.schema import GenericTablable, column_names, full_name
+from snowq.schema import GenericTablable, column_names, columns_dict, full_name
 
 from ._builder import QueryBuilder, QueryParams
 
@@ -13,7 +13,9 @@ class InsertQueryBuilder:
     def overwrite(self) -> "InsertOverwriteQueryBuilder":
         return InsertOverwriteQueryBuilder()
 
-    def into(self, table: Type[GenericTablable]) -> "InsertIntoQueryBuilder":
+    def into(
+        self, table: Type[GenericTablable]
+    ) -> "InsertIntoQueryBuilder[GenericTablable]":
         return InsertIntoQueryBuilder(table)
 
 
@@ -33,10 +35,10 @@ class InsertIntoQueryBuilder(Generic[GenericTablable]):
 
     def values(
         self, value: GenericTablable, *values: GenericTablable
-    ) -> "InsertIntoValuesQueryBuilder":
+    ) -> "InsertIntoValuesQueryBuilder[GenericTablable]":
         return InsertIntoValuesQueryBuilder(
             self._table,
-            (value, values),
+            (value, *values),
             overwrite=self._overwrite,
         )
 
@@ -56,14 +58,17 @@ class InsertIntoValuesQueryBuilder(Generic[GenericTablable], QueryBuilder):
     @override
     def build(self) -> QueryParams:
         overwrite = "OVERWRITE " if self._overwrite else ""
-        query = dedent(
-            f"""
-            INSERT {overwrite}INTO
-                {full_name(self._table)}
-            VALUES (
-                {", ".join(['?' for value in column_names(self._table)])}
-            )
-            """
-        ).strip()
+        query = f"""
+INSERT {overwrite}INTO
+    {full_name(self._table)}
+VALUES (
+    {',\n    '.join([f'%({column_name})s' for column_name in column_names(self._table)])}
+)
+""".strip()
 
-        return QueryParams(query, {})
+        return QueryParams(
+            query,
+            columns_dict(self._values[0])
+            if len(self._values) == 1
+            else tuple(columns_dict(value) for value in self._values),
+        )

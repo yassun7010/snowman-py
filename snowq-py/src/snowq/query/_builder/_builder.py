@@ -6,7 +6,7 @@ from snowq.cursor import Cursor
 
 class QueryParams(NamedTuple):
     query: str
-    params: dict[str, Any]
+    params: dict[str, Any] | tuple[dict[str, Any], ...]
 
 
 class QueryBuilder(ABC):
@@ -15,4 +15,8 @@ class QueryBuilder(ABC):
 
     def execute(self, cursor: Cursor, /) -> None:
         query, params = self.build()
-        cursor.execute(query, params)
+
+        if isinstance(params, tuple):
+            cursor.executemany(query, params)
+        else:
+            cursor.execute(query, params)

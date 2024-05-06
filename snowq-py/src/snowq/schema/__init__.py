@@ -1,4 +1,4 @@
-from typing import Type, TypeVar
+from typing import Any, Type, TypeVar
 
 from pydantic import BaseModel
 
@@ -20,6 +20,14 @@ def full_name(table: Type[Tablable]) -> str:
 def column_names(table: Type[Table]) -> list[str]:
     if issubclass(table, BaseModel):
         return [column_name for column_name in table.model_fields.keys()]
+
+    else:
+        raise ValueError(f"Table {table} is not a Pydantic model")
+
+
+def columns_dict(table: Table) -> dict[str, Any]:
+    if isinstance(table, BaseModel):
+        return table.model_dump()
 
     else:
         raise ValueError(f"Table {table} is not a Pydantic model")

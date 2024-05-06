@@ -46,7 +46,7 @@ class UpdateSetQueryBuilder(
 UPDATE
     {full_name(self._table)}
 SET
-    {'\n    '.join([f'{key} = %({key})s' for key in self._columns.keys()])}
+    {',\n    '.join([f'{key} = %({key})s' for key in self._columns.keys()])}
 """.strip()
 
         return QueryParams(query, {k: v for k, v in self._columns.items()})
