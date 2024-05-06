@@ -62,3 +62,21 @@ class TestInsertQuery:
             ).strip()
         )
         assert params == tuple(value.model_dump() for value in values)
+
+    def test_insert_into_query_overwrite_execute_build(self, user: User):
+        query, params = snowq.query.insert.overwrite.into(User).values(user).build()
+
+        assert (
+            query
+            == textwrap.dedent(
+                """
+                INSERT OVERWRITE INTO
+                    database.public.users
+                VALUES (
+                    %(id)s,
+                    %(name)s
+                )
+                """
+            ).strip()
+        )
+        assert params == user.model_dump()
