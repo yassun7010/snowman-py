@@ -22,7 +22,7 @@ build-backend = "maturin"
 
 [tool.maturin]
 bindings = "bin"
-manifest-path = "crates/snowq/Cargo.toml"
+manifest-path = "crates/snowq-rs/Cargo.toml"
 module-name = "snowq"
 python-source = "python/src"
 

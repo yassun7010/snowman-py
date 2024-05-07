@@ -9,7 +9,7 @@
         },
         {
             "name": "snowq-rs",
-            "path": "crates/snowq"
+            "path": "crates/snowq-rs"
         }
     ],
     "settings": {

@@ -6,3 +6,4 @@ description = "snowflake schema builder for snowq."
 
 [dependencies]
 clap = { version = "4.5.4", features = ["derive"] }
+snowflake-api = "0.8.0"
