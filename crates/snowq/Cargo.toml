@@ -1,0 +1,7 @@
+[package]
+name = "snowq"
+version = { workspace = true }
+edition = { workspace = true }
+description = "snowflake schema builder for snowq."
+
+[dependencies]

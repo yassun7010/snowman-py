@@ -1,7 +1,7 @@
 [project]
 name = "snowq"
 version = "0.1.0"
-description = "Add your description here"
+description = "snowflake query builder for python."
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
 dependencies = [
     "typing-extensions>=4.11.0",
@@ -10,10 +10,21 @@ dependencies = [
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[tool.maturin]
+bindings = "bin"
+manifest-path = "crates/snowq/Cargo.toml"
+module-name = "snowq"
+python-source = "python/src"
 
 [tool.rye]
 managed = true
@@ -26,6 +37,7 @@ dev-dependencies = [
     "pyarrow-stubs>=10.0.1.7",
     "pandas-stubs>=2.2.1.240316",
     "pytest-mock>=3.14.0",
+    "pip>=24.0",
 ]
 
 [tool.hatch.metadata]
