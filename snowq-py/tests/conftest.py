@@ -30,7 +30,7 @@ def mock_turu_snowflake_cursor(
     return mocker.Mock(spec=turu.snowflake.Cursor)
 
 
-class _UserUpdateColumns(TypedDict):
+class _UserUpdateColumns(TypedDict, total=False):
     id: int
     name: str
 

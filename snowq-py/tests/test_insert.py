@@ -9,21 +9,19 @@ class TestInsertQuery:
     def test_insert_execute_by_snowflake_cursor(
         self, user: User, mock_snowflake_cursor: SnowflakeCursor
     ):
-        snowq.query.insert.into(User).values(user, user).execute(mock_snowflake_cursor)
+        snowq.query.insert.into(User).values(user).execute(mock_snowflake_cursor)
 
     def test_insert_execute_by_turu_connection(
         self, user: User, mock_turu_snowflake_connection
     ):
-        snowq.query.insert.into(User).values(user, user).execute(
+        snowq.query.insert.into(User).values(user).execute(
             mock_turu_snowflake_connection
         )
 
     def test_insert_execute_by_turu_cursor(
         self, user: User, mock_turu_snowflake_cursor
     ):
-        snowq.query.insert.into(User).values(user, user).execute(
-            mock_turu_snowflake_cursor
-        )
+        snowq.query.insert.into(User).values(user).execute(mock_turu_snowflake_cursor)
 
     def test_insert_into_query_execute_build(self, user: User):
         query, params = snowq.query.insert.into(User).values(user).build()
@@ -43,10 +41,9 @@ class TestInsertQuery:
         )
         assert params == user.model_dump()
 
-
     def test_insert_into_query_execute_many_build(self, user: User):
-        values = (user, user)
-        query, params = snowq.query.insert.into(User).values(*values).build()
+        values = [user, user]
+        query, params = snowq.query.insert.into(User).values(values).build()
 
         assert (
             query

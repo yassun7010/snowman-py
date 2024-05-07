@@ -1,4 +1,3 @@
-from textwrap import dedent
 from typing import Generic, Sequence, Type
 
 from typing_extensions import override
@@ -34,11 +33,11 @@ class InsertIntoQueryBuilder(Generic[GenericTablable]):
         self._overwrite = overwtire
 
     def values(
-        self, value: GenericTablable, *values: GenericTablable
+        self, values: GenericTablable | Sequence[GenericTablable]
     ) -> "InsertIntoValuesQueryBuilder[GenericTablable]":
         return InsertIntoValuesQueryBuilder(
             self._table,
-            (value, *values),
+            values if isinstance(values, Sequence) else (values,),
             overwrite=self._overwrite,
         )
 
