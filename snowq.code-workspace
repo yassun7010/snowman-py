@@ -1,10 +1,15 @@
 {
     "folders": [
         {
+            "name": "root",
             "path": "."
         },
         {
             "path": "python"
+        },
+        {
+            "name": "snowq-rs",
+            "path": "crates/snowq"
         }
     ],
     "settings": {
