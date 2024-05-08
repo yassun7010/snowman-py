@@ -9,3 +9,6 @@ authors = ["yassun7010 <yassun7010@outlook.com>"]
 license = "MIT"
 
 [workspace.dependencies]
+serde_json = "1.0.116"
+snowflake-api = "0.8.0"
+tokio = "1.37.0"

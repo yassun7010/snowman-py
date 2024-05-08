@@ -2192,6 +2192,16 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "snowflake-api",
+ "snowq-connector",
+ "tokio",
+]
+
+[[package]]
+name = "snowq-connector"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "snowflake-api",
 ]
 
 [[package]]

@@ -1,9 +1,13 @@
 [package]
 name = "snowq"
-version = { workspace = true }
-edition = { workspace = true }
 description = "snowflake schema builder for snowq."
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
 
 [dependencies]
 clap = { version = "4.5.4", features = ["derive"] }
-snowflake-api = "0.8.0"
+tokio.workspace = true
+snowflake-api.workspace = true
+snowq-connector = { version = "0.1.0", path = "../snowq-connector" }

@@ -1,6 +1,6 @@
 use clap::Subcommand;
 
-use super::schema_sync::SchemaSync;
+pub use super::schema_sync::{run_schema_sync_command, SchemaSync};
 
 #[derive(Debug, Subcommand)]
 pub enum Schema {

@@ -1,5 +1,5 @@
-mod schema;
-mod schema_sync;
+pub mod schema;
+pub mod schema_sync;
 
 use clap::{Parser, Subcommand};
 
@@ -8,11 +8,11 @@ use self::schema::Schema;
 #[derive(Debug, Parser)]
 pub struct Args {
     #[command(subcommand)]
-    subcommand: SubCommands,
+    pub subcommand: SubCommands,
 }
 
 #[derive(Debug, Subcommand)]
-enum SubCommands {
+pub enum SubCommands {
     /// Snowflake schema operations.
     #[command(subcommand)]
     Schema(Schema),

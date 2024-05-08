@@ -10,6 +10,9 @@
         {
             "name": "snowq-rs",
             "path": "crates/snowq-rs"
+        },
+        {
+            "path": "crates/snowq-connector"
         }
     ],
     "settings": {
