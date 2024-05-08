@@ -9,3 +9,4 @@ license.workspace = true
 
 [dependencies]
 serde_json.workspace = true
+snowflake-connector-rs = "0.2.0"
