@@ -10,3 +10,4 @@ license.workspace = true
 clap = { version = "4.5.4", features = ["derive"] }
 tokio.workspace = true
 snowq-connector = { version = "0.1.0", path = "../snowq-connector" }
+openssl.workspace = true
