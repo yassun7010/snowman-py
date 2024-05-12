@@ -5,8 +5,15 @@ use crate::command::{
 
 pub fn run(args: impl Into<Args>) -> Result<(), Box<dyn std::error::Error>> {
     let args = args.into();
+
+    dotenvy::dotenv()?;
+
     match args.subcommand {
-        SubCommands::Schema(Schema::Sync(options)) => run_schema_sync_command(options)?,
+        SubCommands::Schema(Schema::Sync(options)) => tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap()
+            .block_on(async { run_schema_sync_command(options).await })?,
     }
     Ok(())
 }

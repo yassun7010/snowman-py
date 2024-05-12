@@ -11,3 +11,4 @@ license.workspace = true
 serde_json.workspace = true
 snowflake-connector-rs = "0.2.0"
 openssl.workspace = true
+thiserror.workspace = true
