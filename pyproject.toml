@@ -49,6 +49,6 @@ packages = ["src/snowq"]
 [tool.taskipy.tasks]
 format = "ruff format ."
 lint = "ruff check --fix ."
-typecheck = "pyright src/** tests/**"
+typecheck = "pyright python/src/** python/tests/**"
 test = "pytest"
 ci = "task format && task lint && task typecheck && task test"

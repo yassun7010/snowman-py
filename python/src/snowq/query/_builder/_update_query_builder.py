@@ -4,33 +4,33 @@ from pydantic import BaseModel
 from typing_extensions import override
 
 from snowq.schema import GenericTablable, full_name
-from snowq.schema.table import GenericUpdateColumns
+from snowq.schema.table import GenericUpdateColumnTypedDict
 
 from ._builder import QueryBuilder, QueryParams
 
 
-class UpdateStatement(Generic[GenericTablable, GenericUpdateColumns]):
+class UpdateStatement(Generic[GenericTablable, GenericUpdateColumnTypedDict]):
     def __init__(
         self,
         table: Type[GenericTablable],
-        _columns_type: GenericUpdateColumns | None = None,
+        _columns_type: GenericUpdateColumnTypedDict | None = None,
     ) -> None:
         self._table = table
 
     def set(
         self,
-        fields: GenericTablable | GenericUpdateColumns,
-    ) -> "UpdateSetQueryBuilder[GenericTablable, GenericUpdateColumns]":
+        fields: GenericTablable | GenericUpdateColumnTypedDict,
+    ) -> "UpdateSetQueryBuilder[GenericTablable, GenericUpdateColumnTypedDict]":
         return UpdateSetQueryBuilder(self._table, fields)
 
 
 class UpdateSetQueryBuilder(
-    Generic[GenericTablable, GenericUpdateColumns], QueryBuilder
+    Generic[GenericTablable, GenericUpdateColumnTypedDict], QueryBuilder
 ):
     def __init__(
         self,
         table: type[GenericTablable],
-        columns: GenericTablable | GenericUpdateColumns,
+        columns: GenericTablable | GenericUpdateColumnTypedDict,
     ):
         self._table = table
         self._columns = cast(
