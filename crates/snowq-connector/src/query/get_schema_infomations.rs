@@ -12,9 +12,11 @@ pub struct SchemaInfomation {
 
 pub async fn get_schema_infomations(
     connection: &Connection,
+    database_name: &str,
+    schema_name: &str,
 ) -> Result<Vec<Table>, Box<dyn std::error::Error>> {
     let rows = connection
-        .execute(
+        .execute(&format!(
             "
             SELECT
                 t.table_catalog,
@@ -29,13 +31,15 @@ pub async fn get_schema_infomations(
                 information_schema.columns c USING (table_schema, table_name)
             WHERE
                 t.table_type = 'BASE TABLE'
+                AND t.table_catalog = '{database_name}'
+                AND t.table_schema = '{schema_name}'
             ORDER BY
                 t.table_catalog,
                 t.table_schema,
                 t.table_name,
                 c.ordinal_position
-            ",
-        )
+            "
+        ))
         .await?;
     let mut tables = vec![];
     let mut table: Option<Table> = None;

@@ -5,17 +5,50 @@ pub struct SchemaSync {}
 
 pub async fn run_schema_sync_command(_: SchemaSync) -> Result<(), Box<dyn std::error::Error>> {
     let connection = snowq_connector::Connection::try_new_from_env()?;
-    let tables =
-        snowq_connector::query::schema_infomations::get_schema_infomations(&connection).await?;
 
-    for table in tables {
-        println!(
-            "{}.{}.{}",
-            table.database_name, table.schema_name, table.table_name
-        );
-        for column in table.columns {
-            println!("    {}:{}", column.column_name, column.data_type);
+    let schemas = snowq_connector::query::get_schemas(&connection).await?;
+    let exclude_schemas = vec![(
+        Option::<String>::None,
+        Some("INFORMATION_SCHEMA".to_string()),
+    )];
+
+    let schemas = schemas
+        .into_iter()
+        .filter(|schema| {
+            !exclude_schemas.iter().any(|(database_name, schema_name)| {
+                match (database_name, schema_name) {
+                    (Some(database_name), Some(schema_name)) => {
+                        schema.database_name == *database_name && schema.schema_name == *schema_name
+                    }
+                    (Some(database_name), None) => schema.database_name == *database_name,
+                    (None, Some(schema_name)) => schema.schema_name == *schema_name,
+                    (None, None) => false,
+                }
+            })
+        })
+        .collect::<Vec<_>>();
+
+    futures::future::try_join_all(schemas.iter().map(|schema| async {
+        let tables = snowq_connector::query::get_schema_infomations(
+            &connection,
+            &schema.database_name,
+            &schema.schema_name,
+        )
+        .await?;
+
+        for table in tables {
+            println!(
+                "{}.{}.{}",
+                table.database_name, table.schema_name, table.table_name
+            );
+            for column in table.columns {
+                println!("    {}:{}", column.column_name, column.data_type);
+            }
         }
-    }
+
+        Ok::<(), Box<dyn std::error::Error>>(())
+    }))
+    .await?;
+
     Ok(())
 }
