@@ -9,6 +9,12 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "editor.comments.insertSpace": true,
+    "rust-analyzer.checkOnSave": true,
+    "rust-analyzer.check.command": "clippy",
+    "rust-analyzer.check.extraArgs": [
+        "--fix",
+        "--allow-dirty",
+    ],
     "[python]": {
         "editor.codeActionsOnSave": {
             "source.fixAll.ruff": "explicit",

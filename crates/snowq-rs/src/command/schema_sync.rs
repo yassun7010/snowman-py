@@ -9,7 +9,7 @@ pub async fn run_schema_sync_command(
     let connection = snowq_connector::Connection::try_new_from_env()?;
 
     let schemas = snowq_connector::query::get_schemas(&connection).await?;
-    let exclude_schemas = vec![(
+    let exclude_schemas = [(
         Option::<String>::None,
         Some("INFORMATION_SCHEMA".to_string()),
     )];

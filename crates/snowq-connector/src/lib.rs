@@ -41,7 +41,7 @@ impl Connection {
         query: &str,
     ) -> Result<Vec<SnowflakeRow>, snowflake_connector_rs::Error> {
         let session = self.inner.create_session().await?;
-        Ok(session.query(query).await?)
+        session.query(query).await
     }
 }
 
