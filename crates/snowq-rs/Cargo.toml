@@ -10,7 +10,9 @@ license.workspace = true
 clap = { version = "4.5.4", features = ["derive"] }
 tokio.workspace = true
 snowq-connector = { version = "0.1.0", path = "../snowq-connector" }
+snowq-config = { version = "0.1.0", path = "../snowq-config" }
 openssl.workspace = true
 dotenvy = "0.15.7"
 askama = "0.12.1"
 futures = "0.3.30"
+serde_json = { workspace = true, features = ["preserve_order"] }

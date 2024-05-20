@@ -1,9 +1,11 @@
+pub mod config;
+pub mod config_print;
 pub mod schema;
 pub mod schema_sync;
 
 use clap::{Parser, Subcommand};
 
-use self::schema::Schema;
+use self::{config::ConfigCommand, schema::SchemaCommand};
 
 #[derive(Debug, Parser)]
 pub struct Args {
@@ -15,7 +17,11 @@ pub struct Args {
 pub enum SubCommands {
     /// Snowflake schema operations.
     #[command(subcommand)]
-    Schema(Schema),
+    Schema(SchemaCommand),
+
+    /// snowq config operations.
+    #[command(subcommand)]
+    Config(ConfigCommand),
 }
 
 impl<I, T> From<I> for Args

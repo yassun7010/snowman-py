@@ -1,9 +1,11 @@
 use clap::Args;
 
 #[derive(Debug, Args)]
-pub struct SchemaSync {}
+pub struct SchemaSyncCommand {}
 
-pub async fn run_schema_sync_command(_: SchemaSync) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run_schema_sync_command(
+    _: SchemaSyncCommand,
+) -> Result<(), Box<dyn std::error::Error>> {
     let connection = snowq_connector::Connection::try_new_from_env()?;
 
     let schemas = snowq_connector::query::get_schemas(&connection).await?;

@@ -1,9 +1,10 @@
 use clap::Subcommand;
 
-pub use super::schema_sync::{run_schema_sync_command, SchemaSync};
+pub use super::schema_sync::run_schema_sync_command;
+use super::schema_sync::SchemaSyncCommand;
 
 #[derive(Debug, Subcommand)]
-pub enum Schema {
+pub enum SchemaCommand {
     /// Update Python schema classes from Snowflake dataabse schema.
-    Sync(SchemaSync),
+    Sync(SchemaSyncCommand),
 }
