@@ -124,13 +124,11 @@ async fn write_schema_py(
         (itertools::join(
             [
                 snowq_generator::generate_import_modules(
-                    &[
+                    &itertools::chain!(
                         snowq_generator::get_insert_typeddict_modules(),
                         snowq_generator::get_update_typeddict_modules(),
                         snowq_generator::get_pydantic_modules(),
-                    ]
-                    .into_iter()
-                    .flatten()
+                    )
                     .unique()
                     .collect::<Vec<&str>>(),
                 ),
