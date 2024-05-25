@@ -94,7 +94,7 @@ pub async fn run_schema_sync_command(
             .into_group_map_by(|x| x.database_name.clone())
             .into_iter()
             .map(|(database_name, schemas)| async move {
-                write_schema_init_py(schema_output_dirpath, &database_name, &schemas).await
+                write_database_init_py(schema_output_dirpath, &database_name, &schemas).await
             }),
     )
     .await?;
@@ -121,7 +121,7 @@ pub async fn run_schema_sync_command(
     Ok(())
 }
 
-async fn write_schema_init_py(
+async fn write_database_init_py(
     schema_output_dirpath: &std::path::Path,
     database_name: &str,
     schemas: &[&DatabaseSchema],
