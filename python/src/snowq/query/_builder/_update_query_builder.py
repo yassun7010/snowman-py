@@ -3,8 +3,8 @@ from typing import Generic, Type, cast
 from pydantic import BaseModel
 from typing_extensions import override
 
-from snowq.schema import GenericTable, full_name
-from snowq.schema.table import GenericUpdateColumnTypedDict
+from snowq.schema import full_name
+from snowq.schema.table import GenericTable, GenericUpdateColumnTypedDict
 
 from ._builder import QueryBuilder, QueryParams
 
@@ -13,6 +13,7 @@ class UpdateStatement(Generic[GenericTable, GenericUpdateColumnTypedDict]):
     def __init__(
         self,
         table: Type[GenericTable],
+        *,
         _columns_type: GenericUpdateColumnTypedDict | None = None,
     ) -> None:
         self._table = table

@@ -2,7 +2,13 @@ from typing import Generic, Sequence, Type
 
 from typing_extensions import override
 
-from snowq.schema import GenericTable, column_names, columns_dict, full_name
+from snowq.schema import column_names, columns_dict, full_name
+from snowq.schema.table import (
+    GenericInsertColumnTypedDict,
+    GenericTable,
+    GenericUpdateColumnTypedDict,
+    Table,
+)
 
 from ._builder import QueryBuilder, QueryParams
 
@@ -12,27 +18,43 @@ class InsertQueryBuilder:
     def overwrite(self) -> "InsertOverwriteQueryBuilder":
         return InsertOverwriteQueryBuilder()
 
-    def into(self, table: Type[GenericTable]) -> "InsertIntoQueryBuilder[GenericTable]":
-        return InsertIntoQueryBuilder(table)
+    def into(
+        self,
+        table: Type[Table[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]],
+    ):
+        return InsertIntoQueryBuilder(
+            table,
+            _columns_type=table.__insert_columns__,  # type: ignore
+        )
 
 
 class InsertOverwriteQueryBuilder:
     def into(self, table: Type[GenericTable]) -> "InsertIntoQueryBuilder":
-        return InsertIntoQueryBuilder(table, overwtire=True)
+        return InsertIntoQueryBuilder(
+            table,
+            overwtire=True,
+            _columns_type=table.__insert_columns__,  # type: ignore
+        )
 
 
-class InsertIntoQueryBuilder(Generic[GenericTable]):
+class InsertIntoQueryBuilder(Generic[GenericTable, GenericInsertColumnTypedDict]):
     def __init__(
         self,
         table: Type[GenericTable],
+        *,
         overwtire: bool = False,
+        _columns_type: GenericInsertColumnTypedDict | None,
     ) -> None:
         self._table = table
         self._overwrite = overwtire
 
     def values(
-        self, values: GenericTable | Sequence[GenericTable]
-    ) -> "InsertIntoValuesQueryBuilder[GenericTable]":
+        self,
+        values: GenericTable
+        | GenericInsertColumnTypedDict
+        | Sequence[GenericTable | GenericInsertColumnTypedDict],
+    ) -> "InsertIntoValuesQueryBuilder[GenericTable, GenericInsertColumnTypedDict]":
+        values = values if isinstance(values, Sequence) else (values,)
         return InsertIntoValuesQueryBuilder(
             self._table,
             values if isinstance(values, Sequence) else (values,),
@@ -40,11 +62,13 @@ class InsertIntoQueryBuilder(Generic[GenericTable]):
         )
 
 
-class InsertIntoValuesQueryBuilder(Generic[GenericTable], QueryBuilder):
+class InsertIntoValuesQueryBuilder(
+    Generic[GenericTable, GenericInsertColumnTypedDict], QueryBuilder
+):
     def __init__(
         self,
         table: type[GenericTable],
-        values: Sequence[GenericTable],
+        values: Sequence[GenericTable | GenericInsertColumnTypedDict],
         /,
         overwrite: bool = False,
     ):

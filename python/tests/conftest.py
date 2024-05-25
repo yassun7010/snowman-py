@@ -1,11 +1,11 @@
 from typing import TypedDict
-from pydantic import BaseModel
+
 import pytest
 import snowflake.connector.cursor
 import snowq
 import turu.snowflake
+from pydantic import BaseModel
 from pytest_mock import MockFixture
-
 from snowq.schema.table import Table
 
 
@@ -30,13 +30,18 @@ def mock_turu_snowflake_cursor(
     return mocker.Mock(spec=turu.snowflake.Cursor)
 
 
+class _UserInsertColumns(TypedDict):
+    id: int
+    name: str
+
+
 class _UserUpdateColumns(TypedDict, total=False):
     id: int
     name: str
 
 
 @snowq.table("database", "public", "users")
-class User(BaseModel, Table[_UserUpdateColumns]):
+class User(BaseModel, Table[_UserInsertColumns, _UserUpdateColumns]):
     id: int
     name: str
 
