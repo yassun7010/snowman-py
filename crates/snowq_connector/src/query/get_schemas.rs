@@ -1,13 +1,13 @@
 use crate::Connection;
 
-pub struct DatabaseSchena {
+pub struct DatabaseSchema {
     pub database_name: String,
     pub schema_name: String,
 }
 
 pub async fn get_schemas(
     connection: &Connection,
-) -> Result<Vec<DatabaseSchena>, Box<dyn std::error::Error>> {
+) -> Result<Vec<DatabaseSchema>, Box<dyn std::error::Error>> {
     let rows = connection
         .execute(
             "
@@ -21,7 +21,7 @@ pub async fn get_schemas(
         .await?;
     let mut tables = vec![];
     for row in rows {
-        tables.push(DatabaseSchena {
+        tables.push(DatabaseSchema {
             database_name: row.get("database_name").unwrap(),
             schema_name: row.get("schema_name").unwrap(),
         });
