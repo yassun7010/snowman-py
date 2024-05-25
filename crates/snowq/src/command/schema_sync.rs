@@ -45,46 +45,14 @@ pub async fn run_schema_sync_command(
         .collect::<Vec<_>>();
 
     futures::future::try_join_all(schemas.iter().map(|schema| async {
-        let tables = snowq_connector::query::get_schema_infomations(
+        write_schema_py(
             &connection,
-            &schema.database_name,
-            &schema.schema_name,
+            schema_output_dirpath,
+            schema,
+            &update_typeddict_options,
+            &pydantic_options,
         )
-        .await?;
-
-        let database_dir = &schema_output_dirpath.join(schema.database_name.to_case(Case::Snake));
-
-        std::fs::create_dir_all(database_dir)?;
-
-        tokio::fs::File::create(
-            database_dir.join(format!("{}.py", schema.schema_name.to_case(Case::Snake))),
-        )
-        .await?
-        .write_all(
-            (snowq_generator::generate_import_modules(
-                &itertools::interleave(
-                    snowq_generator::get_pydantic_modules(),
-                    snowq_generator::get_update_typeddict_modules(),
-                )
-                .unique()
-                .collect::<Vec<&str>>(),
-            ) + &snowq_generator::generate_update_typeddicts(
-                &schema.database_name,
-                &schema.schema_name,
-                &tables,
-                &update_typeddict_options,
-            ) + &snowq_generator::generate_pydantic_models(
-                &schema.database_name,
-                &schema.schema_name,
-                &tables,
-                &pydantic_options,
-                &update_typeddict_options,
-            ))
-                .as_bytes(),
-        )
-        .await?;
-
-        Ok::<(), Box<dyn std::error::Error>>(())
+        .await
     }))
     .await?;
 
@@ -102,6 +70,55 @@ pub async fn run_schema_sync_command(
     write_output_init_py(schema_output_dirpath, &schemas.iter().collect::<Vec<_>>()).await?;
 
     Ok(())
+}
+
+async fn write_schema_py(
+    connection: &snowq_connector::Connection,
+    schema_output_dirpath: &std::path::Path,
+    schema: &DatabaseSchema,
+    update_typeddict_options: &snowq_generator::UpdateTypedDictOptions,
+    pydantic_options: &snowq_generator::PydanticOptions,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let tables = snowq_connector::query::get_schema_infomations(
+        connection,
+        &schema.database_name,
+        &schema.schema_name,
+    )
+    .await?;
+
+    let database_dir = &schema_output_dirpath.join(schema.database_name.to_case(Case::Snake));
+
+    std::fs::create_dir_all(database_dir)?;
+
+    tokio::fs::File::create(
+        database_dir.join(format!("{}.py", schema.schema_name.to_case(Case::Snake))),
+    )
+    .await?
+    .write_all(
+        (snowq_generator::generate_import_modules(
+            &itertools::interleave(
+                snowq_generator::get_pydantic_modules(),
+                snowq_generator::get_update_typeddict_modules(),
+            )
+            .unique()
+            .collect::<Vec<&str>>(),
+        ) + &snowq_generator::generate_update_typeddicts(
+            &schema.database_name,
+            &schema.schema_name,
+            &tables,
+            update_typeddict_options,
+        ) + &snowq_generator::generate_pydantic_models(
+            &schema.database_name,
+            &schema.schema_name,
+            &tables,
+            pydantic_options,
+            update_typeddict_options,
+        ))
+            .as_bytes(),
+    )
+    .await?;
+
+    Ok::<(), Box<dyn std::error::Error>>(())
 }
 
 async fn write_output_init_py(
