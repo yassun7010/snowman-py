@@ -1,8 +1,8 @@
-use std::path::Path;
-
 use clap::Args;
 use convert_case::{Case, Casing};
 use tokio::io::AsyncWriteExt;
+
+use crate::config::{get_pydantic_options, get_schema_output_dirpath};
 
 #[derive(Debug, Args)]
 pub struct SchemaSyncCommand {}
@@ -10,7 +10,11 @@ pub struct SchemaSyncCommand {}
 pub async fn run_schema_sync_command(
     _: SchemaSyncCommand,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    let config_file_path = snowq_config::find_path()?;
+    let config = snowq_config::load_from_path(&config_file_path)?;
     let connection = snowq_connector::Connection::try_new_from_env()?;
+    let pydantic_options = get_pydantic_options(&config);
+    let schema_output_dirpath = get_schema_output_dirpath(&config);
 
     let schemas = snowq_connector::query::get_schemas(&connection).await?;
     let exclude_schemas = [(
@@ -42,7 +46,12 @@ pub async fn run_schema_sync_command(
         )
         .await?;
 
-        let database_dir = Path::new("schema").join(schema.database_name.to_case(Case::Snake));
+        let database_dir = config_file_path
+            .parent()
+            .unwrap()
+            .join(&schema_output_dirpath)
+            .join(schema.database_name.to_case(Case::Snake));
+
         std::fs::create_dir_all(&database_dir)?;
         let mut schema_file = tokio::fs::File::create(
             database_dir.join(format!("{}.py", schema.schema_name.to_case(Case::Snake))),
@@ -55,6 +64,7 @@ pub async fn run_schema_sync_command(
                     &schema.database_name,
                     &schema.schema_name,
                     &tables,
+                    &pydantic_options,
                 )
                 .as_bytes(),
             )

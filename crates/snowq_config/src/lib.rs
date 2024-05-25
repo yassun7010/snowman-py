@@ -17,12 +17,20 @@ impl Default for Config {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ConfigV1 {
-    pub connection: Connection,
+    pub connection: ConnectionV1,
+
+    #[serde(default)]
+    pub schema: SchemaConfigV1,
+
+    #[serde(default)]
+    pub pydantic: PydanticOptionsV1,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Connection {
+#[serde(deny_unknown_fields)]
+pub struct ConnectionV1 {
     #[serde(default = "account_default")]
     pub account: StringOrEnv,
 
@@ -33,14 +41,27 @@ pub struct Connection {
     pub password: StringOrEnv,
 }
 
-impl Default for Connection {
+impl Default for ConnectionV1 {
     fn default() -> Self {
-        Connection {
+        ConnectionV1 {
             account: account_default(),
             username: username_default(),
             password: password_default(),
         }
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
+pub struct SchemaConfigV1 {
+    #[serde(default = "get_pwd")]
+    pub output_dir: std::path::PathBuf,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
+pub struct PydanticOptionsV1 {
+    pub model_name_suffix: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -73,7 +94,7 @@ fn password_default() -> StringOrEnv {
     })
 }
 
-pub fn load() -> Result<Config, crate::Error> {
+pub fn find_path() -> Result<std::path::PathBuf, crate::Error> {
     let config_filename = "snowq.toml";
 
     // find recursively from current directory to root directory
@@ -83,8 +104,7 @@ pub fn load() -> Result<Config, crate::Error> {
         if config_path.exists() {
             log::debug!("config file found: {:?}", config_path);
 
-            let config = std::fs::read_to_string(config_path)?;
-            return toml::from_str(&config).map_err(Into::into);
+            return Ok(config_path);
         }
 
         if !current_dir.pop() {
@@ -93,4 +113,18 @@ pub fn load() -> Result<Config, crate::Error> {
     }
 
     Err(Error::ConfigFileNotFound)
+}
+
+pub fn load_from_path(path: &std::path::Path) -> Result<Config, crate::Error> {
+    let config = std::fs::read_to_string(path)?;
+    toml::from_str(&config).map_err(Into::into)
+}
+
+pub fn load() -> Result<Config, crate::Error> {
+    let config_path = find_path()?;
+    load_from_path(&config_path)
+}
+
+fn get_pwd() -> std::path::PathBuf {
+    std::env::current_dir().unwrap_or_default()
 }

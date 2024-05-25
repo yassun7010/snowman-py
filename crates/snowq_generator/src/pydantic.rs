@@ -1,10 +1,16 @@
 use convert_case::{Case, Casing};
 use snowq_connector::schema::Table;
 
+#[derive(Debug, Clone, Default)]
+pub struct PydanticOptions {
+    pub model_name_suffix: Option<String>,
+}
+
 pub fn generate_pydantic_schema(
     database_name: &str,
     schema_name: &str,
     tables: &[Table],
+    options: &PydanticOptions,
 ) -> String {
     let mut text = String::new();
 
@@ -14,7 +20,7 @@ pub fn generate_pydantic_schema(
     text.push_str(
         &tables
             .iter()
-            .map(|table| generate_pydantic_table(database_name, schema_name, table))
+            .map(|table| generate_pydantic_table(database_name, schema_name, table, options))
             .collect::<Vec<String>>()
             .join("\n\n"),
     );
@@ -22,8 +28,17 @@ pub fn generate_pydantic_schema(
     text
 }
 
-pub fn generate_pydantic_table(database_name: &str, schema_name: &str, table: &Table) -> String {
+pub fn generate_pydantic_table(
+    database_name: &str,
+    schema_name: &str,
+    table: &Table,
+    options: &PydanticOptions,
+) -> String {
     let mut pydantic_schema = String::new();
+    let mut model_class_name = table.table_name.to_case(Case::Pascal);
+    if let Some(suffix) = &options.model_name_suffix {
+        model_class_name.push_str(suffix);
+    }
 
     pydantic_schema.push_str(&format!(
         "@snowq.table(\"{database_name}\", \"{schema_name}\", \"{}\")\n",
@@ -31,7 +46,7 @@ pub fn generate_pydantic_table(database_name: &str, schema_name: &str, table: &T
     ));
     pydantic_schema.push_str(&format!(
         "class {}(pydantic.BaseModel, snowq.Table):",
-        table.table_name.to_case(Case::Pascal)
+        model_class_name
     ));
     for column in &table.columns {
         let mut data_type = column.data_type.clone();
