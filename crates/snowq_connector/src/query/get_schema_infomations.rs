@@ -24,9 +24,10 @@ pub async fn get_schema_infomations(
                 t.table_name,
                 t.comment as table_comment,
                 c.column_name,
-                c.comment as column_comment,
                 c.data_type,
                 c.is_nullable,
+                c.comment as column_comment,
+                c.column_default,
             FROM
                 information_schema.tables t
             JOIN
@@ -53,6 +54,7 @@ pub async fn get_schema_infomations(
                     data_type: row.get("data_type").unwrap(),
                     is_nullable: row.get::<String>("is_nullable").unwrap() == "YES",
                     comment: row.get("column_comment").ok(),
+                    default_value: row.get("column_default").ok(),
                 });
             }
             _ => {
@@ -69,6 +71,7 @@ pub async fn get_schema_infomations(
                         data_type: row.get("data_type").unwrap(),
                         is_nullable: row.get::<String>("is_nullable").unwrap() == "YES",
                         comment: row.get("column_comment").ok(),
+                        default_value: row.get("column_default").ok(),
                     }],
                 });
             }

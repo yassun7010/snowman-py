@@ -15,6 +15,7 @@ pub async fn run_schema_sync_command(
     let config_file_path = snowq_config::find_path()?;
     let config = snowq_config::load_from_path(&config_file_path)?;
     let connection = snowq_connector::Connection::try_new_from_env()?;
+    let insert_typeddict_options = snowq_generator::InsertTypedDictOptions::default();
     let update_typeddict_options = snowq_generator::UpdateTypedDictOptions::default();
     let pydantic_options = get_pydantic_options(&config);
     let output_dirpath = &config_file_path
@@ -72,8 +73,9 @@ pub async fn run_schema_sync_command(
             &connection,
             output_dirpath,
             schema,
-            &update_typeddict_options,
             &pydantic_options,
+            &insert_typeddict_options,
+            &update_typeddict_options,
         )
         .await
     }))
@@ -99,8 +101,9 @@ async fn write_schema_py(
     connection: &snowq_connector::Connection,
     output_dirpath: &std::path::Path,
     schema: &DatabaseSchema,
-    update_typeddict_options: &snowq_generator::UpdateTypedDictOptions,
     pydantic_options: &snowq_generator::PydanticOptions,
+    insert_typeddict_options: &snowq_generator::InsertTypedDictOptions,
+    update_typeddict_options: &snowq_generator::UpdateTypedDictOptions,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let tables = snowq_connector::query::get_schema_infomations(
         connection,
@@ -121,12 +124,21 @@ async fn write_schema_py(
         (itertools::join(
             [
                 snowq_generator::generate_import_modules(
-                    &itertools::interleave(
-                        snowq_generator::get_pydantic_modules(),
+                    &[
+                        snowq_generator::get_insert_typeddict_modules(),
                         snowq_generator::get_update_typeddict_modules(),
-                    )
+                        snowq_generator::get_pydantic_modules(),
+                    ]
+                    .into_iter()
+                    .flatten()
                     .unique()
                     .collect::<Vec<&str>>(),
+                ),
+                snowq_generator::generate_insert_typeddicts(
+                    &schema.database_name,
+                    &schema.schema_name,
+                    &tables,
+                    insert_typeddict_options,
                 ),
                 snowq_generator::generate_update_typeddicts(
                     &schema.database_name,
@@ -139,6 +151,7 @@ async fn write_schema_py(
                     &schema.schema_name,
                     &tables,
                     pydantic_options,
+                    insert_typeddict_options,
                     update_typeddict_options,
                 ),
             ],

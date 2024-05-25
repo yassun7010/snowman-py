@@ -1,7 +1,7 @@
 use convert_case::{Case, Casing};
 use snowq_connector::schema::Table;
 
-use crate::UpdateTypedDictOptions;
+use crate::{InsertTypedDictOptions, UpdateTypedDictOptions};
 
 #[derive(Debug, Clone, Default)]
 pub struct PydanticOptions {
@@ -31,6 +31,7 @@ pub fn generate_pydantic_models(
     schema_name: &str,
     tables: &[Table],
     pydantic_options: &PydanticOptions,
+    insert_typeddict_options: &InsertTypedDictOptions,
     update_typeddict_options: &UpdateTypedDictOptions,
 ) -> String {
     tables
@@ -41,6 +42,7 @@ pub fn generate_pydantic_models(
                 schema_name,
                 table,
                 pydantic_options,
+                insert_typeddict_options,
                 update_typeddict_options,
             )
         })
@@ -53,6 +55,7 @@ pub fn generate_pydantic_model(
     schema_name: &str,
     table: &Table,
     pydantic_options: &PydanticOptions,
+    insert_typeddict_options: &InsertTypedDictOptions,
     update_typeddict_options: &UpdateTypedDictOptions,
 ) -> String {
     let mut pydantic_schema = String::new();
@@ -62,8 +65,9 @@ pub fn generate_pydantic_model(
         table.table_name
     ));
     pydantic_schema.push_str(&format!(
-        "class {}(pydantic.BaseModel, snowq.Table[{}]):",
+        "class {}(pydantic.BaseModel, snowq.Table[{},{}]):",
         pydantic_options.make_class_name(&table.table_name),
+        insert_typeddict_options.make_class_name(&table.table_name),
         update_typeddict_options.make_class_name(&table.table_name)
     ));
     for column in &table.columns {
