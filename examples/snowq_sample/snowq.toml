@@ -1,7 +1,7 @@
 version = "v1"
 [connection]
 
-[schema]
+[sync]
 output_dir = "src/snowq_sample/schema"
 
 [pydantic]

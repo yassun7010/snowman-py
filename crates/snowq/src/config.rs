@@ -16,7 +16,7 @@ pub fn get_pydantic_options(config: &Config) -> PydanticOptions {
 pub fn get_python_models_output_dirpath(config: &Config) -> std::path::PathBuf {
     match config {
         Config::V1(ConfigV1 {
-            schema: snowq_config::SchemaConfigV1 { output_dir, .. },
+            sync: snowq_config::SyncConfigV1 { output_dir, .. },
             ..
         }) => output_dir.clone(),
     }
