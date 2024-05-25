@@ -99,6 +99,15 @@ pub async fn run_schema_sync_command(
     )
     .await?;
 
+    write_output_init_py(schema_output_dirpath, &schemas.iter().collect::<Vec<_>>()).await?;
+
+    Ok(())
+}
+
+async fn write_output_init_py(
+    schema_output_dirpath: &std::path::Path,
+    schemas: &[&DatabaseSchema],
+) -> Result<(), Box<dyn std::error::Error>> {
     let database_names = &schemas
         .iter()
         .map(|schema| schema.database_name.to_case(Case::Snake))
