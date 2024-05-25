@@ -1,10 +1,9 @@
+use crate::config::{get_pydantic_options, get_schema_output_dirpath};
 use clap::Args;
 use convert_case::{Case, Casing};
 use itertools::Itertools;
-use snowq_generator::generate_modlue_init_py;
+use std::iter::Iterator;
 use tokio::io::AsyncWriteExt;
-
-use crate::config::{get_pydantic_options, get_schema_output_dirpath};
 
 #[derive(Debug, Args)]
 pub struct SchemaSyncCommand {}
@@ -15,6 +14,7 @@ pub async fn run_schema_sync_command(
     let config_file_path = snowq_config::find_path()?;
     let config = snowq_config::load_from_path(&config_file_path)?;
     let connection = snowq_connector::Connection::try_new_from_env()?;
+    let update_typeddict_options = snowq_generator::UpdateTypedDictOptions::default();
     let pydantic_options = get_pydantic_options(&config);
     let schema_output_dirpath = &config_file_path
         .parent()
@@ -60,13 +60,25 @@ pub async fn run_schema_sync_command(
         )
         .await?
         .write_all(
-            (snowq_generator::generate_import_modules(&["pydantic", "snowq"])
-                + &snowq_generator::generate_pydantic_models(
-                    &schema.database_name,
-                    &schema.schema_name,
-                    &tables,
-                    &pydantic_options,
-                ))
+            (snowq_generator::generate_import_modules(
+                &itertools::interleave(
+                    snowq_generator::get_pydantic_modules(),
+                    snowq_generator::get_update_typeddict_modules(),
+                )
+                .unique()
+                .collect::<Vec<&str>>(),
+            ) + &snowq_generator::generate_update_typeddicts(
+                &schema.database_name,
+                &schema.schema_name,
+                &tables,
+                &update_typeddict_options,
+            ) + &snowq_generator::generate_pydantic_models(
+                &schema.database_name,
+                &schema.schema_name,
+                &tables,
+                &pydantic_options,
+                &update_typeddict_options,
+            ))
                 .as_bytes(),
         )
         .await?;
@@ -91,7 +103,7 @@ pub async fn run_schema_sync_command(
                 tokio::fs::File::create(database_dir.join("__init__.py"))
                     .await?
                     .write_all(
-                        generate_modlue_init_py(
+                        snowq_generator::generate_modlue_init_py(
                             &schema_names
                                 .iter()
                                 .map(AsRef::as_ref)
@@ -114,7 +126,7 @@ pub async fn run_schema_sync_command(
     tokio::fs::File::create(schema_output_dirpath.join("__init__.py"))
         .await?
         .write_all(
-            generate_modlue_init_py(
+            snowq_generator::generate_modlue_init_py(
                 &database_names
                     .iter()
                     .unique()

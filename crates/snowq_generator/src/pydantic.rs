@@ -1,9 +1,25 @@
 use convert_case::{Case, Casing};
 use snowq_connector::schema::Table;
 
+use crate::UpdateTypedDictOptions;
+
 #[derive(Debug, Clone, Default)]
 pub struct PydanticOptions {
+    pub model_name_prefix: Option<String>,
     pub model_name_suffix: Option<String>,
+}
+
+impl PydanticOptions {
+    pub fn make_class_name(&self, table_name: &str) -> String {
+        let mut table_name = table_name.to_case(Case::Pascal);
+        if let Some(prefix) = &self.model_name_prefix {
+            table_name.insert_str(0, prefix);
+        }
+        if let Some(suffix) = &self.model_name_suffix {
+            table_name.push_str(suffix);
+        }
+        table_name
+    }
 }
 
 pub fn get_pydantic_modules() -> Vec<&'static str> {
@@ -14,11 +30,20 @@ pub fn generate_pydantic_models(
     database_name: &str,
     schema_name: &str,
     tables: &[Table],
-    options: &PydanticOptions,
+    pydantic_options: &PydanticOptions,
+    update_typeddict_options: &UpdateTypedDictOptions,
 ) -> String {
     tables
         .iter()
-        .map(|table| generate_pydantic_model(database_name, schema_name, table, options))
+        .map(|table| {
+            generate_pydantic_model(
+                database_name,
+                schema_name,
+                table,
+                pydantic_options,
+                update_typeddict_options,
+            )
+        })
         .collect::<Vec<String>>()
         .join("\n\n")
 }
@@ -27,21 +52,19 @@ pub fn generate_pydantic_model(
     database_name: &str,
     schema_name: &str,
     table: &Table,
-    options: &PydanticOptions,
+    pydantic_options: &PydanticOptions,
+    update_typeddict_options: &UpdateTypedDictOptions,
 ) -> String {
     let mut pydantic_schema = String::new();
-    let mut model_class_name = table.table_name.to_case(Case::Pascal);
-    if let Some(suffix) = &options.model_name_suffix {
-        model_class_name.push_str(suffix);
-    }
 
     pydantic_schema.push_str(&format!(
         "@snowq.table(\"{database_name}\", \"{schema_name}\", \"{}\")\n",
         table.table_name
     ));
     pydantic_schema.push_str(&format!(
-        "class {}(pydantic.BaseModel, snowq.Table):",
-        model_class_name
+        "class {}(pydantic.BaseModel, snowq.Table[{}]):",
+        pydantic_options.make_class_name(&table.table_name),
+        update_typeddict_options.make_class_name(&table.table_name)
     ));
     for column in &table.columns {
         let mut data_type = column.data_type.clone();

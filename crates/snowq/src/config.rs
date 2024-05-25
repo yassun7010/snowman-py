@@ -7,6 +7,7 @@ pub fn get_pydantic_options(config: &Config) -> PydanticOptions {
             pydantic: pydantic_options,
             ..
         }) => PydanticOptions {
+            model_name_prefix: pydantic_options.model_name_prefix.clone(),
             model_name_suffix: pydantic_options.model_name_suffix.clone(),
         },
     }

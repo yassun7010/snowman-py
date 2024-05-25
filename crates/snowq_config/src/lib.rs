@@ -61,6 +61,7 @@ pub struct SchemaConfigV1 {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct PydanticOptionsV1 {
+    pub model_name_prefix: Option<String>,
     pub model_name_suffix: Option<String>,
 }
 
