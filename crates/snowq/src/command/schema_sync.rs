@@ -161,6 +161,8 @@ async fn write_schema_py(
     )
     .await?;
 
+    run_ruff_format_if_exists(output_dirpath);
+
     Ok::<(), Box<dyn std::error::Error>>(())
 }
 
@@ -211,4 +213,25 @@ async fn write_database_init_py(
         .await?;
 
     Ok::<(), Box<dyn std::error::Error>>(())
+}
+
+fn run_ruff_format_if_exists(output_dirpath: &std::path::Path) {
+    // if ruff command found in local machine, run it on output_dirpath
+    match std::process::Command::new("ruff")
+        .arg("format")
+        .arg(output_dirpath)
+        .status()
+    {
+        Ok(status) => {
+            if !status.success() {
+                eprintln!("ruff command failed");
+            }
+        }
+        Err(err) => {
+            if err.kind() == std::io::ErrorKind::NotFound {
+                return;
+            }
+            eprintln!("ruff command not found: {}", err);
+        }
+    }
 }
