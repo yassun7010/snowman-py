@@ -1,4 +1,4 @@
-use crate::config::{get_pydantic_options, get_schema_output_dirpath};
+use crate::config::{get_pydantic_options, get_python_models_output_dirpath};
 use clap::Args;
 use convert_case::{Case, Casing};
 use itertools::Itertools;
@@ -17,12 +17,22 @@ pub async fn run_schema_sync_command(
     let connection = snowq_connector::Connection::try_new_from_env()?;
     let update_typeddict_options = snowq_generator::UpdateTypedDictOptions::default();
     let pydantic_options = get_pydantic_options(&config);
-    let schema_output_dirpath = &config_file_path
+    let output_dirpath = &config_file_path
         .parent()
         .unwrap()
-        .join(get_schema_output_dirpath(&config));
+        .join(get_python_models_output_dirpath(&config));
 
     let schemas = snowq_connector::query::get_schemas(&connection).await?;
+    let database_module_names = &schemas
+        .iter()
+        .map(|schema| schema.database_name.to_case(Case::Snake))
+        .collect::<Vec<_>>();
+    let database_module_names = database_module_names
+        .iter()
+        .unique()
+        .map(AsRef::as_ref)
+        .collect::<Vec<_>>();
+
     let exclude_schemas = [(
         Option::<String>::None,
         Some("INFORMATION_SCHEMA".to_string()),
@@ -44,10 +54,23 @@ pub async fn run_schema_sync_command(
         })
         .collect::<Vec<_>>();
 
+    futures::future::try_join_all(
+        database_module_names
+            .iter()
+            .map(|database_name| async move {
+                let database_module_path = output_dirpath.join(database_name);
+                if database_module_path.exists() {
+                    tokio::fs::remove_dir_all(&database_module_path).await?;
+                }
+                Ok::<(), Box<dyn std::error::Error>>(())
+            }),
+    )
+    .await?;
+
     futures::future::try_join_all(schemas.iter().map(|schema| async {
         write_schema_py(
             &connection,
-            schema_output_dirpath,
+            output_dirpath,
             schema,
             &update_typeddict_options,
             &pydantic_options,
@@ -62,19 +85,19 @@ pub async fn run_schema_sync_command(
             .into_group_map_by(|x| x.database_name.clone())
             .into_iter()
             .map(|(database_name, schemas)| async move {
-                write_database_init_py(schema_output_dirpath, &database_name, &schemas).await
+                write_database_init_py(output_dirpath, &database_name, &schemas).await
             }),
     )
     .await?;
 
-    write_output_init_py(schema_output_dirpath, &schemas.iter().collect::<Vec<_>>()).await?;
+    write_output_init_py(output_dirpath, &database_module_names).await?;
 
     Ok(())
 }
 
 async fn write_schema_py(
     connection: &snowq_connector::Connection,
-    schema_output_dirpath: &std::path::Path,
+    output_dirpath: &std::path::Path,
     schema: &DatabaseSchema,
     update_typeddict_options: &snowq_generator::UpdateTypedDictOptions,
     pydantic_options: &snowq_generator::PydanticOptions,
@@ -86,7 +109,7 @@ async fn write_schema_py(
     )
     .await?;
 
-    let database_dir = &schema_output_dirpath.join(schema.database_name.to_case(Case::Snake));
+    let database_dir = &output_dirpath.join(schema.database_name.to_case(Case::Snake));
 
     std::fs::create_dir_all(database_dir)?;
 
@@ -95,26 +118,33 @@ async fn write_schema_py(
     )
     .await?
     .write_all(
-        (snowq_generator::generate_import_modules(
-            &itertools::interleave(
-                snowq_generator::get_pydantic_modules(),
-                snowq_generator::get_update_typeddict_modules(),
-            )
-            .unique()
-            .collect::<Vec<&str>>(),
-        ) + &snowq_generator::generate_update_typeddicts(
-            &schema.database_name,
-            &schema.schema_name,
-            &tables,
-            update_typeddict_options,
-        ) + &snowq_generator::generate_pydantic_models(
-            &schema.database_name,
-            &schema.schema_name,
-            &tables,
-            pydantic_options,
-            update_typeddict_options,
+        (itertools::join(
+            [
+                snowq_generator::generate_import_modules(
+                    &itertools::interleave(
+                        snowq_generator::get_pydantic_modules(),
+                        snowq_generator::get_update_typeddict_modules(),
+                    )
+                    .unique()
+                    .collect::<Vec<&str>>(),
+                ),
+                snowq_generator::generate_update_typeddicts(
+                    &schema.database_name,
+                    &schema.schema_name,
+                    &tables,
+                    update_typeddict_options,
+                ),
+                snowq_generator::generate_pydantic_models(
+                    &schema.database_name,
+                    &schema.schema_name,
+                    &tables,
+                    pydantic_options,
+                    update_typeddict_options,
+                ),
+            ],
+            "\n",
         ))
-            .as_bytes(),
+        .as_bytes(),
     )
     .await?;
 
@@ -122,19 +152,14 @@ async fn write_schema_py(
 }
 
 async fn write_output_init_py(
-    schema_output_dirpath: &std::path::Path,
-    schemas: &[&DatabaseSchema],
+    output_dirpath: &std::path::Path,
+    database_module_names: &[&str],
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let database_names = &schemas
-        .iter()
-        .map(|schema| schema.database_name.to_case(Case::Snake))
-        .collect::<Vec<_>>();
-
-    tokio::fs::File::create(schema_output_dirpath.join("__init__.py"))
+    tokio::fs::File::create(output_dirpath.join("__init__.py"))
         .await?
         .write_all(
             snowq_generator::generate_modlue_init_py(
-                &database_names
+                &database_module_names
                     .iter()
                     .unique()
                     .map(AsRef::as_ref)
@@ -148,12 +173,12 @@ async fn write_output_init_py(
 }
 
 async fn write_database_init_py(
-    schema_output_dirpath: &std::path::Path,
+    output_dirpath: &std::path::Path,
     database_name: &str,
     schemas: &[&DatabaseSchema],
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let schema_output_dirpath = &schema_output_dirpath;
-    let database_dir = schema_output_dirpath.join(database_name.to_case(Case::Snake));
+    let output_dirpath = &output_dirpath;
+    let database_dir = output_dirpath.join(database_name.to_case(Case::Snake));
     let schema_names = schemas
         .iter()
         .map(|schema| schema.schema_name.to_case(Case::Snake))

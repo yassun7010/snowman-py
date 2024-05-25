@@ -13,7 +13,7 @@ pub fn get_pydantic_options(config: &Config) -> PydanticOptions {
     }
 }
 
-pub fn get_schema_output_dirpath(config: &Config) -> std::path::PathBuf {
+pub fn get_python_models_output_dirpath(config: &Config) -> std::path::PathBuf {
     match config {
         Config::V1(ConfigV1 {
             schema: snowq_config::SchemaConfigV1 { output_dir, .. },

@@ -16,7 +16,6 @@ pub fn generate_modlue_init_py(database_names: &[&str]) -> String {
         .map(|database_name| format!("from .import {database_name} as {database_name}"))
         .collect::<Vec<String>>()
         .join("\n")
-        + "\n"
 }
 
 pub fn generate_import_modules(module_names: &[&str]) -> String {
@@ -25,5 +24,5 @@ pub fn generate_import_modules(module_names: &[&str]) -> String {
         .map(|module_name| format!("import {}", module_name))
         .collect::<Vec<String>>()
         .join("\n")
-        + "\n\n\n"
+        + "\n"
 }
