@@ -65,11 +65,16 @@ pub fn generate_pydantic_model(
         table.table_name
     ));
     pydantic_schema.push_str(&format!(
-        "class {}(pydantic.BaseModel, snowq.Table[{},{}]):",
+        "class {}(pydantic.BaseModel, snowq.Table[{},{}]):\n",
         pydantic_options.make_class_name(&table.table_name),
         insert_typeddict_options.make_class_name(&table.table_name),
         update_typeddict_options.make_class_name(&table.table_name)
     ));
+    if let Some(comment) = &table.comment {
+        if !comment.is_empty() {
+            pydantic_schema.push_str(&format!("    \"\"\"{}\"\"\"\n", comment));
+        }
+    }
     for column in &table.columns {
         let mut data_type = column.data_type.clone();
         if column.is_nullable {
@@ -82,8 +87,7 @@ pub fn generate_pydantic_model(
         ));
         if let Some(comment) = column.comment.as_ref() {
             if !comment.is_empty() {
-                pydantic_schema.push_str(&format!(r#"    """{}""""#, comment));
-                pydantic_schema.push('\n');
+                pydantic_schema.push_str(&format!("    \"\"\"{}\"\"\"\n", comment));
             }
         }
     }
