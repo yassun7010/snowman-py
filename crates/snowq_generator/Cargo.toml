@@ -8,5 +8,5 @@ license.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-convert_case = "0.6.0"
+convert_case.workspace = true
 snowq_connector.workspace = true

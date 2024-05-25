@@ -1,3 +1,3 @@
 mod pydantic;
 
-pub use pydantic::generate_pydantic_schema;
+pub use pydantic::{generate_pydantic_schema, generate_pydantic_table};

@@ -1593,6 +1593,7 @@ version = "0.1.0"
 dependencies = [
  "askama",
  "clap",
+ "convert_case",
  "dotenvy",
  "futures",
  "openssl",

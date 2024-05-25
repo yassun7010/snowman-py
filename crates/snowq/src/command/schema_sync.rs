@@ -1,4 +1,8 @@
+use std::path::Path;
+
 use clap::Args;
+use convert_case::{Case, Casing};
+use tokio::io::AsyncWriteExt;
 
 #[derive(Debug, Args)]
 pub struct SchemaSyncCommand {}
@@ -38,9 +42,23 @@ pub async fn run_schema_sync_command(
         )
         .await?;
 
-        for table in tables {
-            println!("{}", snowq_generator::generate_pydantic_schema(&table));
-        }
+        let database_dir = Path::new("schema").join(schema.database_name.to_case(Case::Snake));
+        std::fs::create_dir_all(&database_dir)?;
+        let mut schema_file = tokio::fs::File::create(
+            database_dir.join(format!("{}.py", schema.schema_name.to_case(Case::Snake))),
+        )
+        .await?;
+
+        schema_file
+            .write_all(
+                snowq_generator::generate_pydantic_schema(
+                    &schema.database_name,
+                    &schema.schema_name,
+                    &tables,
+                )
+                .as_bytes(),
+            )
+            .await?;
 
         Ok::<(), Box<dyn std::error::Error>>(())
     }))
