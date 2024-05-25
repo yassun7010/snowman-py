@@ -6,29 +6,24 @@ pub struct PydanticOptions {
     pub model_name_suffix: Option<String>,
 }
 
-pub fn generate_pydantic_schema(
+pub fn get_pydantic_modules() -> Vec<&'static str> {
+    vec!["pydantic", "snowq"]
+}
+
+pub fn generate_pydantic_models(
     database_name: &str,
     schema_name: &str,
     tables: &[Table],
     options: &PydanticOptions,
 ) -> String {
-    let mut text = String::new();
-
-    text.push_str("import pydantic\n");
-    text.push_str("import snowq\n\n\n");
-
-    text.push_str(
-        &tables
-            .iter()
-            .map(|table| generate_pydantic_table(database_name, schema_name, table, options))
-            .collect::<Vec<String>>()
-            .join("\n\n"),
-    );
-
-    text
+    tables
+        .iter()
+        .map(|table| generate_pydantic_model(database_name, schema_name, table, options))
+        .collect::<Vec<String>>()
+        .join("\n\n")
 }
 
-pub fn generate_pydantic_table(
+pub fn generate_pydantic_model(
     database_name: &str,
     schema_name: &str,
     table: &Table,

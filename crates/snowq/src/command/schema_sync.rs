@@ -60,13 +60,14 @@ pub async fn run_schema_sync_command(
         )
         .await?
         .write_all(
-            snowq_generator::generate_pydantic_schema(
-                &schema.database_name,
-                &schema.schema_name,
-                &tables,
-                &pydantic_options,
-            )
-            .as_bytes(),
+            (snowq_generator::generate_import_modules(&["pydantic", "snowq"])
+                + &snowq_generator::generate_pydantic_models(
+                    &schema.database_name,
+                    &schema.schema_name,
+                    &tables,
+                    &pydantic_options,
+                ))
+                .as_bytes(),
         )
         .await?;
 
