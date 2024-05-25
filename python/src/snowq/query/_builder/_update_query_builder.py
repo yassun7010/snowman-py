@@ -3,32 +3,32 @@ from typing import Generic, Type, cast
 from pydantic import BaseModel
 from typing_extensions import override
 
-from snowq.schema import GenericTablable, full_name
+from snowq.schema import GenericTable, full_name
 from snowq.schema.table import GenericUpdateColumnTypedDict
 
 from ._builder import QueryBuilder, QueryParams
 
 
-class UpdateStatement(Generic[GenericTablable, GenericUpdateColumnTypedDict]):
+class UpdateStatement(Generic[GenericTable, GenericUpdateColumnTypedDict]):
     def __init__(
         self,
-        table: Type[GenericTablable],
+        table: Type[GenericTable],
         _columns_type: GenericUpdateColumnTypedDict | None = None,
     ) -> None:
         self._table = table
 
     def set(
         self,
-        fields: GenericTablable | GenericUpdateColumnTypedDict,
-    ) -> "UpdateSetQueryBuilder[GenericTablable, GenericUpdateColumnTypedDict]":
+        fields: GenericTable | GenericUpdateColumnTypedDict,
+    ) -> "UpdateSetQueryBuilder[GenericTable, GenericUpdateColumnTypedDict]":
         return UpdateSetQueryBuilder(self._table, fields)
 
 
-class UpdateSetQueryBuilder(Generic[GenericTablable, GenericUpdateColumnTypedDict]):
+class UpdateSetQueryBuilder(Generic[GenericTable, GenericUpdateColumnTypedDict]):
     def __init__(
         self,
-        table: type[GenericTablable],
-        columns: GenericTablable | GenericUpdateColumnTypedDict,
+        table: type[GenericTable],
+        columns: GenericTable | GenericUpdateColumnTypedDict,
     ):
         self._table = table
         self._columns = cast(
@@ -47,12 +47,12 @@ class UpdateSetQueryBuilder(Generic[GenericTablable, GenericUpdateColumnTypedDic
 
 
 class UpdateSetWhereQueryBuidler(
-    Generic[GenericTablable, GenericUpdateColumnTypedDict], QueryBuilder
+    Generic[GenericTable, GenericUpdateColumnTypedDict], QueryBuilder
 ):
     def __init__(
         self,
-        table: type[GenericTablable],
-        columns: GenericTablable | GenericUpdateColumnTypedDict,
+        table: type[GenericTable],
+        columns: GenericTable | GenericUpdateColumnTypedDict,
         *,
         where_condition: str,
     ):

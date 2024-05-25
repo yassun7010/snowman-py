@@ -4,16 +4,15 @@ from pydantic import BaseModel
 
 from snowq.schema.external_table import ExternalTable
 from snowq.schema.materiarized_view import MateriarizedView
-from snowq.schema.table import GenericUpdateColumnTypedDict, Table
+from snowq.schema.table import Table
 from snowq.schema.view import View
 
-Tablable = Table[GenericUpdateColumnTypedDict]
 Viewable = View | ExternalTable | MateriarizedView
 
-GenericTablable = TypeVar("GenericTablable", bound=Tablable)
+GenericTable = TypeVar("GenericTable", bound=Table)
 
 
-def full_name(table: Type[Tablable]) -> str:
+def full_name(table: Type[Table]) -> str:
     return f"{table.__databas_name__}.{table.__schema_name__}.{table.__table_name__}"
 
 

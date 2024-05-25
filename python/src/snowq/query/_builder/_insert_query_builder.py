@@ -2,7 +2,7 @@ from typing import Generic, Sequence, Type
 
 from typing_extensions import override
 
-from snowq.schema import GenericTablable, column_names, columns_dict, full_name
+from snowq.schema import GenericTable, column_names, columns_dict, full_name
 
 from ._builder import QueryBuilder, QueryParams
 
@@ -12,29 +12,27 @@ class InsertQueryBuilder:
     def overwrite(self) -> "InsertOverwriteQueryBuilder":
         return InsertOverwriteQueryBuilder()
 
-    def into(
-        self, table: Type[GenericTablable]
-    ) -> "InsertIntoQueryBuilder[GenericTablable]":
+    def into(self, table: Type[GenericTable]) -> "InsertIntoQueryBuilder[GenericTable]":
         return InsertIntoQueryBuilder(table)
 
 
 class InsertOverwriteQueryBuilder:
-    def into(self, table: Type[GenericTablable]) -> "InsertIntoQueryBuilder":
+    def into(self, table: Type[GenericTable]) -> "InsertIntoQueryBuilder":
         return InsertIntoQueryBuilder(table, overwtire=True)
 
 
-class InsertIntoQueryBuilder(Generic[GenericTablable]):
+class InsertIntoQueryBuilder(Generic[GenericTable]):
     def __init__(
         self,
-        table: Type[GenericTablable],
+        table: Type[GenericTable],
         overwtire: bool = False,
     ) -> None:
         self._table = table
         self._overwrite = overwtire
 
     def values(
-        self, values: GenericTablable | Sequence[GenericTablable]
-    ) -> "InsertIntoValuesQueryBuilder[GenericTablable]":
+        self, values: GenericTable | Sequence[GenericTable]
+    ) -> "InsertIntoValuesQueryBuilder[GenericTable]":
         return InsertIntoValuesQueryBuilder(
             self._table,
             values if isinstance(values, Sequence) else (values,),
@@ -42,11 +40,11 @@ class InsertIntoQueryBuilder(Generic[GenericTablable]):
         )
 
 
-class InsertIntoValuesQueryBuilder(Generic[GenericTablable], QueryBuilder):
+class InsertIntoValuesQueryBuilder(Generic[GenericTable], QueryBuilder):
     def __init__(
         self,
-        table: type[GenericTablable],
-        values: Sequence[GenericTablable],
+        table: type[GenericTable],
+        values: Sequence[GenericTable],
         /,
         overwrite: bool = False,
     ):
