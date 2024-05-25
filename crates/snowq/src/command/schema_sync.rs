@@ -39,13 +39,7 @@ pub async fn run_schema_sync_command(
         .await?;
 
         for table in tables {
-            println!(
-                "{}.{}.{}",
-                table.database_name, table.schema_name, table.table_name
-            );
-            for column in table.columns {
-                println!("    {}:{}", column.column_name, column.data_type);
-            }
+            println!("{}", snowq_generator::generate_pydantic_schema(&table));
         }
 
         Ok::<(), Box<dyn std::error::Error>>(())

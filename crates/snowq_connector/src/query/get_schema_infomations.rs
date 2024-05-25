@@ -22,7 +22,9 @@ pub async fn get_schema_infomations(
                 t.table_catalog,
                 t.table_schema,
                 t.table_name,
+                t.comment as table_comment,
                 c.column_name,
+                c.comment as column_comment,
                 c.data_type,
                 c.is_nullable,
             FROM
@@ -50,6 +52,7 @@ pub async fn get_schema_infomations(
                     column_name: row.get("column_name").unwrap(),
                     data_type: row.get("data_type").unwrap(),
                     is_nullable: row.get::<String>("is_nullable").unwrap() == "YES",
+                    comment: row.get("column_comment").ok(),
                 });
             }
             _ => {
@@ -60,10 +63,12 @@ pub async fn get_schema_infomations(
                     database_name: row.get("table_catalog").unwrap(),
                     schema_name: row.get("table_schema").unwrap(),
                     table_name: row.get("table_name").unwrap(),
+                    comment: row.get("table_comment").ok(),
                     columns: vec![Column {
                         column_name: row.get("column_name").unwrap(),
                         data_type: row.get("data_type").unwrap(),
                         is_nullable: row.get::<String>("is_nullable").unwrap() == "YES",
+                        comment: row.get("column_comment").ok(),
                     }],
                 });
             }
