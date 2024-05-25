@@ -1,4 +1,8 @@
 version = "v1"
 [connection]
+
 [schema]
 output_dir = "src/snowq_sample/schema"
+
+[pydantic]
+# model_name_suffix = "Model"

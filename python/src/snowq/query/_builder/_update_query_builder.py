@@ -24,9 +24,7 @@ class UpdateStatement(Generic[GenericTablable, GenericUpdateColumnTypedDict]):
         return UpdateSetQueryBuilder(self._table, fields)
 
 
-class UpdateSetQueryBuilder(
-    Generic[GenericTablable, GenericUpdateColumnTypedDict], QueryBuilder
-):
+class UpdateSetQueryBuilder(Generic[GenericTablable, GenericUpdateColumnTypedDict]):
     def __init__(
         self,
         table: type[GenericTablable],
@@ -40,6 +38,33 @@ class UpdateSetQueryBuilder(
             else columns,
         )
 
+    def where(self, condition: str) -> "UpdateSetWhereQueryBuidler":
+        return UpdateSetWhereQueryBuidler(
+            self._table,
+            self._columns,
+            where_condition=condition,
+        )
+
+
+class UpdateSetWhereQueryBuidler(
+    Generic[GenericTablable, GenericUpdateColumnTypedDict], QueryBuilder
+):
+    def __init__(
+        self,
+        table: type[GenericTablable],
+        columns: GenericTablable | GenericUpdateColumnTypedDict,
+        *,
+        where_condition: str,
+    ):
+        self._table = table
+        self._columns = cast(
+            dict,
+            columns.model_dump(exclude_unset=True)
+            if isinstance(columns, BaseModel)
+            else columns,
+        )
+        self._where_condition = where_condition
+
     @override
     def build(self) -> QueryParams:
         query = f"""
@@ -47,6 +72,8 @@ UPDATE
     {full_name(self._table)}
 SET
     {',\n    '.join([f'{key} = %({key})s' for key in self._columns.keys()])}
+WHERE
+    {self._where_condition}
 """.strip()
 
         return QueryParams(query, {k: v for k, v in self._columns.items()})
