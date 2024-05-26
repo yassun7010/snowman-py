@@ -7,11 +7,11 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-      - master
+    # branches:
+    #   - main
+    #   - master
     tags:
-      - '*'
+      - 'v*'
   # pull_request:
   workflow_dispatch:
 
