@@ -1,4 +1,4 @@
-name: 'artifacts cleanup'
+name: Artifacts Cleanup
 on:
   workflow_dispatch:
 
