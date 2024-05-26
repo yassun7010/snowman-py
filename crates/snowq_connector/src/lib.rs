@@ -14,26 +14,24 @@ pub struct Connection {
 impl Connection {
     pub fn try_new(
         username: &str,
-        auth: SnowflakeAuthMethod,
-        config: SnowflakeClientConfig,
+        password: &str,
+        account: &str,
+        warehouse: &str,
+        database: &str,
+        schema: &str,
     ) -> Result<Self, snowflake_connector_rs::Error> {
-        let client = SnowflakeClient::new(username, auth, config)?;
-        Ok(Connection { inner: client })
-    }
-
-    pub fn try_new_from_env() -> Result<Self, crate::Error> {
-        Ok(Connection::try_new(
-            &try_get_env("SNOWFLAKE_USER")?,
-            SnowflakeAuthMethod::Password(try_get_env("SNOWFLAKE_PASSWORD")?),
+        let client = SnowflakeClient::new(
+            username,
+            SnowflakeAuthMethod::Password(password.to_string()),
             SnowflakeClientConfig {
-                account: try_get_env("SNOWFLAKE_ACCOUNT")?,
-                warehouse: try_get_env("SNOWFLAKE_WAREHOUSE").ok(),
-                database: try_get_env("SNOWFLAKE_DATABASE").ok(),
-                schema: try_get_env("SNOWFLAKE_SCHEMA").ok(),
-                role: try_get_env("SNOWFLAKE_ROLE").ok(),
-                timeout: None,
+                account: account.to_string(),
+                warehouse: Some(warehouse.to_string()),
+                database: Some(database.to_string()),
+                schema: Some(schema.to_string()),
+                ..Default::default()
             },
-        )?)
+        )?;
+        Ok(Connection { inner: client })
     }
 
     pub async fn execute(
@@ -43,8 +41,4 @@ impl Connection {
         let session = self.inner.create_session().await?;
         session.query(query).await
     }
-}
-
-fn try_get_env(name: &str) -> Result<String, crate::Error> {
-    std::env::var(name).map_err(|_| crate::Error::from_env_var(name))
 }

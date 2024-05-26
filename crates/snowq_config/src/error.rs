@@ -11,4 +11,13 @@ pub enum Error {
 
     #[error("Config file not found")]
     ConfigFileNotFound,
+
+    #[error("env var not found: {0}")]
+    EnvVarNotFound(String),
+}
+
+impl Error {
+    pub fn from_env_var(name: &str) -> Self {
+        Self::EnvVarNotFound(name.to_string())
+    }
 }

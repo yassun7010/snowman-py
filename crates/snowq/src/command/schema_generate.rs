@@ -1,4 +1,6 @@
-use crate::config::{get_pydantic_options, get_schema_sync_output_dirpath};
+use crate::config::{
+    get_pydantic_options, get_schema_sync_output_dirpath, get_snowflake_connection,
+};
 use anyhow::Context;
 use clap::Args;
 use convert_case::{Case, Casing};
@@ -16,7 +18,7 @@ pub struct SchemaGenerateCommand {
 pub async fn run_schema_generate_command(args: SchemaGenerateCommand) -> Result<(), anyhow::Error> {
     let config_file_path = snowq_config::find_path()?;
     let config = snowq_config::load_from_path(&config_file_path)?;
-    let connection = snowq_connector::Connection::try_new_from_env()?;
+    let connection = get_snowflake_connection(&config)?;
     let insert_typeddict_options = snowq_generator::InsertTypedDictOptions::default();
     let update_typeddict_options = snowq_generator::UpdateTypedDictOptions::default();
     let pydantic_options = get_pydantic_options(&config);

@@ -91,6 +91,17 @@ pub enum StringOrEnv {
     Env(Env),
 }
 
+impl StringOrEnv {
+    pub fn try_get_value(&self) -> Result<String, crate::Error> {
+        match self {
+            StringOrEnv::String(s) => Ok(s.clone()),
+            StringOrEnv::Env(env) => {
+                std::env::var(&env.env).map_err(|_| crate::Error::from_env_var(&env.env))
+            }
+        }
+    }
+}
+
 pub fn new_env(env: &str) -> StringOrEnv {
     StringOrEnv::Env(Env {
         env: env.to_string(),
