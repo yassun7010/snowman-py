@@ -127,7 +127,8 @@ async fn write_schema_py(
     .write_all(
         (itertools::join(
             [
-                snowq_generator::generate_import_modules(
+                snowq_generator::generate_module_docs(),
+                &snowq_generator::generate_import_modules(
                     &itertools::chain!(
                         snowq_generator::get_insert_typeddict_modules(),
                         snowq_generator::get_update_typeddict_modules(),
@@ -136,19 +137,19 @@ async fn write_schema_py(
                     .unique()
                     .collect::<Vec<&str>>(),
                 ),
-                snowq_generator::generate_insert_typeddicts(
+                &snowq_generator::generate_insert_typeddicts(
                     &schema.database_name,
                     &schema.schema_name,
                     &tables,
                     insert_typeddict_options,
                 ),
-                snowq_generator::generate_update_typeddicts(
+                &snowq_generator::generate_update_typeddicts(
                     &schema.database_name,
                     &schema.schema_name,
                     &tables,
                     update_typeddict_options,
                 ),
-                snowq_generator::generate_pydantic_models(
+                &snowq_generator::generate_pydantic_models(
                     &schema.database_name,
                     &schema.schema_name,
                     &tables,
@@ -175,12 +176,18 @@ async fn write_output_init_py(
     tokio::fs::File::create(output_dirpath.join("__init__.py"))
         .await?
         .write_all(
-            snowq_generator::generate_modlue_init_py(
-                &database_module_names
-                    .iter()
-                    .unique()
-                    .map(AsRef::as_ref)
-                    .collect::<Vec<&str>>(),
+            itertools::join(
+                [
+                    snowq_generator::generate_module_docs(),
+                    &snowq_generator::generate_modlue_init_py(
+                        &database_module_names
+                            .iter()
+                            .unique()
+                            .map(AsRef::as_ref)
+                            .collect::<Vec<&str>>(),
+                    ),
+                ],
+                "\n",
             )
             .as_bytes(),
         )
@@ -204,11 +211,17 @@ async fn write_database_init_py(
     tokio::fs::File::create(database_dir.join("__init__.py"))
         .await?
         .write_all(
-            snowq_generator::generate_modlue_init_py(
-                &schema_names
-                    .iter()
-                    .map(AsRef::as_ref)
-                    .collect::<Vec<&str>>(),
+            itertools::join(
+                [
+                    snowq_generator::generate_module_docs(),
+                    &snowq_generator::generate_modlue_init_py(
+                        &schema_names
+                            .iter()
+                            .map(AsRef::as_ref)
+                            .collect::<Vec<&str>>(),
+                    ),
+                ],
+                "\n",
             )
             .as_bytes(),
         )
