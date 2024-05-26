@@ -5,9 +5,7 @@ pub struct DatabaseSchema {
     pub schema_name: String,
 }
 
-pub async fn get_schemas(
-    connection: &Connection,
-) -> Result<Vec<DatabaseSchema>, Box<dyn std::error::Error>> {
+pub async fn get_schemas(connection: &Connection) -> Result<Vec<DatabaseSchema>, crate::Error> {
     let rows = connection
         .execute(
             "

@@ -1,20 +1,18 @@
 use crate::config::{get_pydantic_options, get_schema_sync_output_dirpath};
+use anyhow::Context;
 use clap::Args;
 use convert_case::{Case, Casing};
 use itertools::Itertools;
 use snowq_connector::query::DatabaseSchema;
 use std::iter::Iterator;
 use tokio::io::AsyncWriteExt;
-
 #[derive(Debug, Args)]
 pub struct SchemaSyncCommand {
     #[clap(long)]
     pub output_dir: Option<std::path::PathBuf>,
 }
 
-pub async fn run_schema_sync_command(
-    args: SchemaSyncCommand,
-) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run_schema_sync_command(args: SchemaSyncCommand) -> Result<(), anyhow::Error> {
     let config_file_path = snowq_config::find_path()?;
     let config = snowq_config::load_from_path(&config_file_path)?;
     let connection = snowq_connector::Connection::try_new_from_env()?;
@@ -26,7 +24,10 @@ pub async fn run_schema_sync_command(
             .unwrap_or_else(|| get_schema_sync_output_dirpath(&config)),
     );
 
-    let schemas = snowq_connector::query::get_schemas(&connection).await?;
+    let schemas = snowq_connector::query::get_schemas(&connection)
+        .await
+        .with_context(|| "Failed to retrieve Snowflake Information Schema.")?;
+
     let database_module_names = &schemas
         .iter()
         .map(|schema| schema.database_name.to_case(Case::Snake))
@@ -66,7 +67,7 @@ pub async fn run_schema_sync_command(
                 if database_module_path.exists() {
                     tokio::fs::remove_dir_all(&database_module_path).await?;
                 }
-                Ok::<(), Box<dyn std::error::Error>>(())
+                anyhow::Ok(())
             }),
     )
     .await?;
@@ -107,7 +108,7 @@ async fn write_schema_py(
     pydantic_options: &snowq_generator::PydanticOptions,
     insert_typeddict_options: &snowq_generator::InsertTypedDictOptions,
     update_typeddict_options: &snowq_generator::UpdateTypedDictOptions,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), anyhow::Error> {
     let tables = snowq_connector::query::get_schema_infomations(
         connection,
         &schema.database_name,
@@ -164,13 +165,13 @@ async fn write_schema_py(
 
     run_ruff_format_if_exists(output_dirpath);
 
-    Ok::<(), Box<dyn std::error::Error>>(())
+    Ok(())
 }
 
 async fn write_output_init_py(
     output_dirpath: &std::path::Path,
     database_module_names: &[&str],
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), anyhow::Error> {
     tokio::fs::File::create(output_dirpath.join("__init__.py"))
         .await?
         .write_all(
@@ -192,7 +193,7 @@ async fn write_database_init_py(
     output_dirpath: &std::path::Path,
     database_name: &str,
     schemas: &[&DatabaseSchema],
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), anyhow::Error> {
     let output_dirpath = &output_dirpath;
     let database_dir = output_dirpath.join(database_name.to_case(Case::Snake));
     let schema_names = schemas
@@ -213,7 +214,7 @@ async fn write_database_init_py(
         )
         .await?;
 
-    Ok::<(), Box<dyn std::error::Error>>(())
+    Ok(())
 }
 
 fn run_ruff_format_if_exists(output_dirpath: &std::path::Path) {

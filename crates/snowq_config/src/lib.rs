@@ -1,4 +1,7 @@
 mod error;
+
+use std::io::Write;
+
 use serde::{Deserialize, Serialize};
 
 pub use error::Error;
@@ -34,19 +37,35 @@ pub struct ConnectionV1 {
     #[serde(default = "account_default")]
     pub account: StringOrEnv,
 
-    #[serde(default = "username_default")]
-    pub username: StringOrEnv,
+    #[serde(default = "user_default")]
+    pub user: StringOrEnv,
 
     #[serde(default = "password_default")]
     pub password: StringOrEnv,
+
+    #[serde(default = "role_default")]
+    pub role: StringOrEnv,
+
+    #[serde(default = "database_default")]
+    pub database: StringOrEnv,
+
+    #[serde(default = "schema_default")]
+    pub schema: StringOrEnv,
+
+    #[serde(default = "warehouse_default")]
+    pub warehouse: StringOrEnv,
 }
 
 impl Default for ConnectionV1 {
     fn default() -> Self {
         ConnectionV1 {
             account: account_default(),
-            username: username_default(),
+            user: user_default(),
             password: password_default(),
+            role: role_default(),
+            database: database_default(),
+            schema: schema_default(),
+            warehouse: warehouse_default(),
         }
     }
 }
@@ -84,27 +103,43 @@ pub enum StringOrEnv {
     Env(Env),
 }
 
+pub fn new_env(env: &str) -> StringOrEnv {
+    StringOrEnv::Env(Env {
+        env: env.to_string(),
+    })
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Env {
     env: String,
 }
 
 fn account_default() -> StringOrEnv {
-    StringOrEnv::Env(Env {
-        env: "SNOWFLAKE_ACCOUNT".to_string(),
-    })
+    new_env("SNOWFLAKE_ACCOUNT")
 }
 
-fn username_default() -> StringOrEnv {
-    StringOrEnv::Env(Env {
-        env: "SNOWFLAKE_USER".to_string(),
-    })
+fn user_default() -> StringOrEnv {
+    new_env("SNOWFLAKE_USER")
 }
 
 fn password_default() -> StringOrEnv {
-    StringOrEnv::Env(Env {
-        env: "SNOWFLAKE_PASSWORD".to_string(),
-    })
+    new_env("SNOWFLAKE_PASSWORD")
+}
+
+fn role_default() -> StringOrEnv {
+    new_env("SNOWFLAKE_ROLE")
+}
+
+fn database_default() -> StringOrEnv {
+    new_env("SNOWFLAKE_DATABASE")
+}
+
+fn schema_default() -> StringOrEnv {
+    new_env("SNOWFLAKE_SCHEMA")
+}
+
+fn warehouse_default() -> StringOrEnv {
+    new_env("SNOWFLAKE_WAREHOUSE")
 }
 
 pub fn find_path() -> Result<std::path::PathBuf, crate::Error> {
@@ -140,4 +175,13 @@ pub fn load() -> Result<Config, crate::Error> {
 
 fn get_pwd() -> std::path::PathBuf {
     std::env::current_dir().unwrap_or_default()
+}
+
+pub fn write_file_as_toml(config: &Config, filepath: &std::path::Path) -> Result<(), crate::Error> {
+    let file = std::fs::File::create(filepath)?;
+    let mut writer = std::io::BufWriter::new(file);
+    let toml = toml::to_string(&config)?;
+    writer.write_all(toml.as_bytes())?;
+
+    Ok(())
 }

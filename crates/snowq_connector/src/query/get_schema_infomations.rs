@@ -14,7 +14,7 @@ pub async fn get_schema_infomations(
     connection: &Connection,
     database_name: &str,
     schema_name: &str,
-) -> Result<Vec<Table>, Box<dyn std::error::Error>> {
+) -> Result<Vec<Table>, crate::Error> {
     let rows = connection
         .execute(&format!(
             "

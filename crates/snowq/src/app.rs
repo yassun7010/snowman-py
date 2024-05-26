@@ -27,12 +27,13 @@ where
     }
 }
 
-pub fn run(args: impl Into<Args>) -> Result<(), Box<dyn std::error::Error>> {
+pub fn run(args: impl Into<Args>) -> Result<(), anyhow::Error> {
     let args = args.into();
 
     dotenvy::dotenv()?;
 
     match args.subcommand {
+        SubCommands::New(command) => crate::command::new::run_new_command(command)?,
         SubCommands::Schema(SchemaCommand::Sync(options)) => {
             tokio::runtime::Builder::new_multi_thread()
                 .enable_all()

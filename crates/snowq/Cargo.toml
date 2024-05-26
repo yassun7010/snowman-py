@@ -19,3 +19,4 @@ snowq_connector.workspace = true
 snowq_generator.workspace = true
 tokio.workspace = true
 itertools = "0.13.0"
+anyhow = { version = "1.0.86", features = ["backtrace"] }
