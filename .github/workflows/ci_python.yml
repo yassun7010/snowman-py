@@ -1,13 +1,14 @@
 name: CI Python
 
 on:
-  workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
+  workflow_dispatch:
 
 jobs:
-  format:
+  python-ci:
     runs-on: ubuntu-latest
 
     steps:
