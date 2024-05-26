@@ -177,11 +177,46 @@ fn get_pwd() -> std::path::PathBuf {
     std::env::current_dir().unwrap_or_default()
 }
 
-pub fn write_file_as_toml(config: &Config, filepath: &std::path::Path) -> Result<(), crate::Error> {
+pub fn write_as_toml(config: &Config, filepath: &std::path::Path) -> Result<(), crate::Error> {
     let file = std::fs::File::create(filepath)?;
     let mut writer = std::io::BufWriter::new(file);
     let toml = toml::to_string(&config)?;
     writer.write_all(toml.as_bytes())?;
 
     Ok(())
+}
+
+pub fn write_new_file(filepath: &std::path::Path) -> Result<(), crate::Error> {
+    std::fs::File::create(filepath)?
+        .write_all(DEFAULT_CONFIG_STRING.as_bytes())
+        .map_err(Into::into)
+}
+
+const DEFAULT_CONFIG_STRING: &str = r#"# snowq
+version = "v1"
+
+[connection]
+account = { env = "SNOWFLAKE_ACCOUNT" }
+user = { env = "SNOWFLAKE_USER" }
+password = { env = "SNOWFLAKE_PASSWORD" }
+role = { env = "SNOWFLAKE_ROLE" }
+database = { env = "SNOWFLAKE_DATABASE" }
+schema = { env = "SNOWFLAKE_SCHEMA" }
+warehouse = { env = "SNOWFLAKE_WAREHOUSE" }
+
+[command.schema.sync]
+output_dir = "."
+
+[pydantic]
+# model_name_suffix = "Model"
+"#;
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_parse_default_config_string() {
+        toml::from_str::<Config>(super::DEFAULT_CONFIG_STRING).unwrap();
+    }
 }

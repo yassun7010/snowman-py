@@ -10,6 +10,8 @@ pub fn run_new_command(_command: NewCommand) -> Result<(), anyhow::Error> {
             "{config_filepath:?} already exists."
         )));
     }
-    snowq_config::write_file_as_toml(&snowq_config::Config::default(), &config_filepath)?;
+
+    snowq_config::write_new_file(&config_filepath)?;
+
     Ok(())
 }
