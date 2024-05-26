@@ -22,7 +22,7 @@ pub struct ConfigV1 {
     pub connection: ConnectionV1,
 
     #[serde(default)]
-    pub sync: SyncConfigV1,
+    pub command: CommandConfigV1,
 
     #[serde(default)]
     pub pydantic: PydanticOptionsV1,
@@ -53,7 +53,19 @@ impl Default for ConnectionV1 {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
-pub struct SyncConfigV1 {
+pub struct CommandConfigV1 {
+    pub schema: SchemaCommandConfigV1,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
+pub struct SchemaCommandConfigV1 {
+    pub sync: SchemaSyncCommandConfigV1,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
+pub struct SchemaSyncCommandConfigV1 {
     #[serde(default = "get_pwd")]
     pub output_dir: std::path::PathBuf,
 }

@@ -1,4 +1,4 @@
-use crate::config::{get_pydantic_options, get_python_models_output_dirpath};
+use crate::config::{get_pydantic_options, get_schema_sync_output_dirpath};
 use clap::Args;
 use convert_case::{Case, Casing};
 use itertools::Itertools;
@@ -7,10 +7,13 @@ use std::iter::Iterator;
 use tokio::io::AsyncWriteExt;
 
 #[derive(Debug, Args)]
-pub struct SchemaSyncCommand {}
+pub struct SchemaSyncCommand {
+    #[clap(long)]
+    pub output_dir: Option<std::path::PathBuf>,
+}
 
 pub async fn run_schema_sync_command(
-    _: SchemaSyncCommand,
+    args: SchemaSyncCommand,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let config_file_path = snowq_config::find_path()?;
     let config = snowq_config::load_from_path(&config_file_path)?;
@@ -18,10 +21,10 @@ pub async fn run_schema_sync_command(
     let insert_typeddict_options = snowq_generator::InsertTypedDictOptions::default();
     let update_typeddict_options = snowq_generator::UpdateTypedDictOptions::default();
     let pydantic_options = get_pydantic_options(&config);
-    let output_dirpath = &config_file_path
-        .parent()
-        .unwrap()
-        .join(get_python_models_output_dirpath(&config));
+    let output_dirpath = &config_file_path.parent().unwrap().join(
+        args.output_dir
+            .unwrap_or_else(|| get_schema_sync_output_dirpath(&config)),
+    );
 
     let schemas = snowq_connector::query::get_schemas(&connection).await?;
     let database_module_names = &schemas
