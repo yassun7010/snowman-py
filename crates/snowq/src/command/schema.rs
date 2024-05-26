@@ -1,10 +1,10 @@
 use clap::Subcommand;
 
-pub use super::schema_sync::run_schema_sync_command;
-use super::schema_sync::SchemaSyncCommand;
+pub use super::schema_generate::run_schema_generate_command;
+use super::schema_generate::SchemaGenerateCommand;
 
 #[derive(Debug, Subcommand)]
 pub enum SchemaCommand {
-    /// Update Python schema classes from Snowflake dataabse schema.
-    Sync(SchemaSyncCommand),
+    /// Generate Python schema classes from Snowflake dataabse schema.
+    Generate(SchemaGenerateCommand),
 }

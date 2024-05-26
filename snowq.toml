@@ -9,7 +9,7 @@ database = { env = "SNOWFLAKE_DATABASE" }
 schema = { env = "SNOWFLAKE_SCHEMA" }
 warehouse = { env = "SNOWFLAKE_WAREHOUSE" }
 
-[command.schema.sync]
+[generate]
 output_dir = "."
 
 [pydantic]

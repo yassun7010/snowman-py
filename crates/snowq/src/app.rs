@@ -6,7 +6,7 @@ use clap::{
 use crate::command::{
     config::ConfigCommand,
     config_print::run_config_print_command,
-    schema::{run_schema_sync_command, SchemaCommand},
+    schema::{run_schema_generate_command, SchemaCommand},
     SubCommands,
 };
 
@@ -34,12 +34,12 @@ pub fn run(args: impl Into<Args>) -> Result<(), anyhow::Error> {
 
     match args.subcommand {
         SubCommands::New(command) => crate::command::new::run_new_command(command)?,
-        SubCommands::Schema(SchemaCommand::Sync(options)) => {
+        SubCommands::Schema(SchemaCommand::Generate(options)) => {
             tokio::runtime::Builder::new_multi_thread()
                 .enable_all()
                 .build()
                 .unwrap()
-                .block_on(async { run_schema_sync_command(options).await })?
+                .block_on(async { run_schema_generate_command(options).await })?
         }
         SubCommands::Config(ConfigCommand::Print(command)) => run_config_print_command(command)?,
     }
