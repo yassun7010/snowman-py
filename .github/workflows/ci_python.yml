@@ -1,0 +1,19 @@
+name: CI Python
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: eifinger/setup-rye@v2
+      - run: rye format
+      - run: rye lint
+      - run: rye test
