@@ -1,6 +1,6 @@
 [project]
 name = "snowq"
-version = "0.1.0"
+version = "0.0.1"
 description = "snowflake query builder for python."
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
 dependencies = [

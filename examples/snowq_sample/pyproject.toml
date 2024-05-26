@@ -1,10 +1,8 @@
 [project]
 name = "snowq-sample"
-version = "0.1.0"
+version = "0.0.1"
 description = "Add your description here"
-authors = [
-    { name = "yassun7010", email = "yassun7010@outlook.com" }
-]
+authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
 dependencies = [
     "pydantic>=2.7.1",
     "snowq @ file:///Users/s23467/develop/snowq/examples/snowq_sample/../..",

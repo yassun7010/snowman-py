@@ -1613,7 +1613,7 @@ dependencies = [
 
 [[package]]
 name = "snowq"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "askama",
@@ -1632,7 +1632,7 @@ dependencies = [
 
 [[package]]
 name = "snowq_config"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "log",
  "serde",
@@ -1642,7 +1642,7 @@ dependencies = [
 
 [[package]]
 name = "snowq_connector"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "openssl",
  "serde_json",
@@ -1652,7 +1652,7 @@ dependencies = [
 
 [[package]]
 name = "snowq_generator"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "convert_case",
  "snowq_connector",
