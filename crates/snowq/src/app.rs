@@ -51,13 +51,13 @@ fn app_styles() -> clap::builder::Styles {
             Style::new()
                 .bold()
                 .underline()
-                .fg_color(Some(Color::Ansi(AnsiColor::Blue))),
+                .fg_color(Some(Color::Ansi(AnsiColor::BrightBlue))),
         )
         .header(
             Style::new()
                 .bold()
                 .underline()
-                .fg_color(Some(Color::Ansi(AnsiColor::Blue))),
+                .fg_color(Some(Color::Ansi(AnsiColor::BrightBlue))),
         )
         .literal(Style::new().fg_color(Some(Color::Ansi(AnsiColor::Cyan))))
         .valid(
@@ -76,5 +76,5 @@ fn app_styles() -> clap::builder::Styles {
                 .bold()
                 .fg_color(Some(Color::Ansi(AnsiColor::Red))),
         )
-        .placeholder(Style::new().fg_color(Some(Color::Ansi(AnsiColor::Blue))))
+        .placeholder(Style::new().fg_color(Some(Color::Ansi(AnsiColor::BrightBlue))))
 }
