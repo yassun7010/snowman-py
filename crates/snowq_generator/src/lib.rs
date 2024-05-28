@@ -44,16 +44,5 @@ pub fn generate_module_docs() -> &'static str {
 }
 
 pub fn generate_type_checking(inner_code: &str) -> String {
-    "if typing.TYPE_CHECKING:\n".to_string()
-        + &inner_code
-            .split('\n')
-            .map(|line| {
-                if !line.is_empty() {
-                    format!("    {}", line)
-                } else {
-                    line.to_owned()
-                }
-            })
-            .collect::<Vec<String>>()
-            .join("\n")
+    ("if typing.TYPE_CHECKING:\n".to_string() + inner_code).replace('\n', "\n    ")
 }

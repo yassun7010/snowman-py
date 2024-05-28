@@ -46,6 +46,7 @@ pub async fn run_schema_generate_command(args: SchemaGenerateCommand) -> Result<
         Some("INFORMATION_SCHEMA".to_string()),
     )];
 
+    // exclude schemasa
     let schemas = schemas
         .into_iter()
         .filter(|schema| {
@@ -62,18 +63,14 @@ pub async fn run_schema_generate_command(args: SchemaGenerateCommand) -> Result<
         })
         .collect::<Vec<_>>();
 
-    futures::future::try_join_all(
-        database_module_names
-            .iter()
-            .map(|database_name| async move {
-                let database_module_path = output_dirpath.join(database_name);
-                if database_module_path.exists() {
-                    tokio::fs::remove_dir_all(&database_module_path).await?;
-                }
-                anyhow::Ok(())
-            }),
-    )
-    .await?;
+    // remove existing files
+    database_module_names.iter().try_for_each(|database_name| {
+        let database_module_path = output_dirpath.join(database_name);
+        if database_module_path.exists() {
+            std::fs::remove_dir_all(&database_module_path)?;
+        }
+        Ok::<_, anyhow::Error>(())
+    })?;
 
     futures::future::try_join_all(schemas.iter().map(|schema| async {
         write_schema_py(
