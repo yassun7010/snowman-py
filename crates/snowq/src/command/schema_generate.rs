@@ -101,6 +101,8 @@ pub async fn run_schema_generate_command(args: SchemaGenerateCommand) -> Result<
 
     write_output_init_py(output_dirpath, &database_module_names).await?;
 
+    run_ruff_format_if_exists(output_dirpath);
+
     Ok(())
 }
 
@@ -118,6 +120,10 @@ async fn write_schema_py(
         &schema.schema_name,
     )
     .await?;
+
+    if tables.is_empty() {
+        return Ok(());
+    }
 
     let database_dir = &output_dirpath.join(schema.database_name.to_case(Case::Snake));
 
@@ -140,18 +146,23 @@ async fn write_schema_py(
                     .unique()
                     .collect::<Vec<&str>>(),
                 ),
-                &snowq_generator::generate_insert_typeddicts(
-                    &schema.database_name,
-                    &schema.schema_name,
-                    &tables,
-                    insert_typeddict_options,
-                ),
-                &snowq_generator::generate_update_typeddicts(
-                    &schema.database_name,
-                    &schema.schema_name,
-                    &tables,
-                    update_typeddict_options,
-                ),
+                &snowq_generator::generate_type_checking(&itertools::join(
+                    [
+                        &snowq_generator::generate_insert_typeddicts(
+                            &schema.database_name,
+                            &schema.schema_name,
+                            &tables,
+                            insert_typeddict_options,
+                        ),
+                        &snowq_generator::generate_update_typeddicts(
+                            &schema.database_name,
+                            &schema.schema_name,
+                            &tables,
+                            update_typeddict_options,
+                        ),
+                    ],
+                    "\n",
+                )),
                 &snowq_generator::generate_pydantic_models(
                     &schema.database_name,
                     &schema.schema_name,
@@ -166,8 +177,6 @@ async fn write_schema_py(
         .as_bytes(),
     )
     .await?;
-
-    run_ruff_format_if_exists(output_dirpath);
 
     Ok(())
 }
