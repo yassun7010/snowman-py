@@ -1,12 +1,6 @@
 from snowflake.connector.cursor import SnowflakeCursor
 
-try:
-    import turu.snowflake
-
-    TuruSnowflakeCursor = turu.snowflake.Cursor
-
-except ImportError:
-    TuruSnowflakeCursor = SnowflakeCursor
+from snowq._features import TuruSnowflakeCursor
 
 Cursor = SnowflakeCursor | TuruSnowflakeCursor
 

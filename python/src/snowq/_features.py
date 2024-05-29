@@ -1,5 +1,7 @@
 from typing import TypeAlias
 
+from snowflake.connector.cursor import SnowflakeCursor
+
 try:
     import pandas as pd  # type: ignore[import]
 
@@ -13,3 +15,14 @@ except ImportError:
 
     PandasDataFrame: TypeAlias = DataFrame  # type: ignore
     USE_PANDAS = False
+
+
+try:
+    import turu.snowflake
+
+    TuruSnowflakeCursor = turu.snowflake.Cursor
+    USE_TURU = True
+
+except ImportError:
+    TuruSnowflakeCursor = SnowflakeCursor
+    USE_TURU = False
