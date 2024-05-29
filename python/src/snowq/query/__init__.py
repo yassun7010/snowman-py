@@ -2,6 +2,7 @@ from typing import Type
 
 from snowq.query._builder._delete_query_builder import DeleteQueryBuilder
 from snowq.query._builder._insert_query_builder import InsertQueryBuilder
+from snowq.query._builder._truncate_query_builder import TruncateQueryBuilder
 from snowq.query._builder._update_query_builder import UpdateStatement
 from snowq.schema.table import (
     GenericInsertColumnTypedDict,
@@ -22,3 +23,13 @@ def update(
 
 
 delete = DeleteQueryBuilder()
+
+truncate = TruncateQueryBuilder()
+
+
+__all__ = [
+    "insert",
+    "update",
+    "delete",
+    "truncate",
+]
