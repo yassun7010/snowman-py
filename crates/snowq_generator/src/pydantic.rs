@@ -65,7 +65,7 @@ pub fn generate_pydantic_model(
         table.table_name
     ));
     pydantic_schema.push_str(&format!(
-        "class {}(pydantic.BaseModel, snowq.Table[{},{}]):\n",
+        "class {}(pydantic.BaseModel, snowq.Table[\"{}\",\"{}\"]):\n",
         pydantic_options.make_class_name(&table.table_name),
         insert_typeddict_options.make_class_name(&table.table_name),
         update_typeddict_options.make_class_name(&table.table_name)
