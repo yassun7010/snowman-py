@@ -1,7 +1,7 @@
 from typing import Generic, Type, override
 
-from snowq.schema import full_table_name
-from snowq.schema.table import GenericTable
+from snowq.relation import full_table_name
+from snowq.relation.table import GenericTable
 
 from ._builder import QueryBuilder, QueryWithParams
 

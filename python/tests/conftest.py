@@ -6,7 +6,7 @@ import snowq
 import turu.snowflake
 from pydantic import BaseModel
 from pytest_mock import MockFixture
-from snowq.schema.table import Table
+from snowq.relation.table import Table
 
 
 @pytest.fixture

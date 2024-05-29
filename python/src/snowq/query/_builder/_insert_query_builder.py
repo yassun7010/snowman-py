@@ -2,8 +2,8 @@ from typing import Generic, Sequence, Type
 
 from typing_extensions import override
 
-from snowq.schema import column_names, columns_dict, full_table_name
-from snowq.schema.table import (
+from snowq.relation import column_names, columns_dict, full_table_name
+from snowq.relation.table import (
     GenericInsertColumnTypedDict,
     GenericTable,
     GenericUpdateColumnTypedDict,

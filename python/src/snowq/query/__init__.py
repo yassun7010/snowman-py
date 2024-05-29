@@ -4,7 +4,7 @@ from snowq.query._builder._delete_query_builder import DeleteQueryBuilder
 from snowq.query._builder._insert_query_builder import InsertQueryBuilder
 from snowq.query._builder._truncate_query_builder import TruncateQueryBuilder
 from snowq.query._builder._update_query_builder import UpdateStatement
-from snowq.schema.table import (
+from snowq.relation.table import (
     GenericInsertColumnTypedDict,
     GenericUpdateColumnTypedDict,
     Table,

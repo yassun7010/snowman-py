@@ -3,8 +3,8 @@ from typing import Generic, Type, cast
 from pydantic import BaseModel
 from typing_extensions import override
 
-from snowq.schema import full_table_name
-from snowq.schema.table import GenericTable, GenericUpdateColumnTypedDict
+from snowq.relation import full_table_name
+from snowq.relation.table import GenericTable, GenericUpdateColumnTypedDict
 
 from ._builder import QueryBuilder, QueryWithParams
 

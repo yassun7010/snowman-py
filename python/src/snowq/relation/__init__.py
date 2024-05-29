@@ -2,7 +2,7 @@ from typing import Any, Type, cast
 
 from pydantic import BaseModel
 
-from snowq.schema.table import (
+from snowq.relation.table import (
     GenericInsertColumnTypedDict,
     GenericUpdateColumnTypedDict,
     Table,
