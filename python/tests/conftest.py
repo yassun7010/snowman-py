@@ -3,10 +3,13 @@ from typing import TypedDict
 import pytest
 import snowflake.connector.cursor
 import snowq
-import turu.snowflake
 from pydantic import BaseModel
 from pytest_mock import MockFixture
+from snowq._features import USE_TURU
 from snowq.relation.table import Table
+
+if USE_TURU:
+    import turu.snowflake  # type: ignore[import]
 
 
 @pytest.fixture
@@ -19,15 +22,14 @@ def mock_snowflake_cursor(
 @pytest.fixture
 def mock_turu_snowflake_connection(
     mocker: MockFixture,
-) -> turu.snowflake.Connection:
-    return mocker.MagicMock(spec=turu.snowflake.Connection)
+) -> "turu.snowflake.MockConnection":
+    if USE_TURU:
+        import turu.snowflake  # type: ignore[import]
 
+        return turu.snowflake.MockConnection()
 
-@pytest.fixture
-def mock_turu_snowflake_cursor(
-    mocker: MockFixture,
-) -> turu.snowflake.Cursor:
-    return mocker.MagicMock(spec=turu.snowflake.Cursor)
+    else:
+        return mocker.MagicMock(spec=snowflake.connector.connection.SnowflakeConnection)
 
 
 class _UserInsertColumns(TypedDict):

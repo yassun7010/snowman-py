@@ -5,7 +5,10 @@ import snowq
 import snowq.exception
 from conftest import User
 from snowflake.connector.cursor import SnowflakeCursor
-from snowq._features import USE_PANDAS
+from snowq._features import USE_PANDAS, USE_TURU
+
+if USE_TURU:
+    import turu.snowflake  # type: ignore[import]
 
 
 class TestInsertQuery:
@@ -14,17 +17,15 @@ class TestInsertQuery:
     ):
         snowq.query.insert.into(User).values(user).execute(mock_snowflake_cursor)
 
-    def test_insert_execute_by_turu_connection(
-        self, user: User, mock_turu_snowflake_connection
+    @pytest.mark.skipif(not USE_TURU, reason="Not installed turu")
+    def test_insert_execute_by_turu(
+        self,
+        user: User,
+        mock_turu_snowflake_connection: "turu.snowflake.MockConnection",
     ):
-        snowq.query.insert.into(User).values(user).execute(
-            mock_turu_snowflake_connection
-        )
-
-    def test_insert_execute_by_turu_cursor(
-        self, user: User, mock_turu_snowflake_cursor
-    ):
-        snowq.query.insert.into(User).values(user).execute(mock_turu_snowflake_cursor)
+        mock_turu_snowflake_connection.inject_response(None, [])
+        with mock_turu_snowflake_connection.cursor() as cursor:
+            snowq.query.insert.into(User).values(user).execute(cursor)
 
     def test_insert_into_query_execute_build(self, user: User):
         query, params = snowq.query.insert.into(User).values(user).build()

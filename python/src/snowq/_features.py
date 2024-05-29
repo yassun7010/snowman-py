@@ -18,7 +18,7 @@ except ImportError:
 
 
 try:
-    import turu.snowflake
+    import turu.snowflake  # type: ignore[import]
 
     TuruSnowflakeCursor = turu.snowflake.Cursor
     USE_TURU = True
