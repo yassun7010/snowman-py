@@ -1,5 +1,6 @@
 use crate::Connection;
 
+#[derive(Debug, Clone)]
 pub struct DatabaseSchema {
     pub database_name: String,
     pub schema_name: String,
