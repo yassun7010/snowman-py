@@ -4,8 +4,8 @@ version = "0.0.1"
 description = "snowflake query builder for python."
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
 dependencies = [
-    "typing-extensions>=4.11.0",
-    "snowflake-connector-python>=3.10.0",
+    "typing-extensions>=4.12.0",
+    "snowflake-connector-python>=3.10.1",
     "pydantic>=2.7.1",
 ]
 readme = "README.md"
@@ -29,7 +29,7 @@ python-source = "python/src"
 [tool.rye]
 managed = true
 dev-dependencies = [
-    "pytest>=8.2.0",
+    "pytest>=8.2.1",
     "pyright>=1.1.361",
     "taskipy>=1.12.2",
     "ruff>=0.4.3",
@@ -38,6 +38,8 @@ dev-dependencies = [
     "pandas-stubs>=2.2.1.240316",
     "pytest-mock>=3.14.0",
     "pip>=24.0",
+    "pandas>=2.2.2",
+    "pyarrow>=16.1.0",
 ]
 
 [tool.hatch.metadata]
@@ -52,3 +54,6 @@ lint = "ruff check --fix ."
 typecheck = "pyright python/src/** python/tests/**"
 test = "pytest"
 ci = "task format && task lint && task typecheck && task test"
+
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::DeprecationWarning:snowflake"]

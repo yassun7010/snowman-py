@@ -6,6 +6,7 @@
 #   features: []
 #   all-features: false
 #   with-sources: false
+#   generate-hashes: false
 
 -e file:.
 annotated-types==0.6.0
@@ -36,10 +37,13 @@ iniconfig==2.0.0
 nodeenv==1.8.0
     # via pyright
 numpy==1.26.4
+    # via pandas
     # via pandas-stubs
+    # via pyarrow
 packaging==24.0
     # via pytest
     # via snowflake-connector-python
+pandas==2.2.2
 pandas-stubs==2.2.1.240316
 pip==24.0
 platformdirs==4.2.1
@@ -48,6 +52,7 @@ pluggy==1.5.0
     # via pytest
 psutil==5.9.8
     # via taskipy
+pyarrow==16.1.0
 pyarrow-stubs==10.0.1.7
 pycparser==2.22
     # via cffi
@@ -60,17 +65,22 @@ pyjwt==2.8.0
 pyopenssl==24.1.0
     # via snowflake-connector-python
 pyright==1.1.361
-pytest==8.2.0
+pytest==8.2.1
     # via pytest-mock
 pytest-mock==3.14.0
+python-dateutil==2.9.0.post0
+    # via pandas
 pytz==2024.1
+    # via pandas
     # via snowflake-connector-python
 requests==2.31.0
     # via snowflake-connector-python
 ruff==0.4.3
 setuptools==69.5.1
     # via nodeenv
-snowflake-connector-python==3.10.0
+six==1.16.0
+    # via python-dateutil
+snowflake-connector-python==3.10.1
     # via snowq
     # via turu-snowflake
 sortedcontainers==2.4.0
@@ -88,12 +98,14 @@ turu-snowflake==0.10.5
     # via turu
 types-pytz==2024.1.0.20240417
     # via pandas-stubs
-typing-extensions==4.11.0
+typing-extensions==4.12.0
     # via pydantic
     # via pydantic-core
     # via snowflake-connector-python
     # via snowq
     # via turu-core
     # via turu-snowflake
+tzdata==2024.1
+    # via pandas
 urllib3==2.2.1
     # via requests

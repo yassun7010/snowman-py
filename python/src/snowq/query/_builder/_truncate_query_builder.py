@@ -1,4 +1,5 @@
-from typing import Generic, Type, override
+from typing import Generic, Type
+from typing_extensions import override
 
 from snowq.relation import full_table_name
 from snowq.relation.table import GenericTable

@@ -2,6 +2,9 @@ from typing import Generic, Sequence, Type
 
 from typing_extensions import override
 
+import snowq._features
+from snowq.cursor import Cursor, _get_snowfalke_cursor
+from snowq.exception import SnowqNotDataFrameAvailableError
 from snowq.relation import column_names, columns_dict, full_table_name
 from snowq.relation.table import (
     GenericInsertColumnTypedDict,
@@ -52,12 +55,22 @@ class InsertIntoQueryBuilder(Generic[GenericTable, GenericInsertColumnTypedDict]
         self,
         values: GenericTable
         | GenericInsertColumnTypedDict
-        | Sequence[GenericTable | GenericInsertColumnTypedDict],
+        | Sequence[GenericTable | GenericInsertColumnTypedDict]
+        | snowq._features.PandasDataFrame,
     ) -> "InsertIntoValuesQueryBuilder[GenericTable, GenericInsertColumnTypedDict]":
-        values = values if isinstance(values, Sequence) else (values,)
+        if isinstance(values, snowq._features.PandasDataFrame):
+            dataframe = values
+            values = ()
+
+        else:
+            dataframe = None
+            if not isinstance(values, Sequence):
+                values = (values,)
+
         return InsertIntoValuesQueryBuilder(
             self._table,
-            values if isinstance(values, Sequence) else (values,),
+            values,
+            dataframe=dataframe,
             overwrite=self._overwrite,
         )
 
@@ -70,20 +83,30 @@ class InsertIntoValuesQueryBuilder(
         table: type[GenericTable],
         values: Sequence[GenericTable | GenericInsertColumnTypedDict],
         /,
+        *,
+        dataframe: snowq._features.PandasDataFrame | None = None,
         overwrite: bool = False,
     ):
         self._table = table
         self._values = values
+        self._dataframe = dataframe
         self._overwrite = overwrite
 
     @override
     def build(self) -> QueryWithParams:
+        if self._dataframe is not None:
+            raise SnowqNotDataFrameAvailableError()
+
         overwrite = "OVERWRITE " if self._overwrite else ""
+        values = ",\n    ".join(
+            [f"%({column_name})s" for column_name in column_names(self._table)]
+        )
+
         query = f"""
 INSERT {overwrite}INTO
     {full_table_name(self._table)}
 VALUES (
-    {',\n    '.join([f'%({column_name})s' for column_name in column_names(self._table)])}
+    {values}
 )
 """.strip()
 
@@ -93,3 +116,20 @@ VALUES (
             if len(self._values) == 1
             else tuple(columns_dict(value) for value in self._values),
         )
+
+    @override
+    def execute(self, cursor: Cursor, /) -> None:
+        if self._dataframe is not None:
+            from snowflake.connector.pandas_tools import write_pandas
+
+            write_pandas(
+                conn=_get_snowfalke_cursor(cursor).connection,
+                df=self._dataframe,
+                table_name=self._table.__table_name__,
+                database=self._table.__databas_name__,
+                schema=self._table.__schema_name__,
+            )
+            return
+
+        else:
+            super().execute(cursor)

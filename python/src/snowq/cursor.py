@@ -3,11 +3,17 @@ from snowflake.connector.cursor import SnowflakeCursor
 try:
     import turu.snowflake
 
-    TuruSnowflakeConnection = turu.snowflake.Connection
     TuruSnowflakeCursor = turu.snowflake.Cursor
 
 except ImportError:
-    TuruSnowflakeConnection = SnowflakeCursor
     TuruSnowflakeCursor = SnowflakeCursor
 
-Cursor = SnowflakeCursor | TuruSnowflakeConnection | TuruSnowflakeCursor
+Cursor = SnowflakeCursor | TuruSnowflakeCursor
+
+
+def _get_snowfalke_cursor(cursor: Cursor) -> SnowflakeCursor:
+    if raw_cursor := getattr(cursor, "_raw_cursor", None):
+        return raw_cursor
+
+    else:
+        return cursor  # type: ignore
