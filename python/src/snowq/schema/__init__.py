@@ -2,16 +2,11 @@ from typing import Any, Type, cast
 
 from pydantic import BaseModel
 
-from snowq.schema.external_table import ExternalTable
-from snowq.schema.materiarized_view import MateriarizedView
 from snowq.schema.table import (
     GenericInsertColumnTypedDict,
     GenericUpdateColumnTypedDict,
     Table,
 )
-from snowq.schema.view import View
-
-Viewable = View | ExternalTable | MateriarizedView
 
 
 def full_table_name(table: Type[Table]) -> str:

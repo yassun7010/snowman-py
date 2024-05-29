@@ -1,2 +1,0 @@
-class MateriarizedView:
-    pass
