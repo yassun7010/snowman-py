@@ -3,6 +3,7 @@ use crate::{
     Connection,
 };
 
+#[derive(Debug, Clone)]
 pub struct SchemaInfomation {
     pub table_name: String,
     pub column_name: String,
