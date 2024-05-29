@@ -3,10 +3,10 @@ from typing import Generic, Type, cast
 from pydantic import BaseModel
 from typing_extensions import override
 
-from snowq.schema import full_name
+from snowq.schema import full_table_name
 from snowq.schema.table import GenericTable, GenericUpdateColumnTypedDict
 
-from ._builder import QueryBuilder, QueryParams
+from ._builder import QueryBuilder, QueryWithParams
 
 
 class UpdateStatement(Generic[GenericTable, GenericUpdateColumnTypedDict]):
@@ -28,7 +28,7 @@ class UpdateStatement(Generic[GenericTable, GenericUpdateColumnTypedDict]):
 class UpdateSetQueryBuilder(Generic[GenericTable, GenericUpdateColumnTypedDict]):
     def __init__(
         self,
-        table: type[GenericTable],
+        table: Type[GenericTable],
         columns: GenericTable | GenericUpdateColumnTypedDict,
     ):
         self._table = table
@@ -67,14 +67,14 @@ class UpdateSetWhereQueryBuidler(
         self._where_condition = where_condition
 
     @override
-    def build(self) -> QueryParams:
+    def build(self) -> QueryWithParams:
         query = f"""
 UPDATE
-    {full_name(self._table)}
+    {full_table_name(self._table)}
 SET
     {',\n    '.join([f'{key} = %({key})s' for key in self._columns.keys()])}
 WHERE
     {self._where_condition}
 """.strip()
 
-        return QueryParams(query, {k: v for k, v in self._columns.items()})
+        return QueryWithParams(query, {k: v for k, v in self._columns.items()})

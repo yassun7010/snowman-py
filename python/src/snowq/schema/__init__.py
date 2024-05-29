@@ -14,7 +14,7 @@ from snowq.schema.view import View
 Viewable = View | ExternalTable | MateriarizedView
 
 
-def full_name(table: Type[Table]) -> str:
+def full_table_name(table: Type[Table]) -> str:
     return f"{table.__databas_name__}.{table.__schema_name__}.{table.__table_name__}"
 
 

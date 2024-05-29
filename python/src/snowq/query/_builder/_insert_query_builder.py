@@ -2,7 +2,7 @@ from typing import Generic, Sequence, Type
 
 from typing_extensions import override
 
-from snowq.schema import column_names, columns_dict, full_name
+from snowq.schema import column_names, columns_dict, full_table_name
 from snowq.schema.table import (
     GenericInsertColumnTypedDict,
     GenericTable,
@@ -10,7 +10,7 @@ from snowq.schema.table import (
     Table,
 )
 
-from ._builder import QueryBuilder, QueryParams
+from ._builder import QueryBuilder, QueryWithParams
 
 
 class InsertQueryBuilder:
@@ -77,17 +77,17 @@ class InsertIntoValuesQueryBuilder(
         self._overwrite = overwrite
 
     @override
-    def build(self) -> QueryParams:
+    def build(self) -> QueryWithParams:
         overwrite = "OVERWRITE " if self._overwrite else ""
         query = f"""
 INSERT {overwrite}INTO
-    {full_name(self._table)}
+    {full_table_name(self._table)}
 VALUES (
     {',\n    '.join([f'%({column_name})s' for column_name in column_names(self._table)])}
 )
 """.strip()
 
-        return QueryParams(
+        return QueryWithParams(
             query,
             columns_dict(self._values[0])
             if len(self._values) == 1
