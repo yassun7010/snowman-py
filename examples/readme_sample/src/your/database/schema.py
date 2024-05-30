@@ -14,7 +14,7 @@ class _UserUpdateColumns(TypedDict, total=False):
     name: str
 
 
-@snowq.table("database", "public", "users")
+@snowq.table("database", "schema", "users")
 class User(pydantic.BaseModel, snowq.Table["_UserInsertColumns", "_UserUpdateColumns"]):
     id: int
     name: str
