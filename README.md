@@ -1,6 +1,6 @@
 # snowq
 
-Describe your project here.
+Easily build and execute Snowflake queries in Python.
 
 
 ## CLI Tool
