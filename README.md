@@ -100,7 +100,7 @@ query, params = (
     delete.from_(
         User,
     ).where(
-        "id == 1",
+        "id = 1",
     )
 ).build()
 
