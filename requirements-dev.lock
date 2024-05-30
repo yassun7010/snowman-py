@@ -74,8 +74,7 @@ python-dateutil==2.9.0.post0
 pytz==2024.1
     # via pandas
     # via snowflake-connector-python
-readme-sample @ file:///Users/s23467/develop/snowq/examples/readme_sample
-    # via snowq
+readme-sample @ file:///${PROJECT_ROOT}/examples/readme_sample
 requests==2.31.0
     # via snowflake-connector-python
 ruff==0.4.3
