@@ -10,9 +10,9 @@ Easily build and execute Snowflake queries in Python.
 snowq new
 ```
 
-### Import Snowflake Schema
+### Generate Python Model from Snowflake information schema
 ```sh
-snowq schema import
+snowq model import
 ```
 
 

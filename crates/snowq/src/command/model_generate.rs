@@ -10,12 +10,12 @@ use std::iter::Iterator;
 use tokio::io::AsyncWriteExt;
 
 #[derive(Debug, Args)]
-pub struct SchemaGenerateCommand {
+pub struct ModelGenerateCommand {
     #[clap(long)]
     pub output_dir: Option<std::path::PathBuf>,
 }
 
-pub async fn run_schema_generate_command(args: SchemaGenerateCommand) -> Result<(), anyhow::Error> {
+pub async fn run_model_generate_command(args: ModelGenerateCommand) -> Result<(), anyhow::Error> {
     let config_file_path = snowq_config::find_path()?;
     let config = snowq_config::load_from_path(&config_file_path)?;
     let connection = get_snowflake_connection(&config)?;

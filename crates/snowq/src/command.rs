@@ -1,21 +1,21 @@
 pub mod config;
 pub mod config_print;
+pub mod model;
+pub mod model_generate;
 pub mod new;
-pub mod schema;
-pub mod schema_generate;
 
 use clap::Subcommand;
 
-use self::{config::ConfigCommand, new::NewCommand, schema::SchemaCommand};
+use self::{config::ConfigCommand, model::ModelCommand, new::NewCommand};
 
 #[derive(Debug, Subcommand)]
 pub enum SubCommands {
     /// Create a new snowq project.
     New(NewCommand),
 
-    /// Snowflake schema operations.
+    /// Python model operations.
     #[command(subcommand)]
-    Schema(SchemaCommand),
+    Model(ModelCommand),
 
     /// snowq config operations.
     #[command(subcommand)]
