@@ -8,7 +8,9 @@ query, params = (
     update(
         User,
     )
-    .set({"name": "Jane Doe"})
+    .set(
+        {"name": "Jane Doe"},
+    )
     .where(
         "id = 1",
     )
