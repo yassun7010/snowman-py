@@ -118,20 +118,10 @@ async fn write_schema_py(
     )
     .await?;
 
-    if tables.is_empty() {
-        return Ok(());
-    }
-
-    let database_dir = &output_dirpath.join(schema.database_name.to_case(Case::Snake));
-
-    std::fs::create_dir_all(database_dir)?;
-
-    tokio::fs::File::create(
-        database_dir.join(format!("{}.py", schema.schema_name.to_case(Case::Snake))),
-    )
-    .await?
-    .write_all(
-        (itertools::join(
+    let src = if tables.is_empty() {
+        "".to_string()
+    } else {
+        itertools::join(
             [
                 snowq_generator::generate_module_docs(),
                 &snowq_generator::generate_import_modules(
@@ -170,9 +160,18 @@ async fn write_schema_py(
                 ),
             ],
             "\n",
-        ))
-        .as_bytes(),
+        )
+    };
+
+    let database_dir = &output_dirpath.join(schema.database_name.to_case(Case::Snake));
+
+    std::fs::create_dir_all(database_dir)?;
+
+    tokio::fs::File::create(
+        database_dir.join(format!("{}.py", schema.schema_name.to_case(Case::Snake))),
     )
+    .await?
+    .write_all(src.as_bytes())
     .await?;
 
     Ok(())

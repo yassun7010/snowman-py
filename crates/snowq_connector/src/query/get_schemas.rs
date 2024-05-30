@@ -18,12 +18,12 @@ pub async fn get_schemas(connection: &Connection) -> Result<Vec<DatabaseSchema>,
             ",
         )
         .await?;
-    let mut tables = vec![];
+    let mut db_schemas = vec![];
     for row in rows {
-        tables.push(DatabaseSchema {
+        db_schemas.push(DatabaseSchema {
             database_name: row.get("database_name").unwrap(),
             schema_name: row.get("schema_name").unwrap(),
         });
     }
-    Ok(tables)
+    Ok(db_schemas)
 }

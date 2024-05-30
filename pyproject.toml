@@ -52,7 +52,7 @@ packages = ["src/snowq"]
 format = "ruff format ."
 lint = "ruff check --fix ."
 typecheck = "pyright python/src/** python/tests/**"
-test = "pytest"
+test = "pytest --doctest-modules"
 ci = "task format && task lint && task typecheck && task test"
 
 [tool.pytest.ini_options]

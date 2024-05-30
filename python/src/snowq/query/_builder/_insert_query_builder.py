@@ -17,6 +17,29 @@ from ._builder import QueryBuilder, QueryWithParams
 
 
 class InsertQueryBuilder:
+    """
+    Insert records into a table.
+
+    >>> from snowq.query import insert
+    >>> from your_table import User
+    >>>
+    >>> query, _ = (
+    ...     insert.into(
+    ...         User
+    ...     ).values(
+    ...         {"id": 1, "name": "Alice"}
+    ...     )
+    ... ).build()
+    >>>
+    >>> print(query)
+    INSERT INTO
+        database.public.users
+    VALUES (
+        %(id)s,
+        %(name)s
+    )
+    """
+
     @property
     def overwrite(self) -> "InsertOverwriteQueryBuilder":
         return InsertOverwriteQueryBuilder()
