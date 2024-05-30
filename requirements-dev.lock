@@ -9,6 +9,7 @@
 #   generate-hashes: false
 
 -e file:.
+    # via readme-sample
 annotated-types==0.6.0
     # via pydantic
 asn1crypto==1.5.1
@@ -73,6 +74,8 @@ python-dateutil==2.9.0.post0
 pytz==2024.1
     # via pandas
     # via snowflake-connector-python
+readme-sample @ file:///Users/s23467/develop/snowq/examples/readme_sample
+    # via snowq
 requests==2.31.0
     # via snowflake-connector-python
 ruff==0.4.3

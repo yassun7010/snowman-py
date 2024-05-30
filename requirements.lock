@@ -9,6 +9,7 @@
 #   generate-hashes: false
 
 -e file:.
+    # via readme-sample
 annotated-types==0.6.0
     # via pydantic
 asn1crypto==1.5.1
@@ -46,6 +47,8 @@ pyopenssl==24.1.0
     # via snowflake-connector-python
 pytz==2024.1
     # via snowflake-connector-python
+readme-sample @ file:///Users/s23467/develop/snowq/examples/readme_sample
+    # via snowq
 requests==2.31.0
     # via snowflake-connector-python
 snowflake-connector-python==3.10.1

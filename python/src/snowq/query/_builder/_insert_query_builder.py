@@ -21,7 +21,7 @@ class InsertQueryBuilder:
     Insert records into a table.
 
     >>> from snowq.query import insert
-    >>> from your_table import User
+    >>> from your.database.schema import User
     >>>
     >>> query, _ = (
     ...     insert.into(
@@ -33,7 +33,7 @@ class InsertQueryBuilder:
     >>>
     >>> print(query)
     INSERT INTO
-        database.public.users
+        database.schema.users
     VALUES (
         %(id)s,
         %(name)s
