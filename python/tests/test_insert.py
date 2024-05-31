@@ -103,3 +103,22 @@ class TestInsertQuery:
                 }
             )
         ).execute(mock_snowflake_cursor)
+
+    @pytest.mark.skipif(not USE_PANDAS or not USE_TURU, reason="Not installed pandas")
+    @pytest.mark.xfail(reason="turu.snowflake.MockCursor does not have connection.")
+    def test_insert_into_query_execute_use_dataframe_and_turu(
+        self, mock_turu_snowflake_connection: "turu.snowflake.MockConnection"
+    ):
+        import pandas as pd
+
+        mock_turu_snowflake_connection.inject_response(None, None)
+
+        with mock_turu_snowflake_connection.cursor() as cursor:
+            snowq.query.insert.into(User).values(
+                pd.DataFrame(
+                    {
+                        "id": list(range(5)),
+                        "name": [f"name_{i}" for i in range(5)],
+                    }
+                )
+            ).execute(cursor)

@@ -3,7 +3,7 @@ from typing import Generic, Sequence, Type
 from typing_extensions import override
 
 import snowq._features
-from snowq.cursor import Cursor, _get_snowfalke_cursor
+from snowq.cursor import Cursor, _get_snowflake_connection
 from snowq.exception import SnowqNotDataFrameAvailableError
 from snowq.relation import column_names, columns_dict, full_table_name
 from snowq.relation.table import (
@@ -146,7 +146,7 @@ VALUES (
             from snowflake.connector.pandas_tools import write_pandas
 
             write_pandas(
-                conn=_get_snowfalke_cursor(cursor).connection,
+                conn=_get_snowflake_connection(cursor),
                 df=self._dataframe,
                 table_name=self._table.__table_name__,
                 database=self._table.__databas_name__,

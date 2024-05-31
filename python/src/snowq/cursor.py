@@ -1,3 +1,4 @@
+from snowflake.connector import SnowflakeConnection
 from snowflake.connector.cursor import SnowflakeCursor
 
 from snowq._features import TuruSnowflakeCursor
@@ -11,3 +12,10 @@ def _get_snowfalke_cursor(cursor: Cursor) -> SnowflakeCursor:
 
     else:
         return cursor  # type: ignore
+
+
+def _get_snowflake_connection(
+    cursor: Cursor,
+) -> SnowflakeConnection:
+    cursor = _get_snowfalke_cursor(cursor)
+    return getattr(cursor, "connection")
