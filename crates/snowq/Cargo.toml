@@ -20,3 +20,5 @@ snowq_generator.workspace = true
 tokio.workspace = true
 itertools = "0.13.0"
 anyhow = { version = "1.0.86", features = ["backtrace"] }
+clap_complete = "4.5.2"
+clap_complete_nushell = "4.5.1"

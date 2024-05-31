@@ -7,6 +7,7 @@ use crate::command::{
     config::ConfigCommand,
     config_print::run_config_print_command,
     model::{run_model_generate_command, ModelCommand},
+    snowq::SnowqCommand,
     SubCommands,
 };
 
@@ -42,6 +43,11 @@ pub fn run(args: impl Into<Args>) -> Result<(), anyhow::Error> {
                 .block_on(async { run_model_generate_command(options).await })?
         }
         SubCommands::Config(ConfigCommand::Print(command)) => run_config_print_command(command)?,
+        SubCommands::Snowq(command) => match command {
+            SnowqCommand::Completion(command) => {
+                crate::command::snowq_completion::run_snowq_completion_command(command)?
+            }
+        },
     }
     Ok(())
 }
