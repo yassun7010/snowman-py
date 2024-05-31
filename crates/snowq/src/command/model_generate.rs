@@ -119,7 +119,7 @@ async fn write_schema_py(
     .await?;
 
     let src = if tables.is_empty() {
-        "".to_string()
+        snowq_generator::generate_module_docs().to_string()
     } else {
         itertools::join(
             [
