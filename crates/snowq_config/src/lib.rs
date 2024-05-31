@@ -25,7 +25,7 @@ pub struct ConfigV1 {
     pub connection: ConnectionV1,
 
     #[serde(default)]
-    pub code_generation: CodeGenerationConfigV1,
+    pub model: ModelConfigV1,
 
     #[serde(default)]
     pub pydantic: PydanticOptionsV1,
@@ -72,7 +72,7 @@ impl Default for ConnectionV1 {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
-pub struct CodeGenerationConfigV1 {
+pub struct ModelConfigV1 {
     #[serde(default = "get_pwd")]
     pub output_dir: std::path::PathBuf,
 }
@@ -203,7 +203,7 @@ database = { env = "SNOWFLAKE_DATABASE" }
 schema = { env = "SNOWFLAKE_SCHEMA" }
 warehouse = { env = "SNOWFLAKE_WAREHOUSE" }
 
-[code_generation]
+[model]
 output_dir = "."
 
 [pydantic]
