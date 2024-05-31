@@ -39,7 +39,7 @@ pub async fn run_model_generate_command(args: ModelGenerateCommand) -> Result<()
         .iter()
         .unique()
         .map(AsRef::as_ref)
-        .collect::<Vec<_>>();
+        .collect::<Vec<&str>>();
 
     let exclude_schemas = [(
         Option::<String>::None,
@@ -96,7 +96,7 @@ pub async fn run_model_generate_command(args: ModelGenerateCommand) -> Result<()
     )
     .await?;
 
-    write_output_init_py(output_dirpath, &database_module_names).await?;
+    // write_output_init_py(output_dirpath, &database_module_names).await?;
 
     run_ruff_format_if_exists(output_dirpath);
 
@@ -173,33 +173,6 @@ async fn write_schema_py(
     .await?
     .write_all(src.as_bytes())
     .await?;
-
-    Ok(())
-}
-
-async fn write_output_init_py(
-    output_dirpath: &std::path::Path,
-    database_module_names: &[&str],
-) -> Result<(), anyhow::Error> {
-    tokio::fs::File::create(output_dirpath.join("__init__.py"))
-        .await?
-        .write_all(
-            itertools::join(
-                [
-                    snowq_generator::generate_module_docs(),
-                    &snowq_generator::generate_modlue_init_py(
-                        &database_module_names
-                            .iter()
-                            .unique()
-                            .map(AsRef::as_ref)
-                            .collect::<Vec<&str>>(),
-                    ),
-                ],
-                "\n",
-            )
-            .as_bytes(),
-        )
-        .await?;
 
     Ok(())
 }
