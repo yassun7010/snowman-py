@@ -1,8 +1,7 @@
 # Snowq
 
 <!-- --8<-- [start:badges] -->
-[![docs](https://github.com/yassun7010/snowq/actions/workflows/publish-mkdocs.yml/badge.svg)](https://yassun7010.github.io/snowq/)
-[![test](https://github.com/yassun7010/snowq/actions/workflows/test-suite.yml/badge.svg)](https://github.com/yassun7010/snowq/actions)
+[![test](https://github.com/yassun7010/snowq/actions/workflows/ci_python.yml/badge.svg)](https://github.com/yassun7010/snowq/actions)
 [![pypi package](https://badge.fury.io/py/snowq.svg)](https://pypi.org/project/snowq)
 <!-- --8<-- [end:badges] -->
 
