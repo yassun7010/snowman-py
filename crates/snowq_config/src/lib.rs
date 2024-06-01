@@ -185,7 +185,7 @@ pub fn write_as_toml(config: &Config, filepath: &std::path::Path) -> Result<(), 
     Ok(())
 }
 
-pub fn write_new_file(filepath: &std::path::Path) -> Result<(), crate::Error> {
+pub fn create_file(filepath: &std::path::Path) -> Result<(), crate::Error> {
     std::fs::File::create(filepath)?
         .write_all(DEFAULT_CONFIG_STRING.as_bytes())
         .map_err(Into::into)

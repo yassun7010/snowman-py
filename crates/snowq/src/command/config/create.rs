@@ -9,7 +9,7 @@ pub fn run(_args: Args) -> Result<(), anyhow::Error> {
         )));
     }
 
-    snowq_config::write_new_file(&config_filepath)?;
+    snowq_config::create_file(&config_filepath)?;
 
     Ok(())
 }
