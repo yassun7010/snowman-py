@@ -1,11 +1,11 @@
-# snowq
+# Snowq
 
 Easily build and execute Snowflake queries in Python.
 
 
 ## CLI Tool
 
-### Create snowq Config
+### Create Snowq Config
 ```sh
 snowq config create
 ```
