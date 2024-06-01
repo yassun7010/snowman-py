@@ -148,8 +148,6 @@ async fn write_schema_py(
                     "\n",
                 )),
                 &snowq_generator::generate_pydantic_models(
-                    &schema.database_name,
-                    &schema.schema_name,
                     &tables,
                     pydantic_options,
                     insert_typeddict_options,

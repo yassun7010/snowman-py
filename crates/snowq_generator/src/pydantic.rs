@@ -27,8 +27,6 @@ pub fn get_pydantic_modules() -> Vec<&'static str> {
 }
 
 pub fn generate_pydantic_models(
-    database_name: &str,
-    schema_name: &str,
     tables: &[Table],
     pydantic_options: &PydanticOptions,
     insert_typeddict_options: &InsertTypedDictOptions,
@@ -38,8 +36,6 @@ pub fn generate_pydantic_models(
         .iter()
         .map(|table| {
             generate_pydantic_model(
-                database_name,
-                schema_name,
                 table,
                 pydantic_options,
                 insert_typeddict_options,
@@ -47,12 +43,14 @@ pub fn generate_pydantic_models(
             )
         })
         .collect::<Vec<String>>()
-        .join("\n\n")
+        .join(
+            "
+
+",
+        )
 }
 
 pub fn generate_pydantic_model(
-    database_name: &str,
-    schema_name: &str,
     table: &Table,
     pydantic_options: &PydanticOptions,
     insert_typeddict_options: &InsertTypedDictOptions,
@@ -61,8 +59,8 @@ pub fn generate_pydantic_model(
     let mut pydantic_schema = String::new();
 
     pydantic_schema.push_str(&format!(
-        "@snowq.table(\"{database_name}\", \"{schema_name}\", \"{}\")\n",
-        table.table_name
+        "@snowq.table(\"{}\", \"{}\", \"{}\")\n",
+        table.database_name, table.schema_name, table.table_name,
     ));
     pydantic_schema.push_str(&format!(
         "class {}(pydantic.BaseModel, snowq.Table[\"{}\",\"{}\"]):\n",
