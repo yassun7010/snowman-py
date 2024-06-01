@@ -5,7 +5,7 @@ description = "Add your description here"
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
 dependencies = [
     "pydantic>=2.7.1",
-    "snowq @ file:///Users/s23467/develop/snowq/examples/snowq_sample/../..",
+    "snowq @ file:///${PROJECT_ROOT}/examples/snowq_sample/../..",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"

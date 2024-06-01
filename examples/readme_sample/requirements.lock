@@ -50,7 +50,7 @@ requests==2.32.3
     # via snowflake-connector-python
 snowflake-connector-python==3.10.1
     # via snowq
-snowq @ file:///Users/s23467/develop/snowq/examples/readme_sample/../..
+snowq @ file:///${PROJECT_ROOT}/examples/readme_sample/../..
     # via readme-sample
 sortedcontainers==2.4.0
     # via snowflake-connector-python

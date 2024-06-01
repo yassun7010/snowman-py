@@ -51,7 +51,7 @@ requests==2.32.2
     # via snowflake-connector-python
 snowflake-connector-python==3.10.1
     # via snowq
-snowq @ file:///Users/s23467/develop/snowq/examples/snowq_sample/../..
+snowq @ file:///${PROJECT_ROOT}/examples/snowq_sample/../..
     # via snowq-sample
 sortedcontainers==2.4.0
     # via snowflake-connector-python

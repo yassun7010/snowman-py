@@ -3,9 +3,7 @@ name = "readme-sample"
 version = "0.1.0"
 description = "Add your description here"
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
-dependencies = [
-    "snowq @ file:///Users/s23467/develop/snowq/examples/readme_sample/../..",
-]
+dependencies = ["snowq @ file:///${PROJECT_ROOT}/examples/readme_sample/../.."]
 readme = "README.md"
 requires-python = ">= 3.11"
 
