@@ -1,9 +1,9 @@
-use clap::{Args, CommandFactory, ValueEnum};
+use clap::{CommandFactory, ValueEnum};
 use clap_complete::{Generator, Shell};
 use clap_complete_nushell::Nushell;
 
-#[derive(Debug, Args)]
-pub struct SnowqCompletionCommand {
+#[derive(Debug, clap::Args)]
+pub struct Args {
     /// The shell to generate a completion script for (defaults to 'bash').
     #[arg(long)]
     shell: Option<ShellCompletion>,
@@ -51,7 +51,7 @@ impl Generator for ShellCompletion {
     }
 }
 
-pub fn run_snowq_completion_command(args: SnowqCompletionCommand) -> Result<(), anyhow::Error> {
+pub fn run(args: Args) -> Result<(), anyhow::Error> {
     clap_complete::generate(
         args.shell.unwrap_or(ShellCompletion::Bash),
         &mut crate::app::Args::command(),

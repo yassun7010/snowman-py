@@ -2,20 +2,19 @@ use crate::config::{
     get_pydantic_options, get_schema_sync_output_dirpath, get_snowflake_connection,
 };
 use anyhow::Context;
-use clap::Args;
 use convert_case::{Case, Casing};
 use itertools::Itertools;
 use snowq_connector::query::DatabaseSchema;
 use std::iter::Iterator;
 use tokio::io::AsyncWriteExt;
 
-#[derive(Debug, Args)]
-pub struct ModelGenerateCommand {
+#[derive(Debug, clap::Args)]
+pub struct Args {
     #[clap(long)]
     pub output_dir: Option<std::path::PathBuf>,
 }
 
-pub async fn run_model_generate_command(args: ModelGenerateCommand) -> Result<(), anyhow::Error> {
+pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     let config_file_path = snowq_config::find_path()?;
     let config = snowq_config::load_from_path(&config_file_path)?;
     let connection = get_snowflake_connection(&config)?;

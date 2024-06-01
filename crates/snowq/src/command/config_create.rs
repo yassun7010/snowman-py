@@ -1,9 +1,7 @@
-use clap::Args;
+#[derive(Debug, clap::Args)]
+pub struct Args {}
 
-#[derive(Debug, Args)]
-pub struct NewCommand {}
-
-pub fn run_new_command(_command: NewCommand) -> Result<(), anyhow::Error> {
+pub fn run(_args: Args) -> Result<(), anyhow::Error> {
     let config_filepath = std::path::PathBuf::from("snowq.toml");
     if config_filepath.exists() {
         return Err(anyhow::anyhow!(format!(
