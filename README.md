@@ -18,7 +18,7 @@ snowq config create
 
 ### Generate Python Model From Snowflake Information Schema
 ```sh
-snowq model import
+snowq model generate
 ```
 
 
