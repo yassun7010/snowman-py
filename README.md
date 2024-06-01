@@ -5,9 +5,9 @@ Easily build and execute Snowflake queries in Python.
 
 ## CLI Tool
 
-### New snowq Config
+### Create snowq Config
 ```sh
-snowq new
+snowq config create
 ```
 
 ### Generate Python Model from Snowflake information schema
