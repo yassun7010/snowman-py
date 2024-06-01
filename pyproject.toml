@@ -52,7 +52,7 @@ format = "rye format"
 lint = "rye lint --fix"
 typecheck = "pyright python/src/** python/tests/**"
 test = "rye test"
-ci = "format && lint && typecheck && test"
+ci = { chain = ["format", "lint", "typecheck", "test"] }
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:snowflake"]
