@@ -17,5 +17,5 @@ jobs:
       - uses: eifinger/setup-rye@v2
       - run: rye format --check
       - run: rye lint
-      - run: rye run typecheck
       - run: rye test
+      - run: rye run typecheck
