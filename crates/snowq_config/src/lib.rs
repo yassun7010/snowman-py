@@ -159,7 +159,7 @@ pub fn find_path() -> Result<std::path::PathBuf, crate::Error> {
         }
     }
 
-    Err(Error::ConfigFileNotFound)
+    Err(Error::ConfigFileNotFound("snowq.toml".into()))
 }
 
 pub fn load_from_path(path: &std::path::Path) -> Result<Config, crate::Error> {
