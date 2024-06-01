@@ -1,6 +1,4 @@
-use crate::config::{
-    get_pydantic_options, get_schema_sync_output_dirpath, get_snowflake_connection,
-};
+use crate::config::{get_model_output_dirpath, get_pydantic_options, get_snowflake_connection};
 use anyhow::Context;
 use convert_case::{Case, Casing};
 use itertools::Itertools;
@@ -23,7 +21,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     let pydantic_options = get_pydantic_options(&config);
     let output_dirpath = &config_file_path.parent().unwrap().join(
         args.output_dir
-            .unwrap_or_else(|| get_schema_sync_output_dirpath(&config)),
+            .unwrap_or_else(|| get_model_output_dirpath(&config)),
     );
 
     let schemas = snowq_connector::query::get_schemas(&connection)
