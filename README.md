@@ -6,7 +6,7 @@
 [![rust-test](https://github.com/yassun7010/snowq/actions/workflows/ci_rust.yml/badge.svg)](https://github.com/yassun7010/snowq/actions)
 <!-- --8<-- [end:badges] -->
 
-Easily build and execute Snowflake queries in Python.
+Easily build Pydantic Model and execute Snowflake Query in Python.
 
 
 ## CLI Tool
