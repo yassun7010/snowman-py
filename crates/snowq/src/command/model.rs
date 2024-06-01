@@ -1,9 +1,9 @@
 use clap::Subcommand;
 
-use super::model_generate;
+pub mod generate;
 
 #[derive(Debug, Subcommand)]
-pub enum ModelCommand {
+pub enum Command {
     /// Generate Python model classes from Snowflake dataabse schema.
-    Generate(model_generate::Args),
+    Generate(generate::Args),
 }

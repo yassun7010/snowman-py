@@ -3,15 +3,13 @@ use clap::{
     Parser,
 };
 
-use crate::command::{
-    config::ConfigCommand, model::ModelCommand, snowq::SnowqCommand, SubCommands,
-};
+use crate::command::{self, config, model, snowq};
 
 #[derive(Debug, Parser)]
 #[command(version, styles=app_styles())]
 pub struct Args {
     #[command(subcommand)]
-    pub subcommand: SubCommands,
+    pub subcommand: command::Command,
 }
 
 impl<I, T> From<I> for Args
@@ -30,23 +28,23 @@ pub fn run(args: impl Into<Args>) -> Result<(), anyhow::Error> {
     dotenvy::dotenv()?;
 
     match args.subcommand {
-        SubCommands::Model(ModelCommand::Generate(options)) => {
+        command::Command::Model(model::Command::Generate(options)) => {
             tokio::runtime::Builder::new_multi_thread()
                 .enable_all()
                 .build()
                 .unwrap()
-                .block_on(async { crate::command::model_generate::run(options).await })?
+                .block_on(async { crate::command::model::generate::run(options).await })?
         }
-        SubCommands::Config(command) => match command {
-            ConfigCommand::Create(args) => {
-                crate::command::config_create::run(args)?;
+        command::Command::Config(command) => match command {
+            config::Command::Create(args) => {
+                config::create::run(args)?;
             }
-            ConfigCommand::Print(args) => {
-                crate::command::config_print::run(args)?;
+            config::Command::Print(args) => {
+                config::print::run(args)?;
             }
         },
-        SubCommands::Snowq(command) => match command {
-            SnowqCommand::Completion(command) => crate::command::snowq_completion::run(command)?,
+        command::Command::Snowq(command) => match command {
+            snowq::Command::Completion(command) => snowq::completion::run(command)?,
         },
     }
     Ok(())

@@ -1,9 +1,8 @@
 use clap::Subcommand;
-
-use super::snowq_completion;
+pub mod completion;
 
 #[derive(Debug, Subcommand)]
-pub enum SnowqCommand {
+pub enum Command {
     /// Generate Python model classes from Snowflake dataabse schema.
-    Completion(snowq_completion::Args),
+    Completion(completion::Args),
 }
