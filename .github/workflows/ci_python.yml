@@ -15,6 +15,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: eifinger/setup-rye@v2
-      - run: rye format
+      - run: rye format --check
       - run: rye lint
+      - run: rye run typecheck
       - run: rye test

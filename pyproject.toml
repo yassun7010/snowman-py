@@ -49,7 +49,7 @@ packages = ["src/snowq"]
 
 [tool.rye.scripts]
 format = "rye format"
-lint = "rye lint"
+lint = "rye lint --fix"
 typecheck = "pyright python/src/** python/tests/**"
 test = "rye test"
 ci = "format && lint && typecheck && test"
