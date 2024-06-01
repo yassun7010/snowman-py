@@ -38,7 +38,7 @@ jobs:
             target: ppc64le
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install librust-openssl-dev libssl-dev perl
+      - run: sudo apt-get update && sudo apt-get install pkg-config libssl-dev
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
