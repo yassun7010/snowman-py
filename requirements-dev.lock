@@ -9,7 +9,6 @@
 #   generate-hashes: false
 
 -e file:.
-    # via readme-sample
 annotated-types==0.6.0
     # via pydantic
 asn1crypto==1.5.1
@@ -23,8 +22,6 @@ cffi==1.16.0
 charset-normalizer==3.3.2
     # via requests
     # via snowflake-connector-python
-colorama==0.4.6
-    # via taskipy
 cryptography==42.0.7
     # via pyopenssl
     # via snowflake-connector-python
@@ -51,8 +48,6 @@ platformdirs==4.2.1
     # via snowflake-connector-python
 pluggy==1.5.0
     # via pytest
-psutil==5.9.8
-    # via taskipy
 pyarrow==16.1.0
 pyarrow-stubs==10.0.1.7
 pycparser==2.22
@@ -74,7 +69,6 @@ python-dateutil==2.9.0.post0
 pytz==2024.1
     # via pandas
     # via snowflake-connector-python
-readme-sample @ file:///${PROJECT_ROOT}/examples/readme_sample
 requests==2.31.0
     # via snowflake-connector-python
 ruff==0.4.3
@@ -87,9 +81,6 @@ snowflake-connector-python==3.10.1
     # via turu-snowflake
 sortedcontainers==2.4.0
     # via snowflake-connector-python
-taskipy==1.12.2
-tomli==2.0.1
-    # via taskipy
 tomlkit==0.12.4
     # via snowflake-connector-python
 turu==0.10.5

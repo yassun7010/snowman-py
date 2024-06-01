@@ -31,7 +31,6 @@ managed = true
 dev-dependencies = [
     "pytest>=8.2.1",
     "pyright>=1.1.361",
-    "taskipy>=1.12.2",
     "ruff>=0.4.3",
     "turu[snowflake]>=0.10.5",
     "pyarrow-stubs>=10.0.1.7",
@@ -40,7 +39,6 @@ dev-dependencies = [
     "pip>=24.0",
     "pandas>=2.2.2",
     "pyarrow>=16.1.0",
-    "readme_sample @ file:///${PROJECT_ROOT}/examples/readme_sample",
 ]
 
 [tool.hatch.metadata]
@@ -49,7 +47,7 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = ["src/snowq"]
 
-[tool.taskipy.tasks]
+[tool.rye.scripts]
 format = "ruff format ."
 lint = "ruff check --fix ."
 typecheck = "pyright python/src/** python/tests/**"
