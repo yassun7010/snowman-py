@@ -3,7 +3,7 @@ pub mod model;
 pub mod snowq;
 use clap::Subcommand;
 
-#[derive(Debug, Subcommand)]
+#[derive(Subcommand)]
 pub enum Command {
     /// Python model operations.
     #[command(subcommand)]

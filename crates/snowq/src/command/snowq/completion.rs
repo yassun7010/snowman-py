@@ -2,14 +2,14 @@ use clap::{CommandFactory, ValueEnum};
 use clap_complete::{Generator, Shell};
 use clap_complete_nushell::Nushell;
 
-#[derive(Debug, clap::Args)]
+#[derive(clap::Args)]
 pub struct Args {
     /// The shell to generate a completion script for (defaults to 'bash').
     #[arg(long)]
     shell: Option<ShellCompletion>,
 }
 
-#[derive(Clone, Debug, ValueEnum)]
+#[derive(Debug, Clone, ValueEnum)]
 enum ShellCompletion {
     /// Bourne Again SHell (bash)
     Bash,

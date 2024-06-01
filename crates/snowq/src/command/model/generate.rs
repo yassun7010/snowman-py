@@ -6,7 +6,7 @@ use snowq_connector::query::DatabaseSchema;
 use std::iter::Iterator;
 use tokio::io::AsyncWriteExt;
 
-#[derive(Debug, clap::Args)]
+#[derive(clap::Args)]
 pub struct Args {
     #[clap(long)]
     pub output_dir: Option<std::path::PathBuf>,

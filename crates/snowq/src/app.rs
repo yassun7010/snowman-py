@@ -5,7 +5,7 @@ use clap::{
 
 use crate::command::{config, model, snowq, Command};
 
-#[derive(Debug, Parser)]
+#[derive(Parser)]
 #[command(version, styles=app_styles())]
 pub struct Args {
     #[command(subcommand)]
