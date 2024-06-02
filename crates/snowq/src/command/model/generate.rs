@@ -8,7 +8,7 @@ use tokio::io::AsyncWriteExt;
 
 #[derive(clap::Args)]
 pub struct Args {
-    #[clap(long)]
+    #[arg(long)]
     pub output_dir: Option<std::path::PathBuf>,
 }
 
