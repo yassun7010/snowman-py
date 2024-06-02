@@ -193,7 +193,7 @@ pub fn load() -> Result<Config, crate::Error> {
 }
 
 fn get_pwd() -> std::path::PathBuf {
-    std::env::current_dir().unwrap_or_default()
+    ".".into()
 }
 
 pub fn write_as_toml(config: &Config, filepath: &std::path::Path) -> Result<(), crate::Error> {

@@ -151,7 +151,8 @@
       "type": "object",
       "properties": {
         "output_dir": {
-          "default": "/Users/s23467/develop/snowq/crates/snowq_config",
+          "title": "The output directory of the generated model.",
+          "default": ".",
           "type": "string"
         }
       },
