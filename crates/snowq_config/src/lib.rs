@@ -87,6 +87,7 @@ impl Default for ConnectionV1 {
 #[derive(Debug, Clone, Serialize, Deserialize, Default, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct ModelConfigV1 {
+    /// # The output directory of the generated model.
     #[serde(default = "get_pwd")]
     pub output_dir: std::path::PathBuf,
 }
