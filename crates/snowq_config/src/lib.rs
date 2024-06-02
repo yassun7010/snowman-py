@@ -22,11 +22,16 @@ impl Default for Config {
 #[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct ConfigV1 {
+    /// The Snowflake connection configuration.
     pub connection: ConnectionV1,
 
+    /// The Python model configuration.
+    ///
+    /// It is mainly used for the snowq model generate command.
     #[serde(default)]
     pub model: ModelConfigV1,
 
+    /// The Pydantic options.
     #[serde(default)]
     pub pydantic: PydanticOptionsV1,
 }
@@ -34,24 +39,33 @@ pub struct ConfigV1 {
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct ConnectionV1 {
+    /// The Snowflake account name.
     #[serde(default = "account_default")]
     pub account: StringOrEnv,
 
+    /// The Snowflake user name.
     #[serde(default = "user_default")]
     pub user: StringOrEnv,
 
+    /// The Snowflake password.
+    ///
+    /// Currently only password authentication is supported.
     #[serde(default = "password_default")]
     pub password: StringOrEnv,
 
+    /// The Snowflake role.
     #[serde(default = "role_default")]
     pub role: StringOrEnv,
 
+    /// The Snowflake database.
     #[serde(default = "database_default")]
     pub database: StringOrEnv,
 
+    /// The Snowflake schema.
     #[serde(default = "schema_default")]
     pub schema: StringOrEnv,
 
+    /// The Snowflake warehouse.
     #[serde(default = "warehouse_default")]
     pub warehouse: StringOrEnv,
 }
@@ -80,12 +94,16 @@ pub struct ModelConfigV1 {
 #[derive(Debug, Clone, Serialize, Deserialize, Default, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct PydanticOptionsV1 {
+    /// The prefix of the model name.
     pub model_name_prefix: Option<String>,
+
+    /// The suffix of the model name.
     pub model_name_suffix: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(untagged)]
+/// Represents a string or an environment variable.
 pub enum StringOrEnv {
     String(String),
     Env(Env),
@@ -110,6 +128,7 @@ pub fn new_env(env: &str) -> StringOrEnv {
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 pub struct Env {
+    /// The environment variable name.
     env: String,
 }
 

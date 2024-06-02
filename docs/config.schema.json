@@ -10,9 +10,15 @@
       ],
       "properties": {
         "connection": {
-          "$ref": "#/definitions/ConnectionV1"
+          "description": "The Snowflake connection configuration.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ConnectionV1"
+            }
+          ]
         },
         "model": {
+          "description": "The Python model configuration.\n\nIt is mainly used for the snowq model generate command.",
           "default": {
             "output_dir": ""
           },
@@ -23,6 +29,7 @@
           ]
         },
         "pydantic": {
+          "description": "The Pydantic options.",
           "default": {
             "model_name_prefix": null,
             "model_name_suffix": null
@@ -47,6 +54,7 @@
       "type": "object",
       "properties": {
         "account": {
+          "description": "The Snowflake account name.",
           "default": {
             "env": "SNOWFLAKE_ACCOUNT"
           },
@@ -57,6 +65,7 @@
           ]
         },
         "database": {
+          "description": "The Snowflake database.",
           "default": {
             "env": "SNOWFLAKE_DATABASE"
           },
@@ -67,6 +76,7 @@
           ]
         },
         "password": {
+          "description": "The Snowflake password.\n\nCurrently only password authentication is supported.",
           "default": {
             "env": "SNOWFLAKE_PASSWORD"
           },
@@ -77,6 +87,7 @@
           ]
         },
         "role": {
+          "description": "The Snowflake role.",
           "default": {
             "env": "SNOWFLAKE_ROLE"
           },
@@ -87,6 +98,7 @@
           ]
         },
         "schema": {
+          "description": "The Snowflake schema.",
           "default": {
             "env": "SNOWFLAKE_SCHEMA"
           },
@@ -97,6 +109,7 @@
           ]
         },
         "user": {
+          "description": "The Snowflake user name.",
           "default": {
             "env": "SNOWFLAKE_USER"
           },
@@ -107,6 +120,7 @@
           ]
         },
         "warehouse": {
+          "description": "The Snowflake warehouse.",
           "default": {
             "env": "SNOWFLAKE_WAREHOUSE"
           },
@@ -126,6 +140,7 @@
       ],
       "properties": {
         "env": {
+          "description": "The environment variable name.",
           "type": "string"
         }
       }
@@ -144,12 +159,14 @@
       "type": "object",
       "properties": {
         "model_name_prefix": {
+          "description": "The prefix of the model name.",
           "type": [
             "string",
             "null"
           ]
         },
         "model_name_suffix": {
+          "description": "The suffix of the model name.",
           "type": [
             "string",
             "null"
@@ -159,6 +176,7 @@
       "additionalProperties": false
     },
     "StringOrEnv": {
+      "description": "Represents a string or an environment variable.",
       "anyOf": [
         {
           "type": "string"
