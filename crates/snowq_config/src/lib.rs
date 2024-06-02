@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 pub use error::Error;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(tag = "version")]
 pub enum Config {
     #[serde(rename = "v1")]
@@ -19,7 +19,7 @@ impl Default for Config {
     }
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct ConfigV1 {
     pub connection: ConnectionV1,
@@ -31,7 +31,7 @@ pub struct ConfigV1 {
     pub pydantic: PydanticOptionsV1,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct ConnectionV1 {
     #[serde(default = "account_default")]
@@ -70,21 +70,21 @@ impl Default for ConnectionV1 {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct ModelConfigV1 {
     #[serde(default = "get_pwd")]
     pub output_dir: std::path::PathBuf,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct PydanticOptionsV1 {
     pub model_name_prefix: Option<String>,
     pub model_name_suffix: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(untagged)]
 pub enum StringOrEnv {
     String(String),
@@ -108,7 +108,7 @@ pub fn new_env(env: &str) -> StringOrEnv {
     })
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 pub struct Env {
     env: String,
 }

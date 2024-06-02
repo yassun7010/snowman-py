@@ -1,6 +1,7 @@
 [workspace]
 members = ["crates/*"]
 resolver = "2"
+default-members = ["crates/snowq"]
 
 [workspace.package]
 version = "0.0.2"

@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Config",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": [
+        "connection",
+        "version"
+      ],
+      "properties": {
+        "connection": {
+          "$ref": "#/definitions/ConnectionV1"
+        },
+        "model": {
+          "default": {
+            "output_dir": ""
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/ModelConfigV1"
+            }
+          ]
+        },
+        "pydantic": {
+          "default": {
+            "model_name_prefix": null,
+            "model_name_suffix": null
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/PydanticOptionsV1"
+            }
+          ]
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "v1"
+          ]
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "ConnectionV1": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "default": {
+            "env": "SNOWFLAKE_ACCOUNT"
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/StringOrEnv"
+            }
+          ]
+        },
+        "database": {
+          "default": {
+            "env": "SNOWFLAKE_DATABASE"
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/StringOrEnv"
+            }
+          ]
+        },
+        "password": {
+          "default": {
+            "env": "SNOWFLAKE_PASSWORD"
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/StringOrEnv"
+            }
+          ]
+        },
+        "role": {
+          "default": {
+            "env": "SNOWFLAKE_ROLE"
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/StringOrEnv"
+            }
+          ]
+        },
+        "schema": {
+          "default": {
+            "env": "SNOWFLAKE_SCHEMA"
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/StringOrEnv"
+            }
+          ]
+        },
+        "user": {
+          "default": {
+            "env": "SNOWFLAKE_USER"
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/StringOrEnv"
+            }
+          ]
+        },
+        "warehouse": {
+          "default": {
+            "env": "SNOWFLAKE_WAREHOUSE"
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/StringOrEnv"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "Env": {
+      "type": "object",
+      "required": [
+        "env"
+      ],
+      "properties": {
+        "env": {
+          "type": "string"
+        }
+      }
+    },
+    "ModelConfigV1": {
+      "type": "object",
+      "properties": {
+        "output_dir": {
+          "default": "/Users/s23467/develop/snowq/crates/snowq_config",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PydanticOptionsV1": {
+      "type": "object",
+      "properties": {
+        "model_name_prefix": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model_name_suffix": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "StringOrEnv": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/Env"
+        }
+      ]
+    }
+  }
+}
