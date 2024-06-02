@@ -211,6 +211,7 @@ pub fn create_file(filepath: &std::path::Path) -> Result<(), crate::Error> {
 }
 
 const DEFAULT_CONFIG_STRING: &str = r#"# [snowq](https://github.com/yassun7010/snowq)
+#:schema https://raw.githubusercontent.com/yassun7010/snowq/main/docs/config.schema.json
 version = "v1"
 
 [connection]
