@@ -11,7 +11,7 @@
 </p>
 
 
-Easily build Pydantic Model and execute Snowflake Query in Python.
+A tool to easily generate Pydantic models of Snowflake tables in Python.
 
 ## CLI Tool
 

@@ -1,9 +1,12 @@
 #[derive(clap::Args)]
-pub struct Args {}
+pub struct Args {
+    #[clap(long)]
+    pub overwrite: bool,
+}
 
-pub fn run(_args: Args) -> Result<(), anyhow::Error> {
+pub fn run(args: Args) -> Result<(), anyhow::Error> {
     let config_filepath = std::path::PathBuf::from("snowq.toml");
-    if config_filepath.exists() {
+    if config_filepath.exists() && !args.overwrite {
         return Err(anyhow::anyhow!(format!(
             "{config_filepath:?} already exists."
         )));

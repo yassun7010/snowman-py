@@ -191,7 +191,7 @@ pub fn create_file(filepath: &std::path::Path) -> Result<(), crate::Error> {
         .map_err(Into::into)
 }
 
-const DEFAULT_CONFIG_STRING: &str = r#"# snowq
+const DEFAULT_CONFIG_STRING: &str = r#"# [snowq](https://github.com/yassun7010/snowq)
 version = "v1"
 
 [connection]
