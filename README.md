@@ -13,6 +13,12 @@
 
 A tool to easily generate Pydantic models of Snowflake tables in Python.
 
+## Install
+
+```sh
+pip install snowman-py
+```
+
 ## CLI Tool
 
 ### Create snowman Config
