@@ -1,5 +1,5 @@
 # [Snowman](https://github.com/yassun7010/snowman)
-#:schema docs/config.schema.json
+#:schema docs/snowman.schema.json
 
 [connection]
 account = { env = "SNOWFLAKE_ACCOUNT" }
