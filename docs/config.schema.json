@@ -1,55 +1,45 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Config",
-  "oneOf": [
-    {
-      "type": "object",
-      "required": [
-        "connection",
-        "version"
-      ],
-      "properties": {
-        "connection": {
-          "title": "The Snowflake connection configuration.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/ConnectionV1"
-            }
-          ]
-        },
-        "model": {
-          "title": "The Python model configuration.",
-          "description": "It is mainly used for the snowq model generate command.",
-          "default": {
-            "output_dir": ""
-          },
-          "allOf": [
-            {
-              "$ref": "#/definitions/ModelConfigV1"
-            }
-          ]
-        },
-        "pydantic": {
-          "title": "The Pydantic options.",
-          "default": {
-            "model_name_prefix": null,
-            "model_name_suffix": null
-          },
-          "allOf": [
-            {
-              "$ref": "#/definitions/PydanticOptionsV1"
-            }
-          ]
-        },
-        "version": {
-          "type": "string",
-          "enum": [
-            "v1"
-          ]
-        }
-      }
-    }
+  "type": "object",
+  "required": [
+    "connection"
   ],
+  "properties": {
+    "connection": {
+      "title": "The Snowflake connection configuration.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ConnectionV1"
+        }
+      ]
+    },
+    "model": {
+      "title": "The Python model configuration.",
+      "description": "It is mainly used for the snowq model generate command.",
+      "default": {
+        "output_dir": ""
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/ModelConfigV1"
+        }
+      ]
+    },
+    "pydantic": {
+      "title": "The Pydantic options.",
+      "default": {
+        "model_name_prefix": null,
+        "model_name_suffix": null
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/PydanticOptionsV1"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
   "definitions": {
     "ConnectionV1": {
       "type": "object",
