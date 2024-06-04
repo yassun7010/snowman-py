@@ -1683,7 +1683,7 @@ dependencies = [
 
 [[package]]
 name = "snowman"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "anyhow",
  "askama",
@@ -1705,7 +1705,7 @@ dependencies = [
 
 [[package]]
 name = "snowman_config"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "log",
  "schemars",
@@ -1717,7 +1717,7 @@ dependencies = [
 
 [[package]]
 name = "snowman_connector"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "openssl",
  "serde_json",
@@ -1727,7 +1727,7 @@ dependencies = [
 
 [[package]]
 name = "snowman_generator"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "convert_case",
  "snowman_connector",
