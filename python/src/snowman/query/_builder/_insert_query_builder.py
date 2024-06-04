@@ -55,7 +55,10 @@ class InsertQueryBuilder:
 
 
 class InsertOverwriteQueryBuilder:
-    def into(self, table: Type[GenericTable]) -> "InsertIntoQueryBuilder":
+    def into(
+        self,
+        table: Type[Table[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]],
+    ):
         return InsertIntoQueryBuilder(
             table,
             overwtire=True,
