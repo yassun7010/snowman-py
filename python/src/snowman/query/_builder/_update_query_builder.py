@@ -14,7 +14,7 @@ class UpdateStatement(Generic[GenericTable, GenericUpdateColumnTypedDict]):
         self,
         table: Type[GenericTable],
         *,
-        _columns_type: GenericUpdateColumnTypedDict | None = None,
+        _columns_type: Type[GenericUpdateColumnTypedDict] | None = None,
     ) -> None:
         self._table = table
 

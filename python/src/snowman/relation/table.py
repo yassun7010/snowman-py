@@ -24,8 +24,8 @@ class Table(Generic[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict])
     __databas_name__: ClassVar[str]
     __schema_name__: ClassVar[str]
     __table_name__: ClassVar[str]
-    __insert_columns__: GenericInsertColumnTypedDict | None = None
-    __update_columns__: GenericUpdateColumnTypedDict | None = None
+    __insert_columns__: Type[GenericInsertColumnTypedDict] | None = None
+    __update_columns__: Type[GenericUpdateColumnTypedDict] | None = None
 
 
 GenericTable = TypeVar("GenericTable", bound=Table)

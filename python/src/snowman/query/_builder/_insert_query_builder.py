@@ -72,7 +72,7 @@ class InsertIntoQueryBuilder(Generic[GenericTable, GenericInsertColumnTypedDict]
         table: Type[GenericTable],
         *,
         overwtire: bool = False,
-        _columns_type: GenericInsertColumnTypedDict | None,
+        _columns_type: Type[GenericInsertColumnTypedDict] | None,
     ) -> None:
         self._table = table
         self._overwrite = overwtire
