@@ -13,13 +13,13 @@ pub struct Args {
 }
 
 pub async fn run(args: Args) -> Result<(), anyhow::Error> {
-    let config_file_path = snowman_config::find_path()?;
-    let config = snowman_config::load_from_path(&config_file_path)?;
+    let config_source = snowman_config::find_path()?;
+    let config = snowman_config::load_from_source(&config_source)?;
     let connection = get_snowflake_connection(&config)?;
     let insert_typeddict_options = snowman_generator::InsertTypedDictOptions::default();
     let update_typeddict_options = snowman_generator::UpdateTypedDictOptions::default();
     let pydantic_options = get_pydantic_options(&config);
-    let output_dirpath = &config_file_path.parent().unwrap().join(
+    let output_dirpath = &config_source.as_ref().parent().unwrap().join(
         args.output_dir
             .unwrap_or_else(|| get_model_output_dirpath(&config)),
     );

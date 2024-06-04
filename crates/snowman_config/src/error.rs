@@ -9,7 +9,7 @@ pub enum Error {
     #[error(transparent)]
     TomlDeserialize(#[from] toml::de::Error),
 
-    #[error("config file not found: {0:?} ")]
+    #[error("config file not found: {0:?}")]
     ConfigFileNotFound(std::path::PathBuf),
 
     #[error("env var not found: {0}")]

@@ -6,6 +6,39 @@ use serde::{Deserialize, Serialize};
 
 pub use error::Error;
 
+const CONFIG_FILENAME: &str = "snowman.toml";
+
+#[doc(hidden)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
+struct PyProjectToml {
+    tool: Tool,
+}
+
+#[doc(hidden)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
+struct Tool {
+    snowman: Option<Config>,
+}
+
+#[doc(hidden)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+pub enum ConfigSource {
+    /// "snowman.toml" filepath.
+    SnowmanToml(std::path::PathBuf),
+
+    /// "pyproject.toml" filepath.
+    PyProjectToml(std::path::PathBuf),
+}
+
+impl AsRef<std::path::Path> for ConfigSource {
+    fn as_ref(&self) -> &std::path::Path {
+        match self {
+            ConfigSource::SnowmanToml(path) => path.as_ref(),
+            ConfigSource::PyProjectToml(path) => path.as_ref(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
@@ -148,17 +181,22 @@ fn warehouse_default() -> StringOrEnv {
     new_env("SNOWFLAKE_WAREHOUSE")
 }
 
-pub fn find_path() -> Result<std::path::PathBuf, crate::Error> {
-    let config_filename = "snowman.toml";
-
+pub fn find_path() -> Result<ConfigSource, crate::Error> {
     // find recursively from current directory to root directory
-    let mut current_dir = std::env::current_dir()?;
+    let mut current_dir = std::env::current_dir().unwrap();
     loop {
-        let config_path = current_dir.join(config_filename);
+        let config_path = current_dir.join(CONFIG_FILENAME);
         if config_path.exists() {
-            log::debug!("config file found: {:?}", config_path);
+            log::debug!("\"snowq.toml\" found: {:?}", config_path);
 
-            return Ok(config_path);
+            return Ok(ConfigSource::SnowmanToml(config_path));
+        }
+
+        let pyproject_toml_path = current_dir.join("pyproject.toml");
+        if pyproject_toml_path.exists() {
+            log::debug!("\"pyproject.toml\" found: {:?}", pyproject_toml_path);
+
+            return Ok(ConfigSource::PyProjectToml(pyproject_toml_path));
         }
 
         if !current_dir.pop() {
@@ -166,17 +204,30 @@ pub fn find_path() -> Result<std::path::PathBuf, crate::Error> {
         }
     }
 
-    Err(Error::ConfigFileNotFound("snowman.toml".into()))
+    Err(Error::ConfigFileNotFound(CONFIG_FILENAME.into()))
 }
 
-pub fn load_from_path(path: &std::path::Path) -> Result<Config, crate::Error> {
-    let config = std::fs::read_to_string(path)?;
-    toml::from_str(&config).map_err(Into::into)
+pub fn load_from_source(source: &ConfigSource) -> Result<Config, crate::Error> {
+    match source {
+        ConfigSource::PyProjectToml(path) => {
+            let pyproject_toml = std::fs::read_to_string(path)?;
+            let pyproject_toml: PyProjectToml = toml::from_str(&pyproject_toml)?;
+
+            if let Some(config) = pyproject_toml.tool.snowman {
+                Ok(config)
+            } else {
+                Err(Error::ConfigFileNotFound(CONFIG_FILENAME.into()))
+            }
+        }
+        ConfigSource::SnowmanToml(path) => {
+            let config = std::fs::read_to_string(path)?;
+            toml::from_str(&config).map_err(Into::into)
+        }
+    }
 }
 
 pub fn load() -> Result<Config, crate::Error> {
-    let config_path = find_path()?;
-    load_from_path(&config_path)
+    load_from_source(&find_path()?)
 }
 
 fn get_pwd() -> std::path::PathBuf {
