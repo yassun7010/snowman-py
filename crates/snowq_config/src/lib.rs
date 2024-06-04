@@ -6,22 +6,9 @@ use serde::{Deserialize, Serialize};
 
 pub use error::Error;
 
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-#[serde(tag = "version")]
-pub enum Config {
-    #[serde(rename = "v1")]
-    V1(ConfigV1),
-}
-
-impl Default for Config {
-    fn default() -> Self {
-        Config::V1(ConfigV1::default())
-    }
-}
-
 #[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
-pub struct ConfigV1 {
+pub struct Config {
     /// # The Snowflake connection configuration.
     pub connection: ConnectionV1,
 
@@ -213,8 +200,6 @@ pub fn create_file(filepath: &std::path::Path) -> Result<(), crate::Error> {
 
 const DEFAULT_CONFIG_STRING: &str = r#"# [snowq](https://github.com/yassun7010/snowq)
 #:schema https://raw.githubusercontent.com/yassun7010/snowq/main/docs/config.schema.json
-
-version = "v1"
 
 [connection]
 account = { env = "SNOWFLAKE_ACCOUNT" }
