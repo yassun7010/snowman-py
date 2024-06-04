@@ -5,7 +5,7 @@ from typing_extensions import override
 import snowman._features
 from snowman.cursor import Cursor, _get_snowflake_connection
 from snowman.exception import snowmanNotDataFrameAvailableError
-from snowman.relation import column_names, columns_dict, full_table_name
+from snowman.relation import full_table_name, table_column_names, table_columns_dict
 from snowman.relation.table import (
     GenericInsertColumnTypedDict,
     GenericTable,
@@ -125,7 +125,7 @@ class InsertIntoValuesQueryBuilder(
 
         overwrite = "OVERWRITE " if self._overwrite else ""
         values = ",\n    ".join(
-            [f"%({column_name})s" for column_name in column_names(self._table)]
+            [f"%({column_name})s" for column_name in table_column_names(self._table)]
         )
 
         query = f"""
@@ -138,9 +138,9 @@ VALUES (
 
         return QueryWithParams(
             query,
-            columns_dict(self._values[0])
+            table_columns_dict(self._values[0])
             if len(self._values) == 1
-            else tuple(columns_dict(value) for value in self._values),
+            else tuple(table_columns_dict(value) for value in self._values),
         )
 
     @override
