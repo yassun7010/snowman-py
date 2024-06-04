@@ -11,7 +11,7 @@
 </p>
 
 
-A tool to easily generate Pydantic models of Snowflake tables in Python.
+Python model and query builder for [Snowflake](https://www.snowflake.com/).
 
 ## Install
 

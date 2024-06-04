@@ -1,6 +1,6 @@
 [package]
 name = "snowman"
-description = "Snowflake model and query builder tool."
+description = "Python model and query builder for Snowflake."
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
