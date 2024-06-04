@@ -249,7 +249,7 @@ pub fn create_file(filepath: &std::path::Path) -> Result<(), crate::Error> {
         .map_err(Into::into)
 }
 
-const DEFAULT_CONFIG_STRING: &str = r#"# [Snowman](https://github.com/yassun7010/snowman)
+const DEFAULT_CONFIG_STRING: &str = r#"# [Snowman](https://github.com/yassun7010/snowman-py)
 #:schema https://raw.githubusercontent.com/yassun7010/snowman-py/main/docs/snowman.schema.json
 
 [connection]
