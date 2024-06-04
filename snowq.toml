@@ -1,5 +1,5 @@
 # [snowq](https://github.com/yassun7010/snowq)
-#:schema https://raw.githubusercontent.com/yassun7010/snowq/main/docs/config.schema.json
+#:schema docs/config.schema.json
 
 [connection]
 account = { env = "SNOWFLAKE_ACCOUNT" }
