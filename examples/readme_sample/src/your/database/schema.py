@@ -15,6 +15,8 @@ class _UserUpdateColumns(TypedDict, total=False):
 
 
 @snowman.table("database", "schema", "users")
-class User(pydantic.BaseModel, snowman.Table["_UserInsertColumns", "_UserUpdateColumns"]):
+class User(
+    pydantic.BaseModel, snowman.Table["_UserInsertColumns", "_UserUpdateColumns"]
+):
     id: int
     name: str
