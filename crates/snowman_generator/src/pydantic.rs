@@ -63,7 +63,7 @@ pub fn generate_pydantic_model(
         table.database_name, table.schema_name, table.table_name,
     ));
     pydantic_schema.push_str(&format!(
-        "class {}(pydantic.BaseModel, snowman.Table[\"{}\",\"{}\"]):\n",
+        "class {}(pydantic.BaseModel, snowman.Table[\"{}\",\"{}\",]):\n",
         pydantic_options.make_class_name(&table.table_name),
         insert_typeddict_options.make_class_name(&table.table_name),
         update_typeddict_options.make_class_name(&table.table_name)
@@ -79,9 +79,16 @@ pub fn generate_pydantic_model(
             data_type.push_str(" | None");
         }
         pydantic_schema.push_str(&format!(
-            "\n    {}: snowman.datatype.{}\n",
+            "\n    {}: typing.Annotated[snowman.datatype.{}, pydantic.Field({}alias=\"{}\"),]\n",
             column.column_name.to_case(Case::Snake),
-            data_type
+            data_type,
+            column
+                .comment
+                .as_ref()
+                .filter(|c| !c.is_empty())
+                .map(|c| format!("title=\"{}\", ", c))
+                .unwrap_or_default(),
+            column.column_name,
         ));
         if let Some(comment) = column.comment.as_ref() {
             if !comment.is_empty() {
