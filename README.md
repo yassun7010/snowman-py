@@ -1,4 +1,4 @@
-# snowman
+# Snowman
 
 <!-- --8<-- [start:badges] -->
 [![pypi package](https://badge.fury.io/py/snowman.svg)](https://pypi.org/project/snowman)
@@ -21,7 +21,7 @@ pip install snowman-py
 
 ## CLI Tool
 
-### Create snowman Config
+### Create Snowman Config
 ```sh
 snowman config create
 ```

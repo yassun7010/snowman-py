@@ -14,7 +14,7 @@ pub struct Config {
 
     /// # The Python model configuration.
     ///
-    /// It is mainly used for the snowman model generate command.
+    /// It is mainly used for the Snowman model generate command.
     #[serde(default)]
     pub model: ModelConfigV1,
 
@@ -198,7 +198,7 @@ pub fn create_file(filepath: &std::path::Path) -> Result<(), crate::Error> {
         .map_err(Into::into)
 }
 
-const DEFAULT_CONFIG_STRING: &str = r#"# [snowman](https://github.com/yassun7010/snowman)
+const DEFAULT_CONFIG_STRING: &str = r#"# [Snowman](https://github.com/yassun7010/snowman)
 #:schema https://raw.githubusercontent.com/yassun7010/snowman/main/docs/config.schema.json
 
 [connection]

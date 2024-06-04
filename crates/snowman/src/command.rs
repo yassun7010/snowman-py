@@ -9,11 +9,11 @@ pub enum Command {
     #[command(subcommand)]
     Model(model::Command),
 
-    /// snowman config operations.
+    /// Snowman config operations.
     #[command(subcommand)]
     Config(config::Command),
 
-    /// snowman operations.
+    /// Snowman operations.
     #[command(subcommand)]
     #[command(name = "self")]
     Snowman(snowman::Command),

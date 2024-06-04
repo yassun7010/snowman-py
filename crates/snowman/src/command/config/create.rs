@@ -1,6 +1,6 @@
 #[derive(clap::Args)]
 pub struct Args {
-    /// The path to the snowman configuration file.
+    /// The path to the Snowman configuration file.
     #[arg(long, default_value = "snowman.toml")]
     pub file: std::path::PathBuf,
 
