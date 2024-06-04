@@ -1,6 +1,6 @@
 import textwrap
 
-from snowq.query import update
+from snowman.query import update
 
 from your.database.schema import User
 

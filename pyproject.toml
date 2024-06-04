@@ -1,5 +1,5 @@
 [project]
-name = "snowq"
+name = "snowman"
 version = "0.0.2"
 description = "snowflake query builder for python."
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
@@ -22,8 +22,8 @@ build-backend = "maturin"
 
 [tool.maturin]
 bindings = "bin"
-manifest-path = "crates/snowq/Cargo.toml"
-module-name = "snowq"
+manifest-path = "crates/snowman/Cargo.toml"
+module-name = "snowman"
 python-source = "python/src"
 
 [tool.rye]
@@ -45,7 +45,7 @@ dev-dependencies = [
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/snowq"]
+packages = ["src/snowman"]
 
 [tool.rye.scripts]
 format = "rye format"

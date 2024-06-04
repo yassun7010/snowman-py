@@ -1,13 +1,13 @@
 import textwrap
 
-import snowq
+import snowman
 from conftest import User
 from snowflake.connector.cursor import SnowflakeCursor
 
 
 class TestUpdateQuery:
     def test_update_query(self, user: User, mock_snowflake_cursor: SnowflakeCursor):
-        snowq.query.update(User).set({"id": 1, "name": "taro"}).where("id = 1").execute(
+        snowman.query.update(User).set({"id": 1, "name": "taro"}).where("id = 1").execute(
             mock_snowflake_cursor
         )
 
@@ -15,7 +15,7 @@ class TestUpdateQuery:
         self, user: User, mock_snowflake_cursor: SnowflakeCursor
     ):
         query, params = (
-            snowq.query.update(User).set({"name": "taro"}).where("id = 1").build()
+            snowman.query.update(User).set({"name": "taro"}).where("id = 1").build()
         )
 
         assert (
@@ -34,7 +34,7 @@ class TestUpdateQuery:
         assert params == {"name": "taro"}
 
     def test_update_query_pydantic_build(self, user: User):
-        query, params = snowq.query.update(User).set(user).where("id = 1").build()
+        query, params = snowman.query.update(User).set(user).where("id = 1").build()
 
         assert (
             query

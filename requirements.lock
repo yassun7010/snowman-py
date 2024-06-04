@@ -37,7 +37,7 @@ platformdirs==4.2.1
 pycparser==2.22
     # via cffi
 pydantic==2.7.1
-    # via snowq
+    # via snowman
 pydantic-core==2.18.2
     # via pydantic
 pyjwt==2.8.0
@@ -49,7 +49,7 @@ pytz==2024.1
 requests==2.31.0
     # via snowflake-connector-python
 snowflake-connector-python==3.10.1
-    # via snowq
+    # via snowman
 sortedcontainers==2.4.0
     # via snowflake-connector-python
 tomlkit==0.12.4
@@ -58,6 +58,6 @@ typing-extensions==4.12.0
     # via pydantic
     # via pydantic-core
     # via snowflake-connector-python
-    # via snowq
+    # via snowman
 urllib3==1.26.18
     # via requests

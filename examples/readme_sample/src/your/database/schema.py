@@ -1,7 +1,7 @@
 from typing import TypedDict
 
 import pydantic
-import snowq
+import snowman
 
 
 class _UserInsertColumns(TypedDict):
@@ -14,7 +14,7 @@ class _UserUpdateColumns(TypedDict, total=False):
     name: str
 
 
-@snowq.table("database", "schema", "users")
-class User(pydantic.BaseModel, snowq.Table["_UserInsertColumns", "_UserUpdateColumns"]):
+@snowman.table("database", "schema", "users")
+class User(pydantic.BaseModel, snowman.Table["_UserInsertColumns", "_UserUpdateColumns"]):
     id: int
     name: str

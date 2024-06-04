@@ -1,13 +1,14 @@
 [project]
-name = "readme-sample"
-version = "0.1.0"
+name = "snowman-sample"
+version = "0.0.2"
 description = "Add your description here"
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
 dependencies = [
-    "snowman @ file:///${PROJECT_ROOT}/examples/readme_sample/../..",
+    "pydantic>=2.7.1",
+    "snowman @ file:///${PROJECT_ROOT}/examples/snowman_sample/../..",
 ]
 readme = "README.md"
-requires-python = ">= 3.11"
+requires-python = ">= 3.8"
 
 [build-system]
 requires = ["hatchling"]
@@ -21,4 +22,4 @@ dev-dependencies = []
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/your"]
+packages = ["src/snowman_sample"]

@@ -1672,7 +1672,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "snowq"
+name = "snowman"
 version = "0.0.2"
 dependencies = [
  "anyhow",
@@ -1686,14 +1686,14 @@ dependencies = [
  "itertools",
  "openssl",
  "serde_json",
- "snowq_config",
- "snowq_connector",
- "snowq_generator",
+ "snowman_config",
+ "snowman_connector",
+ "snowman_generator",
  "tokio",
 ]
 
 [[package]]
-name = "snowq_config"
+name = "snowman_config"
 version = "0.0.2"
 dependencies = [
  "log",
@@ -1705,7 +1705,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "snowq_connector"
+name = "snowman_connector"
 version = "0.0.2"
 dependencies = [
  "openssl",
@@ -1715,11 +1715,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "snowq_generator"
+name = "snowman_generator"
 version = "0.0.2"
 dependencies = [
  "convert_case",
- "snowq_connector",
+ "snowman_connector",
 ]
 
 [[package]]

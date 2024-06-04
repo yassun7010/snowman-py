@@ -1,13 +1,13 @@
-# Snowq
+# snowman
 
 <!-- --8<-- [start:badges] -->
-[![pypi package](https://badge.fury.io/py/snowq.svg)](https://pypi.org/project/snowq)
-[![python-test](https://github.com/yassun7010/snowq/actions/workflows/ci_python.yml/badge.svg)](https://github.com/yassun7010/snowq/actions)
-[![rust-test](https://github.com/yassun7010/snowq/actions/workflows/ci_rust.yml/badge.svg)](https://github.com/yassun7010/snowq/actions)
+[![pypi package](https://badge.fury.io/py/snowman.svg)](https://pypi.org/project/snowman)
+[![python-test](https://github.com/yassun7010/snowman/actions/workflows/ci_python.yml/badge.svg)](https://github.com/yassun7010/snowman/actions)
+[![rust-test](https://github.com/yassun7010/snowman/actions/workflows/ci_rust.yml/badge.svg)](https://github.com/yassun7010/snowman/actions)
 <!-- --8<-- [end:badges] -->
 
 <p align="center">
-    <img alt="logo" src="https://raw.githubusercontent.com/yassun7010/snowq/main/images/logo.svg" width="300" />
+    <img alt="logo" src="https://raw.githubusercontent.com/yassun7010/snowman/main/images/logo.svg" width="300" />
 </p>
 
 
@@ -15,14 +15,14 @@ A tool to easily generate Pydantic models of Snowflake tables in Python.
 
 ## CLI Tool
 
-### Create Snowq Config
+### Create snowman Config
 ```sh
-snowq config create
+snowman config create
 ```
 
 ### Generate Python Model From Snowflake Information Schema
 ```sh
-snowq model generate
+snowman model generate
 ```
 
 
@@ -33,7 +33,7 @@ snowq model generate
 ```python
 import textwrap
 
-from snowq.query import insert
+from snowman.query import insert
 
 from your.database.schema import User
 
@@ -67,7 +67,7 @@ assert query == expected
 ```python
 import textwrap
 
-from snowq.query import update
+from snowman.query import update
 
 from your.database.schema import User
 
@@ -102,7 +102,7 @@ assert query == expected
 ```python
 import textwrap
 
-from snowq.query import delete
+from snowman.query import delete
 
 from your.database.schema import User
 
@@ -129,7 +129,7 @@ assert query == expected
 ### Truncate Query
 
 ```python
-from snowq.query import truncate
+from snowman.query import truncate
 
 from your.database.schema import User
 

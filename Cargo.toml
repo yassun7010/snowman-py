@@ -1,7 +1,7 @@
 [workspace]
 members = ["crates/*"]
 resolver = "2"
-default-members = ["crates/snowq"]
+default-members = ["crates/snowman"]
 
 [workspace.package]
 version = "0.0.2"
@@ -10,9 +10,9 @@ authors = ["yassun7010 <yassun7010@outlook.com>"]
 license = "MIT"
 
 [workspace.dependencies]
-snowq_config = { path = "crates/snowq_config" }
-snowq_connector = { path = "crates/snowq_connector" }
-snowq_generator = { path = "crates/snowq_generator" }
+snowman_config = { path = "crates/snowman_config" }
+snowman_connector = { path = "crates/snowman_connector" }
+snowman_generator = { path = "crates/snowman_generator" }
 
 convert_case = "0.6.0"
 log = "^0.4"

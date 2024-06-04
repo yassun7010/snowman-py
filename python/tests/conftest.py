@@ -2,11 +2,11 @@ from typing import TypedDict
 
 import pytest
 import snowflake.connector.cursor
-import snowq
+import snowman
 from pydantic import BaseModel
 from pytest_mock import MockFixture
-from snowq._features import USE_TURU
-from snowq.relation.table import Table
+from snowman._features import USE_TURU
+from snowman.relation.table import Table
 
 if USE_TURU:
     import turu.snowflake  # type: ignore[import]
@@ -42,7 +42,7 @@ class _UserUpdateColumns(TypedDict, total=False):
     name: str
 
 
-@snowq.table("database", "public", "users")
+@snowman.table("database", "public", "users")
 class User(BaseModel, Table[_UserInsertColumns, _UserUpdateColumns]):
     id: int
     name: str

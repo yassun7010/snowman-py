@@ -51,7 +51,7 @@ pyarrow-stubs==10.0.1.7
 pycparser==2.22
     # via cffi
 pydantic==2.7.1
-    # via snowq
+    # via snowman
 pydantic-core==2.18.2
     # via pydantic
 pyjwt==2.8.0
@@ -70,7 +70,7 @@ ruff==0.4.3
 setuptools==69.5.1
     # via nodeenv
 snowflake-connector-python==3.10.0
-    # via snowq
+    # via snowman
     # via turu-snowflake
 sortedcontainers==2.4.0
     # via snowflake-connector-python
@@ -91,7 +91,7 @@ typing-extensions==4.11.0
     # via pydantic
     # via pydantic-core
     # via snowflake-connector-python
-    # via snowq
+    # via snowman
     # via turu-core
     # via turu-snowflake
 urllib3==2.2.1

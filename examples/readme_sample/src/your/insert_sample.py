@@ -1,6 +1,6 @@
 import textwrap
 
-from snowq.query import insert
+from snowman.query import insert
 
 from your.database.schema import User
 

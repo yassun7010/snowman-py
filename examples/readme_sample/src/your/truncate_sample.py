@@ -1,4 +1,4 @@
-from snowq.query import truncate
+from snowman.query import truncate
 
 from your.database.schema import User
 

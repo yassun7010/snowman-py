@@ -1,6 +1,6 @@
 import textwrap
 
-from snowq.query import delete
+from snowman.query import delete
 
 from your.database.schema import User
 
