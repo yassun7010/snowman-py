@@ -2,12 +2,12 @@
 
 <!-- --8<-- [start:badges] -->
 [![pypi package](https://badge.fury.io/py/snowman.svg)](https://pypi.org/project/snowman)
-[![python-test](https://github.com/yassun7010/snowman/actions/workflows/ci_python.yml/badge.svg)](https://github.com/yassun7010/snowman/actions)
-[![rust-test](https://github.com/yassun7010/snowman/actions/workflows/ci_rust.yml/badge.svg)](https://github.com/yassun7010/snowman/actions)
+[![python-test](https://github.com/yassun7010/snowman-py/actions/workflows/ci_python.yml/badge.svg)](https://github.com/yassun7010/snowman-py/actions)
+[![rust-test](https://github.com/yassun7010/snowman-py/actions/workflows/ci_rust.yml/badge.svg)](https://github.com/yassun7010/snowman-py/actions)
 <!-- --8<-- [end:badges] -->
 
 <p align="center">
-    <img alt="logo" src="https://raw.githubusercontent.com/yassun7010/snowman/main/images/logo.svg" width="300" />
+    <img alt="logo" src="https://raw.githubusercontent.com/yassun7010/snowman-py/main/images/logo.svg" width="300" />
 </p>
 
 
