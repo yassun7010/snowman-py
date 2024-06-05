@@ -39,7 +39,8 @@
       "description": "It is mainly used for the Snowman model generate command.",
       "default": {
         "output_dir": "",
-        "database": {}
+        "database": {},
+        "exclude_databases": []
       },
       "allOf": [
         {
@@ -197,6 +198,40 @@
     },
     "ModelConfigV1": {
       "type": "object",
+      "oneOf": [
+        {
+          "title": "Specifies the database name to include in the Python Model.",
+          "type": "object",
+          "required": [
+            "include_databases"
+          ],
+          "properties": {
+            "include_databases": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "Specifies the database name to exclude from the Python Model.",
+          "type": "object",
+          "required": [
+            "exclude_databases"
+          ],
+          "properties": {
+            "exclude_databases": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ],
       "properties": {
         "database": {
           "title": "The database configuration.",

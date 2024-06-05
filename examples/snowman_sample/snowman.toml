@@ -12,6 +12,7 @@ warehouse = { env = "SNOWFLAKE_WAREHOUSE" }
 
 [model]
 output_dir = "src/snowman_sample/schema"
+include_databases = ["CDP"]
 
 [model.database.CDP]
 include_schemas = ["DATALAKE", "DWH", "DATAMART"]

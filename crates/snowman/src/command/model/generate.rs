@@ -2,8 +2,7 @@ use crate::config::{get_model_output_dirpath, get_pydantic_options, get_snowflak
 
 use convert_case::{Case, Casing};
 use itertools::Itertools;
-use snowman_connector::query::DatabaseSchema;
-use std::{collections::HashSet, iter::Iterator};
+use snowman_connector::query::{get_databases, DatabaseSchema};
 use tokio::io::AsyncWriteExt;
 
 #[derive(clap::Args)]
@@ -24,16 +23,12 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             .unwrap_or_else(|| get_model_output_dirpath(&config)),
     );
 
-    let mut database_names = config
-        .model
-        .database
-        .keys()
-        .map(ToString::to_string)
-        .collect::<HashSet<String>>();
-
-    if let Ok(default_database) = config.connection.database.try_get_value() {
-        database_names.insert(default_database);
-    }
+    let database_names = get_databases(&connection)
+        .await?
+        .into_iter()
+        .filter(|name| config.model.include_database(name))
+        .unique()
+        .collect::<Vec<_>>();
 
     let schemas = snowman_connector::query::get_schemas(
         &connection,

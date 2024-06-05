@@ -115,9 +115,41 @@ pub struct ModelConfigV1 {
     /// # The database configuration.
     #[serde(default)]
     pub database: indexmap::IndexMap<String, DatabaseConfig>,
+
+    /// # The database names to exclude from the Python Model.
+    #[serde(default)]
+    #[serde(flatten)]
+    pub database_pattern: DatabasePattern,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum DatabasePattern {
+    /// # Specifies the database name to include in the Python Model.
+    IncludeDatabases(Vec<String>),
+
+    /// # Specifies the database name to exclude from the Python Model.
+    ExcludeDatabases(Vec<String>),
+}
+
+impl Default for DatabasePattern {
+    fn default() -> Self {
+        DatabasePattern::ExcludeDatabases(vec![])
+    }
 }
 
 impl ModelConfigV1 {
+    pub fn include_database(&self, database_name: &str) -> bool {
+        match &self.database_pattern {
+            DatabasePattern::IncludeDatabases(databases) => {
+                databases.contains(&database_name.to_string())
+            }
+            DatabasePattern::ExcludeDatabases(databases) => {
+                !databases.contains(&database_name.to_string())
+            }
+        }
+    }
+
     pub fn include_database_schema(&self, database_name: &str, schema_name: &str) -> bool {
         if let Some(database_config) = self.database.get(database_name) {
             database_config.include_schema(schema_name)
