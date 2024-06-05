@@ -117,9 +117,8 @@ pub struct ModelConfigV1 {
     pub database: indexmap::IndexMap<String, DatabaseConfig>,
 
     /// # The database names to exclude from the Python Model.
-    #[serde(default)]
-    #[serde(flatten)]
-    pub database_pattern: DatabasePattern,
+    #[serde(flatten, default)]
+    pub database_pattern: Option<DatabasePattern>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
@@ -140,7 +139,11 @@ impl Default for DatabasePattern {
 
 impl ModelConfigV1 {
     pub fn include_database(&self, database_name: &str) -> bool {
-        match &self.database_pattern {
+        match self
+            .database_pattern
+            .as_ref()
+            .unwrap_or(&DatabasePattern::default())
+        {
             DatabasePattern::IncludeDatabases(databases) => {
                 databases.contains(&database_name.to_string())
             }
@@ -161,9 +164,8 @@ impl ModelConfigV1 {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, schemars::JsonSchema)]
 pub struct DatabaseConfig {
-    #[serde(default)]
-    #[serde(flatten)]
-    pub schema_pattern: DatabaseSchemaPattern,
+    #[serde(flatten, default)]
+    pub schema_pattern: Option<DatabaseSchemaPattern>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
@@ -184,7 +186,11 @@ impl Default for DatabaseSchemaPattern {
 
 impl DatabaseConfig {
     pub fn include_schema(&self, schema_name: &str) -> bool {
-        match &self.schema_pattern {
+        match self
+            .schema_pattern
+            .as_ref()
+            .unwrap_or(&DatabaseSchemaPattern::default())
+        {
             DatabaseSchemaPattern::IncludeSchemas(schemas) => {
                 schemas.contains(&schema_name.to_string())
             }
@@ -373,9 +379,9 @@ mod test {
     #[test]
     fn test_database_config_exclude_schema() {
         let database_config = DatabaseConfig {
-            schema_pattern: DatabaseSchemaPattern::ExcludeSchemas(vec![
-                "INFORMATION_SCHEMA".to_string()
-            ]),
+            schema_pattern: Some(DatabaseSchemaPattern::ExcludeSchemas(vec![
+                "INFORMATION_SCHEMA".to_string(),
+            ])),
         };
 
         assert!(database_config.include_schema("MY_SCHEMA"));
