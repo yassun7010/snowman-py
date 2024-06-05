@@ -43,6 +43,7 @@ impl AsRef<std::path::Path> for ConfigSource {
 #[serde(deny_unknown_fields)]
 pub struct Config {
     /// # The Snowflake connection configuration.
+    #[serde(default)]
     pub connection: ConnectionV1,
 
     /// # The Python model configuration.
