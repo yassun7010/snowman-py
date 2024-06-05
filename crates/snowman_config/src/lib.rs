@@ -175,6 +175,8 @@ pub enum DatabaseSchemaPattern {
     IncludeSchemas(Vec<String>),
 
     /// # Specifies the schema name to exclude from the Python Model.
+    ///
+    /// The default value is `["INFORMATION_SCHEMA"]`.
     ExcludeSchemas(Vec<String>),
 }
 

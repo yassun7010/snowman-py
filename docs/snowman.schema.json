@@ -39,8 +39,7 @@
       "description": "It is mainly used for the Snowman model generate command.",
       "default": {
         "output_dir": "",
-        "database": {},
-        "exclude_databases": []
+        "database": {}
       },
       "allOf": [
         {
@@ -168,6 +167,7 @@
         },
         {
           "title": "Specifies the schema name to exclude from the Python Model.",
+          "description": "The default value is `[\"INFORMATION_SCHEMA\"]`.",
           "type": "object",
           "required": [
             "exclude_schemas"
