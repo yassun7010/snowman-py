@@ -8,19 +8,7 @@ pub struct DatabaseSchema {
 
 pub async fn get_schemas(
     connection: &Connection,
-    database_names: &[&str],
-) -> Result<Vec<DatabaseSchema>, crate::Error> {
-    let mut db_schemas = vec![];
-    for database_name in database_names {
-        let schemas = get_schemas_by_database_name(connection, database_name).await?;
-        db_schemas.extend(schemas);
-    }
-    Ok(db_schemas)
-}
-
-pub async fn get_schemas_by_database_name(
-    connection: &Connection,
-    database_name: &str,
+    database_name: String,
 ) -> Result<Vec<DatabaseSchema>, crate::Error> {
     let rows = connection
         .execute(&format!(

@@ -23,18 +23,32 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             .unwrap_or_else(|| get_model_output_dirpath(&config)),
     );
 
-    let database_names = get_databases(&connection)
-        .await?
-        .into_iter()
-        .filter(|name| config.model.include_database(name))
-        .unique()
-        .collect::<Vec<_>>();
-
-    let schemas = snowman_connector::query::get_schemas(
-        &connection,
-        &database_names.iter().map(AsRef::as_ref).collect::<Vec<_>>(),
+    let schemas = futures::future::try_join_all(
+        get_databases(&connection)
+            .await?
+            .into_iter()
+            .filter(|name| config.model.include_database(name))
+            .unique()
+            .map(|database_name| async {
+                snowman_connector::query::get_schemas(&connection, database_name).await
+            }),
     )
-    .await?;
+    .await?
+    .into_iter()
+    .flatten()
+    .filter(|schema| {
+        config
+            .model
+            .include_database_schema(&schema.database_name, &schema.schema_name)
+    })
+    .collect::<Vec<_>>();
+
+    for schema in &schemas {
+        println!(
+            "Generating models for {}.{}",
+            schema.database_name, schema.schema_name
+        );
+    }
 
     let database_module_names = &schemas
         .iter()
@@ -45,16 +59,6 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
         .unique()
         .map(AsRef::as_ref)
         .collect::<Vec<&str>>();
-
-    // filter schemas by config
-    let schemas = schemas
-        .into_iter()
-        .filter(|schema| {
-            config
-                .model
-                .include_database_schema(&schema.database_name, &schema.schema_name)
-        })
-        .collect::<Vec<_>>();
 
     // remove existing files
     database_module_names.iter().try_for_each(|database_name| {
