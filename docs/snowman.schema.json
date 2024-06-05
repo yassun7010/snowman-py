@@ -38,7 +38,8 @@
       "title": "The Python model configuration.",
       "description": "It is mainly used for the Snowman model generate command.",
       "default": {
-        "output_dir": ""
+        "output_dir": "",
+        "database": {}
       },
       "allOf": [
         {
@@ -145,6 +146,43 @@
       },
       "additionalProperties": false
     },
+    "DatabaseConfig": {
+      "type": "object",
+      "oneOf": [
+        {
+          "title": "Specifies the schema name to include in the Python Model.",
+          "type": "object",
+          "required": [
+            "include_schemas"
+          ],
+          "properties": {
+            "include_schemas": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "title": "Specifies the schema name to exclude from the Python Model.",
+          "type": "object",
+          "required": [
+            "exclude_schemas"
+          ],
+          "properties": {
+            "exclude_schemas": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
     "Env": {
       "type": "object",
       "required": [
@@ -160,6 +198,14 @@
     "ModelConfigV1": {
       "type": "object",
       "properties": {
+        "database": {
+          "title": "The database configuration.",
+          "default": {},
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/DatabaseConfig"
+          }
+        },
         "output_dir": {
           "title": "The output directory of the generated model.",
           "default": ".",

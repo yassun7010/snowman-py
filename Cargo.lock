@@ -839,6 +839,7 @@ checksum = "168fb715dda47215e360912c096649d23d58bf392ac62f73919e831745e40f26"
 dependencies = [
  "equivalent",
  "hashbrown",
+ "serde",
 ]
 
 [[package]]
@@ -1481,6 +1482,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09c024468a378b7e36765cd36702b7a90cc3cba11654f6685c8f233408e89e92"
 dependencies = [
  "dyn-clone",
+ "indexmap",
  "schemars_derive",
  "serde",
  "serde_json",
@@ -1707,6 +1709,7 @@ dependencies = [
 name = "snowman_config"
 version = "0.0.5"
 dependencies = [
+ "indexmap",
  "log",
  "schemars",
  "serde",

@@ -1,5 +1,5 @@
 # [Snowman](https://github.com/yassun7010/snowman-py)
-#:schema https://raw.githubusercontent.com/yassun7010/snowman-py/main/docs/snowman.schema.json
+#:schema ../../docs/snowman.schema.json
 
 [connection]
 account = { env = "SNOWFLAKE_ACCOUNT" }
@@ -12,6 +12,9 @@ warehouse = { env = "SNOWFLAKE_WAREHOUSE" }
 
 [model]
 output_dir = "src/snowman_sample/schema"
+
+[model.database.CDP]
+include_schemas = ["DATALAKE", "DWH", "DATAMART"]
 
 [pydantic]
 # model_name_suffix = "Model"

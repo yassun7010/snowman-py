@@ -111,6 +111,56 @@ pub struct ModelConfigV1 {
     /// # The output directory of the generated model.
     #[serde(default = "get_pwd")]
     pub output_dir: std::path::PathBuf,
+
+    /// # The database configuration.
+    #[serde(default)]
+    pub database: indexmap::IndexMap<String, DatabaseConfig>,
+}
+
+impl ModelConfigV1 {
+    pub fn include_database_schema(&self, database_name: &str, schema_name: &str) -> bool {
+        if let Some(database_config) = self.database.get(database_name) {
+            database_config.include_schema(schema_name)
+        } else {
+            DatabaseConfig::default().include_schema(schema_name)
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, schemars::JsonSchema)]
+pub struct DatabaseConfig {
+    #[serde(default)]
+    #[serde(flatten)]
+    pub schema_pattern: DatabaseSchemaPattern,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum DatabaseSchemaPattern {
+    /// # Specifies the schema name to include in the Python Model.
+    IncludeSchemas(Vec<String>),
+
+    /// # Specifies the schema name to exclude from the Python Model.
+    ExcludeSchemas(Vec<String>),
+}
+
+impl Default for DatabaseSchemaPattern {
+    fn default() -> Self {
+        DatabaseSchemaPattern::ExcludeSchemas(vec!["INFORMATION_SCHEMA".to_string()])
+    }
+}
+
+impl DatabaseConfig {
+    pub fn include_schema(&self, schema_name: &str) -> bool {
+        match &self.schema_pattern {
+            DatabaseSchemaPattern::IncludeSchemas(schemas) => {
+                schemas.contains(&schema_name.to_string())
+            }
+            DatabaseSchemaPattern::ExcludeSchemas(schemas) => {
+                !schemas.contains(&schema_name.to_string())
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, schemars::JsonSchema)]
@@ -276,5 +326,26 @@ mod test {
     #[test]
     fn test_parse_default_config_string() {
         toml::from_str::<Config>(super::DEFAULT_CONFIG_STRING).unwrap();
+    }
+
+    #[test]
+    fn test_database_config_default_include_schema() {
+        assert!(DatabaseConfig::default().include_schema("MY_SCHEMA"));
+    }
+
+    #[test]
+    fn test_database_config_default_exclude_schema() {
+        assert!(!DatabaseConfig::default().include_schema("INFORMATION_SCHEMA"));
+    }
+
+    #[test]
+    fn test_database_config_exclude_schema() {
+        let database_config = DatabaseConfig {
+            schema_pattern: DatabaseSchemaPattern::ExcludeSchemas(vec![
+                "INFORMATION_SCHEMA".to_string()
+            ]),
+        };
+
+        assert!(database_config.include_schema("MY_SCHEMA"));
     }
 }

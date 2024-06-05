@@ -38,25 +38,13 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
         .map(AsRef::as_ref)
         .collect::<Vec<&str>>();
 
-    let exclude_schemas = [(
-        Option::<String>::None,
-        Some("INFORMATION_SCHEMA".to_string()),
-    )];
-
-    // exclude schemasa
+    // filter schemas by config
     let schemas = schemas
         .into_iter()
         .filter(|schema| {
-            !exclude_schemas.iter().any(|(database_name, schema_name)| {
-                match (database_name, schema_name) {
-                    (Some(database_name), Some(schema_name)) => {
-                        schema.database_name == *database_name && schema.schema_name == *schema_name
-                    }
-                    (Some(database_name), None) => schema.database_name == *database_name,
-                    (None, Some(schema_name)) => schema.schema_name == *schema_name,
-                    (None, None) => false,
-                }
-            })
+            config
+                .model
+                .include_database_schema(&schema.database_name, &schema.schema_name)
         })
         .collect::<Vec<_>>();
 
