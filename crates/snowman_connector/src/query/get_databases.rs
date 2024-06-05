@@ -1,5 +1,3 @@
-
-
 use crate::Connection;
 
 pub async fn get_databases(connection: &Connection) -> Result<Vec<String>, crate::Error> {
