@@ -1719,6 +1719,7 @@ dependencies = [
 name = "snowman_connector"
 version = "0.0.5"
 dependencies = [
+ "log",
  "openssl",
  "serde_json",
  "snowflake-connector-rs",

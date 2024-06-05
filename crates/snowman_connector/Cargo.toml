@@ -12,3 +12,4 @@ serde_json.workspace = true
 snowflake-connector-rs = "^0.4.0"
 openssl.workspace = true
 thiserror.workspace = true
+log.workspace = true

@@ -20,6 +20,16 @@ impl Connection {
         database: &str,
         schema: &str,
     ) -> Result<Self, snowflake_connector_rs::Error> {
+        log::debug!("username: {username}");
+        log::debug!(
+            "password: {}**********{}",
+            &password[..2],
+            &password[password.len() - 2..]
+        );
+        log::debug!("account: {account}");
+        log::debug!("warehouse: {warehouse}");
+        log::debug!("database: {database}");
+
         let client = SnowflakeClient::new(
             username,
             SnowflakeAuthMethod::Password(password.to_string()),
