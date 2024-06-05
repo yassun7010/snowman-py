@@ -1,9 +1,9 @@
 use crate::config::{get_model_output_dirpath, get_pydantic_options, get_snowflake_connection};
-use anyhow::Context;
+
 use convert_case::{Case, Casing};
 use itertools::Itertools;
 use snowman_connector::query::DatabaseSchema;
-use std::iter::Iterator;
+use std::{collections::HashSet, iter::Iterator};
 use tokio::io::AsyncWriteExt;
 
 #[derive(clap::Args)]
@@ -24,9 +24,22 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             .unwrap_or_else(|| get_model_output_dirpath(&config)),
     );
 
-    let schemas = snowman_connector::query::get_schemas(&connection)
-        .await
-        .with_context(|| "Failed to retrieve Snowflake Information Schema.")?;
+    let mut database_names = config
+        .model
+        .database
+        .keys()
+        .map(ToString::to_string)
+        .collect::<HashSet<String>>();
+
+    if let Ok(default_database) = config.connection.database.try_get_value() {
+        database_names.insert(default_database);
+    }
+
+    let schemas = snowman_connector::query::get_schemas(
+        &connection,
+        &database_names.iter().map(AsRef::as_ref).collect::<Vec<_>>(),
+    )
+    .await?;
 
     let database_module_names = &schemas
         .iter()
