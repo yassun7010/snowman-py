@@ -1,11 +1,11 @@
 use clap::Subcommand;
-pub mod create;
+
 pub mod print;
 
 #[derive(Subcommand)]
 pub enum Command {
     /// Create a new configuration file.
-    Create(create::Args),
+    Create(super::init::Args),
 
     /// Print the current configuration.
     Print(print::Args),

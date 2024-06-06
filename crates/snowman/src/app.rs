@@ -3,7 +3,7 @@ use clap::{
     Parser,
 };
 
-use crate::command::{config, model, snowman, Command};
+use crate::command::{config, init, model, snowman, Command};
 
 #[derive(Parser)]
 #[command(version, styles=app_styles())]
@@ -28,6 +28,7 @@ pub fn run(args: impl Into<Args>) -> Result<(), anyhow::Error> {
     dotenvy::dotenv()?;
 
     match args.subcommand {
+        Command::Init(args) => init::run(args)?,
         Command::Model(model::Command::Generate(options)) => {
             tokio::runtime::Builder::new_multi_thread()
                 .enable_all()
@@ -37,7 +38,7 @@ pub fn run(args: impl Into<Args>) -> Result<(), anyhow::Error> {
         }
         Command::Config(command) => match command {
             config::Command::Create(args) => {
-                config::create::run(args)?;
+                init::run(args)?;
             }
             config::Command::Print(args) => {
                 config::print::run(args)?;

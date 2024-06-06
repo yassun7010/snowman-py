@@ -21,9 +21,10 @@ pip install snowman-py
 
 ## CLI Tool
 
-### Create Snowman Config
+### Initialize Snowman Configuration
 ```sh
-snowman config create
+snowman init
+-- Outdated: snowman config create
 ```
 
 ### Generate Python Model From Snowflake Information Schema
