@@ -47,6 +47,14 @@ class UpdateSetQueryBuilder(Generic[GenericTable, GenericUpdateColumnTypedDict])
         params: Sequence[Any] | None = None,
         /,
     ) -> "UpdateSetWhereQueryBuidler":
+        """
+        Specify the condition of the where clause.
+
+        Query parameters only support positional placeholders, so specify them with `%s`.
+
+        e.g)
+            `.where("id = %s AND name = %s", [1, "Alice"])`
+        """
         return UpdateSetWhereQueryBuidler(
             self._table,
             self._columns,

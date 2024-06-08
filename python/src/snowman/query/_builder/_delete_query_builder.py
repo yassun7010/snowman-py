@@ -25,6 +25,14 @@ class DeleteFromStatement(Generic[GenericTable]):
         params: Sequence[Any] | None = None,
         /,
     ) -> "UpdateFromWhereQueryBuilder[GenericTable]":
+        """
+        Specify the condition of the where clause.
+
+        Query parameters only support positional placeholders, so specify them with `%s`.
+
+        e.g)
+            `.where("id = %s AND name = %s", [1, "Alice"])`
+        """
         return UpdateFromWhereQueryBuilder(self._table, condition, params or ())
 
 
