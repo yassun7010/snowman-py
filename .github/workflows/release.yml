@@ -11,9 +11,6 @@ on:
       - 'v*'
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   delete-artifacts:
     runs-on: ubuntu-latest
