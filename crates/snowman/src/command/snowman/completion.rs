@@ -55,7 +55,7 @@ pub fn run(args: Args) -> Result<(), anyhow::Error> {
     clap_complete::generate(
         args.shell.unwrap_or(ShellCompletion::Bash),
         &mut crate::app::Args::command(),
-        "rye",
+        "snowman",
         &mut std::io::stdout(),
     );
     Ok(())
