@@ -23,9 +23,9 @@ impl clap::ValueEnum for TargetFile {
     fn to_possible_value<'a>(&self) -> Option<clap::builder::PossibleValue> {
         Some(match self {
             Self::SnowmanToml => clap::builder::PossibleValue::new("snowman.toml")
-                .help("Create a new 'snowman.toml' file."),
+                .help("Create a new \"snowman.toml\" file."),
             Self::PyProjectToml => clap::builder::PossibleValue::new("pyproject.toml")
-                .help("Append '[tool.snowman]' to the 'pyproject.toml' file."),
+                .help("Append [tool.snowman] to the \"pyproject.toml\" file."),
         })
     }
 }
