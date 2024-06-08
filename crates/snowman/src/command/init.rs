@@ -3,10 +3,6 @@ pub struct Args {
     /// The file type of the Snowman configuration.
     #[arg(long, value_enum, default_value = "snowman.toml")]
     pub file: TargetFile,
-
-    /// Overwrite the existing configuration file.
-    #[arg(long)]
-    pub overwrite: bool,
 }
 
 #[derive(Clone, Default)]
@@ -38,7 +34,7 @@ impl From<TargetFile> for std::path::PathBuf {
 
 pub fn run(args: Args) -> Result<(), anyhow::Error> {
     let config_filepath: std::path::PathBuf = args.file.into();
-    if config_filepath.exists() && !args.overwrite {
+    if config_filepath.exists() {
         return Err(anyhow::anyhow!(format!(
             "{config_filepath:?} already exists."
         )));
