@@ -1,4 +1,12 @@
-from typing import Callable, ClassVar, Generic, LiteralString, Type, TypedDict, TypeVar
+from typing import (
+    Callable,
+    ClassVar,
+    Generic,
+    LiteralString,
+    Type,
+    TypedDict,
+    TypeVar,
+)
 
 
 class InsertColumnTypedDict(TypedDict):
@@ -29,6 +37,13 @@ class Table(Generic[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict])
 
 
 GenericTable = TypeVar("GenericTable", bound=Table)
+
+
+class PydanticTable(
+    Generic[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict],
+    Table[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict],
+):
+    pass
 
 
 def table(
