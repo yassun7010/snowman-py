@@ -36,9 +36,13 @@ class TestInsertQuery:
                 """
                 INSERT INTO
                     database.public.users
+                (
+                    id,
+                    name
+                )
                 VALUES (
-                    %(id)s,
-                    %(name)s
+                    %s,
+                    %s
                 )
                 """
             ).strip()
@@ -55,9 +59,13 @@ class TestInsertQuery:
                 """
                 INSERT INTO
                     database.public.users
+                (
+                    id,
+                    name
+                )
                 VALUES (
-                    %(id)s,
-                    %(name)s
+                    %s,
+                    %s
                 )
                 """
             ).strip()
@@ -73,9 +81,13 @@ class TestInsertQuery:
                 """
                 INSERT OVERWRITE INTO
                     database.public.users
+                (
+                    id,
+                    name
+                )
                 VALUES (
-                    %(id)s,
-                    %(name)s
+                    %s,
+                    %s
                 )
                 """
             ).strip()

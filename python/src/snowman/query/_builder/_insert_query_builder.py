@@ -34,9 +34,13 @@ class InsertQueryBuilder:
     >>> print(query)
     INSERT INTO
         database.schema.users
+    (
+        id,
+        name
+    )
     VALUES (
-        %(id)s,
-        %(name)s
+        %s,
+        %s
     )
     """
 
@@ -127,13 +131,15 @@ class InsertIntoValuesQueryBuilder(
             raise snowmanNotDataFrameAvailableError()
 
         overwrite = "OVERWRITE " if self._overwrite else ""
-        values = ",\n    ".join(
-            [f"%({column_name})s" for column_name in table_column_names(self._table)]
-        )
+        keys = ",\n    ".join(table_column_names(self._table))
+        values = ",\n    ".join("%s" for _ in table_column_names(self._table))
 
         query = f"""
 INSERT {overwrite}INTO
     {full_table_name(self._table)}
+(
+    {keys}
+)
 VALUES (
     {values}
 )
