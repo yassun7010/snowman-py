@@ -24,7 +24,6 @@ pip install snowman-py
 ### Initialize Snowman Configuration
 ```sh
 snowman init
-# Outdated: snowman config create
 ```
 
 ### Generate Python Model From Snowflake Information Schema
