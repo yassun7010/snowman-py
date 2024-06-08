@@ -1,4 +1,5 @@
-from typing import Generic, Type, cast
+import itertools
+from typing import Any, Generic, Sequence, Type, cast
 
 from pydantic import BaseModel
 from typing_extensions import override
@@ -13,6 +14,7 @@ class UpdateStatement(Generic[GenericTable, GenericUpdateColumnTypedDict]):
     def __init__(
         self,
         table: Type[GenericTable],
+        /,
         *,
         _columns_type: Type[GenericUpdateColumnTypedDict] | None = None,
     ) -> None:
@@ -39,11 +41,17 @@ class UpdateSetQueryBuilder(Generic[GenericTable, GenericUpdateColumnTypedDict])
             else columns,
         )
 
-    def where(self, condition: str) -> "UpdateSetWhereQueryBuidler":
+    def where(
+        self,
+        condition: str,
+        params: Sequence[Any] | None = None,
+        /,
+    ) -> "UpdateSetWhereQueryBuidler":
         return UpdateSetWhereQueryBuidler(
             self._table,
             self._columns,
             where_condition=condition,
+            where_params=params or (),
         )
 
 
@@ -56,6 +64,7 @@ class UpdateSetWhereQueryBuidler(
         columns: GenericTable | GenericUpdateColumnTypedDict,
         *,
         where_condition: str,
+        where_params: Sequence[Any],
     ):
         self._table = table
         self._columns = cast(
@@ -65,10 +74,11 @@ class UpdateSetWhereQueryBuidler(
             else columns,
         )
         self._where_condition = where_condition
+        self._where_params = where_params
 
     @override
     def build(self) -> QueryWithParams:
-        values = ",\n    ".join([f"{key} = %({key})s" for key in self._columns.keys()])
+        values = ",\n    ".join([f"{key} = %s" for key in self._columns.keys()])
 
         query = f"""
 UPDATE
@@ -79,4 +89,7 @@ WHERE
     {self._where_condition}
 """.strip()
 
-        return QueryWithParams(query, {k: v for k, v in self._columns.items()})
+        return QueryWithParams(
+            query,
+            tuple(itertools.chain(self._columns.values(), self._where_params)),
+        )

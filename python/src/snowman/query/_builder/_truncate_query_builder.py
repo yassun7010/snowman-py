@@ -1,4 +1,5 @@
 from typing import Generic, Type
+
 from typing_extensions import override
 
 from snowman.relation import full_table_name
@@ -49,4 +50,4 @@ class TruncateTableQueryBuilder(Generic[GenericTable], QueryBuilder):
     def build(self) -> QueryWithParams:
         query = f"TRUNCATE TABLE{ ' IF EXISTS' if self._if_exists else ''} {full_table_name(self._table)}"
 
-        return QueryWithParams(query, {})
+        return QueryWithParams(query, ())

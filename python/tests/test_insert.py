@@ -43,7 +43,7 @@ class TestInsertQuery:
                 """
             ).strip()
         )
-        assert params == user.model_dump()
+        assert params == (1, "Alice")
 
     def test_insert_into_query_execute_many_build(self, user: User):
         values = [user, user]
@@ -62,7 +62,7 @@ class TestInsertQuery:
                 """
             ).strip()
         )
-        assert params == tuple(value.model_dump() for value in values)
+        assert params == ((1, "Alice"), (1, "Alice"))
 
     def test_insert_into_query_overwrite_execute_build(self, user: User):
         query, params = snowman.query.insert.overwrite.into(User).values(user).build()
@@ -80,7 +80,7 @@ class TestInsertQuery:
                 """
             ).strip()
         )
-        assert params == user.model_dump()
+        assert params == (1, "Alice")
 
     @pytest.mark.skipif(not USE_PANDAS, reason="Not installed pandas")
     def test_insert_into_query_build_use_dataframe(self):

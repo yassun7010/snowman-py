@@ -24,4 +24,4 @@ class TestDeleteQuery:
             ).strip()
         )
 
-        assert params == {}
+        assert params == ()

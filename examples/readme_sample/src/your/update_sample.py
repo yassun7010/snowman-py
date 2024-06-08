@@ -11,9 +11,7 @@ query, params = (
     .set(
         {"name": "Jane Doe"},
     )
-    .where(
-        "id = 1",
-    )
+    .where("id = %s", [1])
 ).build()
 
 expected = textwrap.dedent(
@@ -21,10 +19,11 @@ expected = textwrap.dedent(
     UPDATE
         database.schema.users
     SET
-        name = %(name)s
+        name = %s
     WHERE
-        id = 1
+        id = %s
     """
 ).strip()
 
 assert query == expected
+assert params == ("Jane Doe", 1)

@@ -15,7 +15,10 @@ class TestUpdateQuery:
         self, user: User, mock_snowflake_cursor: SnowflakeCursor
     ):
         query, params = (
-            snowman.query.update(User).set({"name": "taro"}).where("id = 1").build()
+            snowman.query.update(User)
+            .set({"name": "taro"})
+            .where("id = %s", [1])
+            .build()
         )
 
         assert (
@@ -25,16 +28,18 @@ class TestUpdateQuery:
                 UPDATE
                     database.public.users
                 SET
-                    name = %(name)s
+                    name = %s
                 WHERE
-                    id = 1
+                    id = %s
                 """
             ).strip()
         )
-        assert params == {"name": "taro"}
+        assert params == ("taro", 1)
 
     def test_update_query_pydantic_build(self, user: User):
-        query, params = snowman.query.update(User).set(user).where("id = 1").build()
+        query, params = (
+            snowman.query.update(User).set(user).where("id = %s", [1]).build()
+        )
 
         assert (
             query
@@ -43,11 +48,11 @@ class TestUpdateQuery:
                 UPDATE
                     database.public.users
                 SET
-                    id = %(id)s,
-                    name = %(name)s
+                    id = %s,
+                    name = %s
                 WHERE
-                    id = 1
+                    id = %s
                 """
             ).strip()
         )
-        assert params == user.model_dump()
+        assert params == (1, "Alice", 1)

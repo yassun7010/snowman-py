@@ -6,7 +6,7 @@ from snowman.cursor import Cursor
 
 class QueryWithParams(NamedTuple):
     query: str
-    params: dict[str, Any] | tuple[dict[str, Any], ...]
+    params: tuple[Any, ...]
 
 
 class QueryBuilder(ABC):

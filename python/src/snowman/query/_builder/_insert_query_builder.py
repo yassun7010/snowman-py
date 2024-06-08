@@ -47,6 +47,7 @@ class InsertQueryBuilder:
     def into(
         self,
         table: Type[Table[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]],
+        /,
     ):
         return InsertIntoQueryBuilder(
             table,
@@ -58,6 +59,7 @@ class InsertOverwriteQueryBuilder:
     def into(
         self,
         table: Type[Table[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]],
+        /,
     ):
         return InsertIntoQueryBuilder(
             table,
@@ -83,6 +85,7 @@ class InsertIntoQueryBuilder(Generic[GenericTable, GenericInsertColumnTypedDict]
         | GenericInsertColumnTypedDict
         | Sequence[GenericTable | GenericInsertColumnTypedDict]
         | snowman._features.PandasDataFrame,
+        /,
     ) -> "InsertIntoValuesQueryBuilder[GenericTable, GenericInsertColumnTypedDict]":
         if isinstance(values, snowman._features.PandasDataFrame):
             dataframe = values
@@ -138,9 +141,11 @@ VALUES (
 
         return QueryWithParams(
             query,
-            table_columns_dict(self._values[0])
+            tuple(table_columns_dict(self._values[0]).values())
             if len(self._values) == 1
-            else tuple(table_columns_dict(value) for value in self._values),
+            else tuple(
+                tuple(table_columns_dict(value).values()) for value in self._values
+            ),
         )
 
     @override
