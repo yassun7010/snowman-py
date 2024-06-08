@@ -19,6 +19,7 @@ impl Connection {
         warehouse: &str,
         database: &str,
         schema: &str,
+        role: &str,
     ) -> Result<Self, snowflake_connector_rs::Error> {
         log::debug!("username: {username}");
         log::debug!(
@@ -29,6 +30,8 @@ impl Connection {
         log::debug!("account: {account}");
         log::debug!("warehouse: {warehouse}");
         log::debug!("database: {database}");
+        log::debug!("schema: {schema}");
+        log::debug!("role: {role}");
 
         let client = SnowflakeClient::new(
             username,
@@ -38,6 +41,7 @@ impl Connection {
                 warehouse: Some(warehouse.to_string()),
                 database: Some(database.to_string()),
                 schema: Some(schema.to_string()),
+                role: Some(role.to_string()),
                 ..Default::default()
             },
         )?;

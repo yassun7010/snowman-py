@@ -1,5 +1,6 @@
 use crate::config::{get_model_output_dirpath, get_pydantic_options, get_snowflake_connection};
 
+use anyhow::anyhow;
 use convert_case::{Case, Casing};
 use itertools::Itertools;
 use snowman_connector::query::{get_databases, DatabaseSchema};
@@ -42,6 +43,10 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             .include_database_schema(&schema.database_name, &schema.schema_name)
     })
     .collect::<Vec<_>>();
+
+    if schemas.is_empty() {
+        Err(anyhow!("No database schema found to generate models."))?;
+    }
 
     for schema in &schemas {
         println!(

@@ -34,6 +34,7 @@ pub fn get_snowflake_connection(
         &connection.warehouse.try_get_value()?,
         &connection.database.try_get_value()?,
         &connection.schema.try_get_value()?,
+        &connection.role.try_get_value()?,
     )
     .map_err(Into::into)
 }
