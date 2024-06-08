@@ -37,9 +37,6 @@ pub fn run(args: impl Into<Args>) -> Result<(), anyhow::Error> {
                 .block_on(async { model::generate::run(options).await })?
         }
         Command::Config(command) => match command {
-            config::Command::Create(args) => {
-                init::run(args)?;
-            }
             config::Command::Print(args) => {
                 config::print::run(args)?;
             }
