@@ -78,17 +78,20 @@ pub struct ConnectionV1 {
     #[serde(default = "role_default")]
     pub role: StringOrEnv,
 
+    /// # The Snowflake warehouse.
+    #[serde(default = "warehouse_default")]
+    pub warehouse: StringOrEnv,
+
     /// # The Snowflake database.
     #[serde(default = "database_default")]
     pub database: StringOrEnv,
 
     /// # The Snowflake schema.
-    #[serde(default = "schema_default")]
-    pub schema: StringOrEnv,
-
-    /// # The Snowflake warehouse.
-    #[serde(default = "warehouse_default")]
-    pub warehouse: StringOrEnv,
+    ///
+    /// This is optional.
+    /// Schema is not required for this tool, but it can be set for consistency.
+    #[serde(default)]
+    pub schema: Option<StringOrEnv>,
 }
 
 impl Default for ConnectionV1 {
@@ -99,7 +102,7 @@ impl Default for ConnectionV1 {
             password: password_default(),
             role: role_default(),
             database: database_default(),
-            schema: schema_default(),
+            schema: None,
             warehouse: warehouse_default(),
         }
     }
@@ -264,10 +267,6 @@ fn database_default() -> StringOrEnv {
     new_env("SNOWFLAKE_DATABASE")
 }
 
-fn schema_default() -> StringOrEnv {
-    new_env("SNOWFLAKE_SCHEMA")
-}
-
 fn warehouse_default() -> StringOrEnv {
     new_env("SNOWFLAKE_WAREHOUSE")
 }
@@ -381,7 +380,6 @@ user = { env = "SNOWFLAKE_USER" }
 password = { env = "SNOWFLAKE_PASSWORD" }
 role = { env = "SNOWFLAKE_ROLE" }
 database = { env = "SNOWFLAKE_DATABASE" }
-schema = { env = "SNOWFLAKE_SCHEMA" }
 warehouse = { env = "SNOWFLAKE_WAREHOUSE" }
 
 [model]

@@ -28,13 +28,16 @@ pub fn get_snowflake_connection(
     let Config { connection, .. } = config;
 
     snowman_connector::Connection::try_new(
-        &connection.user.try_get_value()?,
-        &connection.password.try_get_value()?,
-        &connection.account.try_get_value()?,
-        &connection.warehouse.try_get_value()?,
-        &connection.database.try_get_value()?,
-        &connection.schema.try_get_value()?,
-        &connection.role.try_get_value()?,
+        connection.user.try_get_value()?,
+        connection.password.try_get_value()?,
+        connection.account.try_get_value()?,
+        connection.warehouse.try_get_value()?,
+        connection.role.try_get_value()?,
+        connection.database.try_get_value()?,
+        connection
+            .schema
+            .as_ref()
+            .and_then(|v| v.try_get_value().ok()),
     )
     .map_err(Into::into)
 }
