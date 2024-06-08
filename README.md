@@ -7,7 +7,7 @@
 <!-- --8<-- [end:badges] -->
 
 <p align="center">
-    <img alt="logo" src="https://raw.githubusercontent.com/yassun7010/snowman-py/main/images/logo.svg" width="300" />
+    <img alt="logo" src="https://raw.githubusercontent.com/yassun7010/snowman-py/main/docs/images/logo.svg" width="300" />
 </p>
 
 
