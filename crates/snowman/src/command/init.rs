@@ -33,14 +33,17 @@ impl From<TargetFile> for std::path::PathBuf {
 }
 
 pub fn run(args: Args) -> Result<(), anyhow::Error> {
-    let config_filepath: std::path::PathBuf = args.file.into();
-    if config_filepath.exists() {
-        return Err(anyhow::anyhow!(format!(
-            "{config_filepath:?} already exists."
-        )));
-    }
-
-    snowman_config::create_file(&config_filepath)?;
+    match args.file {
+        TargetFile::SnowmanToml => {
+            let config_filepath: std::path::PathBuf = args.file.into();
+            if config_filepath.exists() {
+                return Err(anyhow::anyhow!(format!(
+                    "{config_filepath:?} already exists."
+                )));
+            }
+            snowman_config::create_file(&config_filepath)?;
+        }
+    };
 
     Ok(())
 }
