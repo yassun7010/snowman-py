@@ -60,13 +60,14 @@ expected = textwrap.dedent(
     INSERT INTO
         database.schema.users
     VALUES (
-        %(id)s,
-        %(name)s
+        %s,
+        %s
     )
     """
 ).strip()
 
 assert query == expected
+assert params == (1, "John Doe")
 ```
 
 ### Update Query
@@ -85,9 +86,7 @@ query, params = (
     .set(
         {"name": "Jane Doe"},
     )
-    .where(
-        "id = 1",
-    )
+    .where("id = %s", [1])
 ).build()
 
 expected = textwrap.dedent(
@@ -95,13 +94,14 @@ expected = textwrap.dedent(
     UPDATE
         database.schema.users
     SET
-        name = %(name)s
+        name = %s
     WHERE
-        id = 1
+        id = %s
     """
 ).strip()
 
 assert query == expected
+assert params == ("Jane Doe", 1)
 ```
 
 ### Delete Query
@@ -117,7 +117,8 @@ query, params = (
     delete.from_(
         User,
     ).where(
-        "id = 1",
+        "id = %s",
+        [1],
     )
 ).build()
 
@@ -126,11 +127,12 @@ expected = textwrap.dedent(
     DELETE FROM
         database.schema.users
     WHERE
-        id = 1
+        id = %s
     """
 ).strip()
 
 assert query == expected
+assert params == (1,)
 ```
 
 ### Truncate Query
@@ -145,4 +147,5 @@ query, params = truncate.table(User).build()
 expected = "TRUNCATE TABLE database.schema.users"
 
 assert query == expected
+assert params == ()
 ```

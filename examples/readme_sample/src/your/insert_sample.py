@@ -20,10 +20,11 @@ expected = textwrap.dedent(
     INSERT INTO
         database.schema.users
     VALUES (
-        %(id)s,
-        %(name)s
+        %s,
+        %s
     )
     """
 ).strip()
 
 assert query == expected
+assert params == (1, "John Doe")

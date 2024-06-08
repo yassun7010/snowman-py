@@ -8,7 +8,8 @@ query, params = (
     delete.from_(
         User,
     ).where(
-        "id = 1",
+        "id = %s",
+        [1],
     )
 ).build()
 
@@ -17,8 +18,9 @@ expected = textwrap.dedent(
     DELETE FROM
         database.schema.users
     WHERE
-        id = 1
+        id = %s
     """
 ).strip()
 
 assert query == expected
+assert params == (1,)
