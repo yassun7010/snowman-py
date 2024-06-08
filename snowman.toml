@@ -12,6 +12,7 @@ warehouse = { env = "SNOWFLAKE_WAREHOUSE" }
 
 [model]
 output_dir = "."
+exclude_databases = ["INFORMATION_SCHEMA"]
 
 [pydantic]
 # model_name_suffix = "Model"

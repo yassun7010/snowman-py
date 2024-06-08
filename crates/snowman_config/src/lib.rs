@@ -178,31 +178,21 @@ pub enum DatabaseSchemaPattern {
     IncludeSchemas(Vec<String>),
 
     /// # Specifies the schema name to exclude from the Python Model.
-    ///
-    /// The default value is `["INFORMATION_SCHEMA"]`.
     ExcludeSchemas(Vec<String>),
-}
-
-impl Default for DatabaseSchemaPattern {
-    fn default() -> Self {
-        DatabaseSchemaPattern::ExcludeSchemas(vec!["INFORMATION_SCHEMA".to_string()])
-    }
 }
 
 impl DatabaseConfig {
     pub fn include_schema(&self, schema_name: &str) -> bool {
-        match self
-            .schema_pattern
+        self.schema_pattern
             .as_ref()
-            .unwrap_or(&DatabaseSchemaPattern::default())
-        {
-            DatabaseSchemaPattern::IncludeSchemas(schemas) => {
-                schemas.contains(&schema_name.to_string())
-            }
-            DatabaseSchemaPattern::ExcludeSchemas(schemas) => {
-                !schemas.contains(&schema_name.to_string())
-            }
-        }
+            .map_or(true, |schema_pattern| match schema_pattern {
+                DatabaseSchemaPattern::IncludeSchemas(schemas) => {
+                    schemas.contains(&schema_name.to_string())
+                }
+                DatabaseSchemaPattern::ExcludeSchemas(schemas) => {
+                    !schemas.contains(&schema_name.to_string())
+                }
+            })
     }
 }
 
@@ -384,6 +374,7 @@ warehouse = { env = "SNOWFLAKE_WAREHOUSE" }
 
 [model]
 output_dir = "."
+exclude_databases = ["INFORMATION_SCHEMA"]
 
 [pydantic]
 # model_name_suffix = "Model"
@@ -392,6 +383,7 @@ output_dir = "."
 const DEFAULT_PYPROJECT_TOML_STRING: &str = r#"
 [tool.snowman.model]
 output_dir = "."
+exclude_databases = ["INFORMATION_SCHEMA"]
 
 [tool.snowman.pydantic]
 "#;
@@ -417,7 +409,12 @@ mod test {
 
     #[test]
     fn test_database_config_default_exclude_schema() {
-        assert!(!DatabaseConfig::default().include_schema("INFORMATION_SCHEMA"));
+        assert!(!DatabaseConfig {
+            schema_pattern: Some(DatabaseSchemaPattern::ExcludeSchemas(vec![
+                "INFORMATION_SCHEMA".to_string()
+            ])),
+        }
+        .include_schema("INFORMATION_SCHEMA"));
     }
 
     #[test]
