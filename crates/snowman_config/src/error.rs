@@ -9,8 +9,14 @@ pub enum Error {
     #[error(transparent)]
     TomlDeserialize(#[from] toml::de::Error),
 
-    #[error("config file not found: {0:?}")]
+    #[error("{0:?} not found.")]
     ConfigFileNotFound(std::path::PathBuf),
+
+    #[error("{0:?} already exists.")]
+    ConfigFileAlreadyExists(std::path::PathBuf),
+
+    #[error("[tool.snowman] is already set in \"pyproject.toml\".")]
+    PyProjectTomlAlreadySet,
 
     #[error("env var not found: {0}")]
     EnvVarNotFound(String),

@@ -5,21 +5,25 @@ pub struct Args {
     pub file: TargetFile,
 }
 
-#[derive(Clone, Default)]
+#[derive(Copy, Clone, Default)]
 pub enum TargetFile {
+    /// Use "snowman.toml".
     #[default]
     SnowmanToml,
-    // PyProjectToml,
+
+    /// Use "pyproject.toml".
+    PyProjectToml,
 }
 
 impl clap::ValueEnum for TargetFile {
     fn value_variants<'a>() -> &'a [Self] {
-        &[TargetFile::SnowmanToml]
+        &[Self::SnowmanToml, Self::PyProjectToml]
     }
 
     fn to_possible_value<'a>(&self) -> Option<clap::builder::PossibleValue> {
         Some(match self {
-            TargetFile::SnowmanToml => clap::builder::PossibleValue::new("snowman.toml"),
+            Self::SnowmanToml => clap::builder::PossibleValue::new("snowman.toml"),
+            Self::PyProjectToml => clap::builder::PossibleValue::new("pyproject.toml"),
         })
     }
 }
@@ -28,22 +32,19 @@ impl From<TargetFile> for std::path::PathBuf {
     fn from(val: TargetFile) -> Self {
         match val {
             TargetFile::SnowmanToml => "snowman.toml".into(),
+            TargetFile::PyProjectToml => "pyproject.toml".into(),
         }
     }
 }
 
 pub fn run(args: Args) -> Result<(), anyhow::Error> {
+    let config_filepath: std::path::PathBuf = args.file.into();
     match args.file {
         TargetFile::SnowmanToml => {
-            let config_filepath: std::path::PathBuf = args.file.into();
-            if config_filepath.exists() {
-                return Err(anyhow::anyhow!(format!(
-                    "{config_filepath:?} already exists."
-                )));
-            }
-            snowman_config::create_file(&config_filepath)?;
+            snowman_config::create_file(&config_filepath).map_err(Into::into)
         }
-    };
-
-    Ok(())
+        TargetFile::PyProjectToml => {
+            snowman_config::append_pyproject_tool(&config_filepath).map_err(Into::into)
+        }
+    }
 }

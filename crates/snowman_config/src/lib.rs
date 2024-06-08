@@ -11,7 +11,7 @@ const CONFIG_FILENAME: &str = "snowman.toml";
 #[doc(hidden)]
 #[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
 struct PyProjectToml {
-    tool: Tool,
+    tool: Option<Tool>,
 }
 
 #[doc(hidden)]
@@ -304,7 +304,12 @@ pub fn load_from_source(source: &ConfigSource) -> Result<Config, crate::Error> {
             let pyproject_toml = std::fs::read_to_string(path)?;
             let pyproject_toml: PyProjectToml = toml::from_str(&pyproject_toml)?;
 
-            if let Some(config) = pyproject_toml.tool.snowman {
+            if let PyProjectToml {
+                tool: Some(Tool {
+                    snowman: Some(config),
+                }),
+            } = pyproject_toml
+            {
                 Ok(config)
             } else {
                 Err(Error::ConfigFileNotFound(CONFIG_FILENAME.into()))
@@ -335,9 +340,36 @@ pub fn write_as_toml(config: &Config, filepath: &std::path::Path) -> Result<(), 
 }
 
 pub fn create_file(filepath: &std::path::Path) -> Result<(), crate::Error> {
+    if filepath.exists() {
+        Err(crate::Error::ConfigFileAlreadyExists(
+            filepath.to_path_buf(),
+        ))?
+    }
+
     std::fs::File::create(filepath)?
         .write_all(DEFAULT_CONFIG_STRING.as_bytes())
         .map_err(Into::into)
+}
+
+pub fn append_pyproject_tool(filepath: &std::path::Path) -> Result<(), crate::Error> {
+    if !filepath.exists() {
+        Err(crate::Error::ConfigFileNotFound(filepath.to_path_buf()))?
+    }
+
+    if let PyProjectToml {
+        tool: Some(Tool {
+            snowman: Some(_snowman),
+        }),
+    } = toml::from_str(&std::fs::read_to_string(filepath)?)?
+    {
+        Err(crate::Error::PyProjectTomlAlreadySet)?
+    };
+
+    let mut file = std::fs::OpenOptions::new().append(true).open(filepath)?;
+
+    file.write_all(DEFAULT_PYPROJECT_TOML_STRING.as_bytes())?;
+
+    Ok(())
 }
 
 const DEFAULT_CONFIG_STRING: &str = r#"# [Snowman](https://github.com/yassun7010/snowman-py)
@@ -359,6 +391,13 @@ output_dir = "."
 # model_name_suffix = "Model"
 "#;
 
+const DEFAULT_PYPROJECT_TOML_STRING: &str = r#"
+[tool.snowman.model]
+output_dir = "."
+
+[tool.snowman.pydantic]
+"#;
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -366,6 +405,11 @@ mod test {
     #[test]
     fn test_parse_default_config_string() {
         toml::from_str::<Config>(super::DEFAULT_CONFIG_STRING).unwrap();
+    }
+
+    #[test]
+    fn test_parse_default_pyproject_toml_string() {
+        toml::from_str::<PyProjectToml>(super::DEFAULT_PYPROJECT_TOML_STRING).unwrap();
     }
 
     #[test]
