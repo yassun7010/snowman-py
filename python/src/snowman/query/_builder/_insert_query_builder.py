@@ -131,8 +131,9 @@ class InsertIntoValuesQueryBuilder(
             raise snowmanNotDataFrameAvailableError()
 
         overwrite = "OVERWRITE " if self._overwrite else ""
-        keys = ",\n    ".join(table_column_names(self._table))
-        values = ",\n    ".join("%s" for _ in table_column_names(self._table))
+        names = table_column_names(self._table)
+        keys = ",\n    ".join(names)
+        values = ",\n    ".join("%s" for _ in names)
 
         query = f"""
 INSERT {overwrite}INTO
