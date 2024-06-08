@@ -58,6 +58,10 @@ expected = textwrap.dedent(
     """
     INSERT INTO
         database.schema.users
+    (
+        id,
+        name
+    )
     VALUES (
         %s,
         %s
