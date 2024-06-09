@@ -73,6 +73,9 @@ pub fn generate_pydantic_model(
             pydantic_schema.push_str(&format!("    \"\"\"{}\"\"\"\n", comment));
         }
     }
+
+    pydantic_schema.push_str("    model_config = pydantic.ConfigDict(populate_by_name=True)\n");
+
     for column in &table.columns {
         let mut data_type = column.data_type.clone();
         if column.is_nullable {
