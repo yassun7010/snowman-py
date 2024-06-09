@@ -124,6 +124,7 @@ class InsertIntoValuesQueryBuilder(
         self._values = values
         self._dataframe = dataframe
         self._overwrite = overwrite
+        self._use_execute_many = len(values) != 1
 
     @override
     def build(self) -> QueryWithParams:
@@ -148,10 +149,12 @@ VALUES (
 
         return QueryWithParams(
             query,
-            tuple(table_columns_dict(self._values[0]).values())
-            if len(self._values) == 1
-            else tuple(
-                tuple(table_columns_dict(value).values()) for value in self._values
+            (
+                tuple(
+                    tuple(table_columns_dict(value).values()) for value in self._values
+                )
+                if self._use_execute_many
+                else tuple(table_columns_dict(self._values[0]).values())
             ),
         )
 
@@ -169,5 +172,8 @@ VALUES (
             )
             return
 
+        elif self._use_execute_many:
+            cursor.executemany(*self.build())
+
         else:
-            super().execute(cursor)
+            cursor.execute(*self.build())

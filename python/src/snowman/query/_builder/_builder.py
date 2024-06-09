@@ -16,7 +16,4 @@ class QueryBuilder(ABC):
     def execute(self, cursor: Cursor, /) -> None:
         query, params = self.build()
 
-        if isinstance(params, tuple):
-            cursor.executemany(query, params)
-        else:
-            cursor.execute(query, params)
+        cursor.execute(query, params)
