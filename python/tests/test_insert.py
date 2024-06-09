@@ -26,6 +26,25 @@ class TestInsertQuery:
         builder.execute(mock_snowflake_cursor)
         assert builder._use_execute_many is True
 
+    def test_insert_execute_when_typed_dict(
+        self, mock_snowflake_cursor: SnowflakeCursor
+    ):
+        builder = snowman.query.insert.into(User).values({"id": 1, "name": "Alice"})
+        builder.execute(mock_snowflake_cursor)
+        assert builder._use_execute_many is False
+
+    def test_insert_executemany_when_typed_dict(
+        self, mock_snowflake_cursor: SnowflakeCursor
+    ):
+        builder = snowman.query.insert.into(User).values(
+            [
+                {"id": 1, "name": "Alice"},
+                {"id": 2, "name": "Bob"},
+            ]
+        )
+        builder.execute(mock_snowflake_cursor)
+        assert builder._use_execute_many is True
+
     @pytest.mark.skipif(not USE_TURU, reason="Not installed turu")
     def test_insert_execute_by_turu(
         self,
