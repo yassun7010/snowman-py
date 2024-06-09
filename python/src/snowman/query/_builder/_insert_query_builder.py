@@ -170,7 +170,6 @@ VALUES (
                 database=self._table.__databas_name__,
                 schema=self._table.__schema_name__,
             )
-            return
 
         elif self._use_execute_many:
             cursor.executemany(*self.build())
