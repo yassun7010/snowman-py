@@ -31,7 +31,7 @@ snowman init
 snowman model generate
 ```
 
-### Check Generated Python Model
+### Check Difference Between Python Model and Snowflake Information Schema
 ```sh
 snowman model diff --check
 ```
