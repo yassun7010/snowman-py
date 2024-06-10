@@ -102,7 +102,7 @@ fn diff_generated_code(old: &str, new: &str, target_file: &std::path::Path) -> b
         return false;
     }
 
-    println!("File: {:?}", style(target_file).bold().dim());
+    println!("File: {:?}", style(target_file).bold().blue());
     for (idx, group) in diff.grouped_ops(3).iter().enumerate() {
         if idx > 0 {
             println!("{:-^1$}", "-", 80);
