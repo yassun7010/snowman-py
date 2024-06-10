@@ -12,6 +12,7 @@ use tokio::io::AsyncWriteExt;
 
 #[derive(clap::Args)]
 pub struct Args {
+    /// Output directory for generated models
     #[arg(long)]
     pub output_dir: Option<std::path::PathBuf>,
 }
@@ -79,6 +80,8 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
 
     run_ruff_format_if_exists(output_dirpath);
 
+    eprintln!("✅ Models generated successfully");
+
     Ok(())
 }
 
@@ -99,11 +102,13 @@ async fn write_schema_py(
     )
     .await?;
 
-    let database_dir = &output_dirpath.join(schema.database_module());
+    let target_file = schema.schema_file_fullpath(output_dirpath);
 
-    std::fs::create_dir_all(database_dir)?;
+    if let Some(parent_dir) = target_file.parent() {
+        tokio::fs::create_dir_all(parent_dir).await?;
+    }
 
-    tokio::fs::File::create(database_dir.join(schema.schema_file_path()))
+    tokio::fs::File::create(target_file)
         .await?
         .write_all(src.as_bytes())
         .await?;
