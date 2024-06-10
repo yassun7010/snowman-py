@@ -77,12 +77,10 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
 
     if !has_diff {
         eprintln!("✅ Generated code is up-to-date");
-    } else {
-        if args.check {
-            anyhow::bail!(
-                "Generated code has differences. Please run `snowman model generate` to update the code."
-            );
-        }
+    } else if args.check {
+        anyhow::bail!(
+            "Generated code has differences. Please run `snowman model generate` to update the code."
+        );
     }
 
     Ok(())
