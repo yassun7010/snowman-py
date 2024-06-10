@@ -21,4 +21,5 @@ itertools.workspace = true
 anyhow = { version = "1.0.86", features = ["backtrace"] }
 clap_complete = "4.5.2"
 clap_complete_nushell = "4.5.1"
-colored = "2.1.0"
+similar = { version = "2.5.0", features = ["inline"] }
+console = "0.15.8"

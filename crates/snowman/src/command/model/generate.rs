@@ -1,8 +1,11 @@
-use crate::config::{get_model_output_dirpath, get_pydantic_options, get_snowflake_connection};
+use crate::{
+    config::{get_model_output_dirpath, get_pydantic_options, get_snowflake_connection},
+    database::fetch_database_schemas,
+};
 
 use anyhow::anyhow;
 use itertools::Itertools;
-use snowman_connector::query::{get_databases, DatabaseSchema};
+use snowman_connector::query::DatabaseSchema;
 use snowman_generator::ToPython;
 use tokio::io::AsyncWriteExt;
 
@@ -16,33 +19,17 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     let config_source = snowman_config::find_path()?;
     let config = snowman_config::load_from_source(&config_source)?;
     let connection = get_snowflake_connection(&config)?;
+
     let insert_typeddict_options = snowman_generator::InsertTypedDictOptions::default();
     let update_typeddict_options = snowman_generator::UpdateTypedDictOptions::default();
     let pydantic_options = get_pydantic_options(&config);
+
     let output_dirpath = &config_source.as_ref().parent().unwrap().join(
         args.output_dir
             .unwrap_or_else(|| get_model_output_dirpath(&config)),
     );
 
-    let schemas = futures::future::try_join_all(
-        get_databases(&connection)
-            .await?
-            .into_iter()
-            .filter(|name| config.model.include_database(name))
-            .unique()
-            .map(|database_name| async {
-                snowman_connector::query::get_schemas(&connection, database_name).await
-            }),
-    )
-    .await?
-    .into_iter()
-    .flatten()
-    .filter(|schema| {
-        config
-            .model
-            .include_database_schema(&schema.database_name, &schema.schema_name)
-    })
-    .collect::<Vec<_>>();
+    let schemas = fetch_database_schemas(&connection, &config).await?;
 
     if schemas.is_empty() {
         Err(anyhow!("No database schema found to generate models."))?;
