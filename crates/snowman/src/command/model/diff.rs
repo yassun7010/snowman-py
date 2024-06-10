@@ -1,6 +1,9 @@
+use std::io::Write;
+
 use crate::{
     config::{get_model_output_dirpath, get_pydantic_options, get_snowflake_connection},
     database::fetch_database_schemas,
+    formatter::run_ruff_format_if_exists,
 };
 use console::{style, Style};
 use similar::{ChangeTag, TextDiff};
@@ -53,8 +56,8 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     // zip database_schema and sources and print diff
     schemas
         .iter()
-        .zip(sources.iter())
-        .for_each(|(schema, new)| {
+        .zip(sources.into_iter())
+        .try_for_each(|(schema, mut new)| {
             let old = std::fs::read_to_string(
                 output_dirpath
                     .join(schema.database_module())
@@ -62,7 +65,16 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             )
             .unwrap_or("".to_string());
 
-            let diff = TextDiff::from_lines(&old, new);
+            if !old.is_empty() {
+                // write tmp file and format by ruff and get formatted code string.
+                // tmp file remove auto.
+                let mut file = tempfile::NamedTempFile::new()?;
+                file.write_all(new.as_bytes())?;
+                run_ruff_format_if_exists(file.path());
+                new = std::fs::read_to_string(file.path())?;
+            }
+
+            let diff = TextDiff::from_lines(&old, &new);
             for (idx, group) in diff.grouped_ops(3).iter().enumerate() {
                 if idx > 0 {
                     println!("{:-^1$}", "-", 80);
@@ -93,7 +105,9 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
                     }
                 }
             }
-        });
+
+            Ok::<(), anyhow::Error>(())
+        })?;
 
     Ok(())
 }

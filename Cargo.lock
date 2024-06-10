@@ -1717,6 +1717,7 @@ dependencies = [
  "snowman_config",
  "snowman_connector",
  "snowman_generator",
+ "tempfile",
  "tokio",
 ]
 

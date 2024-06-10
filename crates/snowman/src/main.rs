@@ -2,6 +2,7 @@ mod app;
 mod command;
 mod config;
 mod database;
+mod formatter;
 
 use console::Style;
 

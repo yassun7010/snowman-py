@@ -1,6 +1,7 @@
 use crate::{
     config::{get_model_output_dirpath, get_pydantic_options, get_snowflake_connection},
     database::fetch_database_schemas,
+    formatter::run_ruff_format_if_exists,
 };
 
 use anyhow::anyhow;
@@ -125,25 +126,4 @@ async fn write_database_init_py(
         .await?;
 
     Ok(())
-}
-
-fn run_ruff_format_if_exists(output_dirpath: &std::path::Path) {
-    // if ruff command found in local machine, run it on output_dirpath
-    match std::process::Command::new("ruff")
-        .arg("format")
-        .arg(output_dirpath)
-        .status()
-    {
-        Ok(status) => {
-            if !status.success() {
-                eprintln!("ruff command failed");
-            }
-        }
-        Err(err) => {
-            if err.kind() == std::io::ErrorKind::NotFound {
-                return;
-            }
-            eprintln!("ruff command not found: {}", err);
-        }
-    }
 }
