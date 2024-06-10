@@ -1,18 +1,23 @@
+mod error;
 mod model;
+mod traits;
 
-pub use model::pydantic::{
-    generate_pydantic_model, generate_pydantic_models, get_pydantic_modules, PydanticOptions,
-};
+pub use error::Error;
 
-pub use model::update_typeddict::{
-    generate_update_typeddict, generate_update_typeddicts, get_update_typeddict_modules,
-    UpdateTypedDictOptions,
-};
-
+use itertools::Itertools;
 pub use model::insert_typeddict::{
     generate_insert_typeddict, generate_insert_typeddicts, get_insert_typeddict_modules,
     InsertTypedDictOptions,
 };
+pub use model::pydantic::{
+    generate_pydantic_model, generate_pydantic_models, get_pydantic_modules, PydanticOptions,
+};
+pub use model::update_typeddict::{
+    generate_update_typeddict, generate_update_typeddicts, get_update_typeddict_modules,
+    UpdateTypedDictOptions,
+};
+use snowman_connector::query::DatabaseSchema;
+pub use traits::ToPython;
 
 pub fn generate_modlue_init_py(database_names: &[&str]) -> String {
     database_names
@@ -43,4 +48,88 @@ pub fn generate_module_docs() -> &'static str {
 
 pub fn generate_type_checking(inner_code: &str) -> String {
     ("if typing.TYPE_CHECKING:\n".to_string() + inner_code).replace('\n', "\n    ")
+}
+
+pub async fn generate_schema_python_code(
+    connection: &snowman_connector::Connection,
+    schema: &DatabaseSchema,
+    pydantic_options: &PydanticOptions,
+    insert_typeddict_options: &InsertTypedDictOptions,
+    update_typeddict_options: &UpdateTypedDictOptions,
+) -> Result<String, crate::Error> {
+    let tables = snowman_connector::query::get_schema_infomations(
+        connection,
+        &schema.database_name,
+        &schema.schema_name,
+    )
+    .await?;
+
+    let src = if tables.is_empty() {
+        generate_module_docs().to_string()
+    } else {
+        itertools::join(
+            [
+                generate_module_docs(),
+                &generate_import_modules(
+                    &itertools::chain!(
+                        get_insert_typeddict_modules(),
+                        get_update_typeddict_modules(),
+                        get_pydantic_modules(),
+                    )
+                    .unique()
+                    .collect::<Vec<&str>>(),
+                ),
+                &generate_type_checking(&itertools::join(
+                    [
+                        &generate_insert_typeddicts(
+                            &schema.database_name,
+                            &schema.schema_name,
+                            &tables,
+                            insert_typeddict_options,
+                        ),
+                        &generate_update_typeddicts(
+                            &schema.database_name,
+                            &schema.schema_name,
+                            &tables,
+                            update_typeddict_options,
+                        ),
+                    ],
+                    "\n",
+                )),
+                &generate_pydantic_models(
+                    &tables,
+                    pydantic_options,
+                    insert_typeddict_options,
+                    update_typeddict_options,
+                ),
+            ],
+            "\n",
+        )
+    };
+
+    Ok(src)
+}
+
+pub async fn generate_database_init_python_code(
+    schemas: &[&DatabaseSchema],
+) -> Result<String, crate::Error> {
+    let schema_names = schemas
+        .iter()
+        .map(|schema| schema.schema_module())
+        .collect::<Vec<_>>();
+
+    let src = itertools::join(
+        [
+            generate_module_docs(),
+            &generate_modlue_init_py(
+                &schema_names
+                    .iter()
+                    .map(AsRef::as_ref)
+                    .collect::<Vec<&str>>(),
+            ),
+        ],
+        "\n",
+    );
+
+    Ok(src)
 }

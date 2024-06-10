@@ -8,7 +8,6 @@ license.workspace = true
 
 [dependencies]
 askama = "0.12.1"
-convert_case.workspace = true
 clap = { version = "4.5.4", features = ["derive"] }
 dotenvy = "0.15.7"
 futures = "0.3.30"
@@ -18,7 +17,7 @@ snowman_config.workspace = true
 snowman_connector.workspace = true
 snowman_generator.workspace = true
 tokio.workspace = true
-itertools = "0.13.0"
+itertools.workspace = true
 anyhow = { version = "1.0.86", features = ["backtrace"] }
 clap_complete = "4.5.2"
 clap_complete_nushell = "4.5.1"

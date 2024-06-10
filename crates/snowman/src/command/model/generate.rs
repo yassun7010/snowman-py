@@ -1,9 +1,9 @@
 use crate::config::{get_model_output_dirpath, get_pydantic_options, get_snowflake_connection};
 
 use anyhow::anyhow;
-use convert_case::{Case, Casing};
 use itertools::Itertools;
 use snowman_connector::query::{get_databases, DatabaseSchema};
+use snowman_generator::ToPython;
 use tokio::io::AsyncWriteExt;
 
 #[derive(clap::Args)]
@@ -55,25 +55,16 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
         );
     }
 
-    let database_module_names = &schemas
-        .iter()
-        .map(|schema| schema.database_name.to_case(Case::Snake))
-        .collect::<Vec<_>>();
-    let database_module_names = database_module_names
-        .iter()
-        .unique()
-        .map(AsRef::as_ref)
-        .collect::<Vec<&str>>();
-
     // remove existing files
-    database_module_names.iter().try_for_each(|database_name| {
-        let database_module_path = output_dirpath.join(database_name);
+    schemas.iter().try_for_each(|schema| {
+        let database_module_path = output_dirpath.join(schema.database_module());
         if database_module_path.exists() {
             std::fs::remove_dir_all(&database_module_path)?;
         }
         Ok::<_, anyhow::Error>(())
     })?;
 
+    // generate models
     futures::future::try_join_all(schemas.iter().map(|schema| async {
         write_schema_py(
             &connection,
@@ -90,15 +81,13 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     futures::future::try_join_all(
         schemas
             .iter()
-            .into_group_map_by(|x| x.database_name.clone())
+            .into_group_map_by(|x| x.database_module())
             .into_iter()
-            .map(|(database_name, schemas)| async move {
-                write_database_init_py(output_dirpath, &database_name, &schemas).await
+            .map(|(database_module, schemas)| async move {
+                write_database_init_py(output_dirpath, &database_module, &schemas).await
             }),
     )
     .await?;
-
-    // write_output_init_py(output_dirpath, &database_module_names).await?;
 
     run_ruff_format_if_exists(output_dirpath);
 
@@ -113,98 +102,38 @@ async fn write_schema_py(
     insert_typeddict_options: &snowman_generator::InsertTypedDictOptions,
     update_typeddict_options: &snowman_generator::UpdateTypedDictOptions,
 ) -> Result<(), anyhow::Error> {
-    let tables = snowman_connector::query::get_schema_infomations(
+    let src = snowman_generator::generate_schema_python_code(
         connection,
-        &schema.database_name,
-        &schema.schema_name,
+        schema,
+        pydantic_options,
+        insert_typeddict_options,
+        update_typeddict_options,
     )
     .await?;
 
-    let src = if tables.is_empty() {
-        snowman_generator::generate_module_docs().to_string()
-    } else {
-        itertools::join(
-            [
-                snowman_generator::generate_module_docs(),
-                &snowman_generator::generate_import_modules(
-                    &itertools::chain!(
-                        snowman_generator::get_insert_typeddict_modules(),
-                        snowman_generator::get_update_typeddict_modules(),
-                        snowman_generator::get_pydantic_modules(),
-                    )
-                    .unique()
-                    .collect::<Vec<&str>>(),
-                ),
-                &snowman_generator::generate_type_checking(&itertools::join(
-                    [
-                        &snowman_generator::generate_insert_typeddicts(
-                            &schema.database_name,
-                            &schema.schema_name,
-                            &tables,
-                            insert_typeddict_options,
-                        ),
-                        &snowman_generator::generate_update_typeddicts(
-                            &schema.database_name,
-                            &schema.schema_name,
-                            &tables,
-                            update_typeddict_options,
-                        ),
-                    ],
-                    "\n",
-                )),
-                &snowman_generator::generate_pydantic_models(
-                    &tables,
-                    pydantic_options,
-                    insert_typeddict_options,
-                    update_typeddict_options,
-                ),
-            ],
-            "\n",
-        )
-    };
-
-    let database_dir = &output_dirpath.join(schema.database_name.to_case(Case::Snake));
+    let database_dir = &output_dirpath.join(schema.database_module());
 
     std::fs::create_dir_all(database_dir)?;
 
-    tokio::fs::File::create(
-        database_dir.join(format!("{}.py", schema.schema_name.to_case(Case::Snake))),
-    )
-    .await?
-    .write_all(src.as_bytes())
-    .await?;
+    tokio::fs::File::create(database_dir.join(schema.schema_file_path()))
+        .await?
+        .write_all(src.as_bytes())
+        .await?;
 
     Ok(())
 }
 
 async fn write_database_init_py(
     output_dirpath: &std::path::Path,
-    database_name: &str,
+    database_module: &str,
     schemas: &[&DatabaseSchema],
 ) -> Result<(), anyhow::Error> {
-    let output_dirpath = &output_dirpath;
-    let database_dir = output_dirpath.join(database_name.to_case(Case::Snake));
-    let schema_names = schemas
-        .iter()
-        .map(|schema| schema.schema_name.to_case(Case::Snake))
-        .collect::<Vec<_>>();
-
-    tokio::fs::File::create(database_dir.join("__init__.py"))
+    tokio::fs::File::create(output_dirpath.join(database_module).join("__init__.py"))
         .await?
         .write_all(
-            itertools::join(
-                [
-                    snowman_generator::generate_module_docs(),
-                    &snowman_generator::generate_modlue_init_py(
-                        &schema_names
-                            .iter()
-                            .map(AsRef::as_ref)
-                            .collect::<Vec<&str>>(),
-                    ),
-                ],
-                "\n",
-            )
-            .as_bytes(),
+            snowman_generator::generate_database_init_python_code(schemas)
+                .await?
+                .as_bytes(),
         )
         .await?;
 

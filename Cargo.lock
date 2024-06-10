@@ -1693,7 +1693,6 @@ dependencies = [
  "clap_complete",
  "clap_complete_nushell",
  "colored",
- "convert_case",
  "dotenvy",
  "futures",
  "itertools",
@@ -1734,7 +1733,9 @@ name = "snowman_generator"
 version = "0.0.13"
 dependencies = [
  "convert_case",
+ "itertools",
  "snowman_connector",
+ "thiserror",
 ]
 
 [[package]]

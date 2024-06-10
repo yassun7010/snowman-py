@@ -9,4 +9,6 @@ license.workspace = true
 
 [dependencies]
 convert_case.workspace = true
+itertools.workspace = true
 snowman_connector.workspace = true
+thiserror.workspace = true
