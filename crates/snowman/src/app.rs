@@ -29,13 +29,18 @@ pub fn run(args: impl Into<Args>) -> Result<(), anyhow::Error> {
 
     match args.subcommand {
         Command::Init(args) => init::run(args)?,
-        Command::Model(model::Command::Generate(options)) => {
-            tokio::runtime::Builder::new_multi_thread()
+        Command::Model(command) => match command {
+            model::Command::Generate(args) => tokio::runtime::Builder::new_multi_thread()
                 .enable_all()
                 .build()
                 .unwrap()
-                .block_on(async { model::generate::run(options).await })?
-        }
+                .block_on(async { model::generate::run(args).await })?,
+            model::Command::Diff(args) => tokio::runtime::Builder::new_multi_thread()
+                .enable_all()
+                .build()
+                .unwrap()
+                .block_on(async { model::diff::run(args).await })?,
+        },
         Command::Config(command) => match command {
             config::Command::Print(args) => {
                 config::print::run(args)?;

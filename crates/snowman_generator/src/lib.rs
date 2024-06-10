@@ -1,17 +1,15 @@
-mod insert_typeddict;
-mod pydantic;
-mod update_typeddict;
+mod model;
 
-pub use pydantic::{
+pub use model::pydantic::{
     generate_pydantic_model, generate_pydantic_models, get_pydantic_modules, PydanticOptions,
 };
 
-pub use update_typeddict::{
+pub use model::update_typeddict::{
     generate_update_typeddict, generate_update_typeddicts, get_update_typeddict_modules,
     UpdateTypedDictOptions,
 };
 
-pub use insert_typeddict::{
+pub use model::insert_typeddict::{
     generate_insert_typeddict, generate_insert_typeddicts, get_insert_typeddict_modules,
     InsertTypedDictOptions,
 };
