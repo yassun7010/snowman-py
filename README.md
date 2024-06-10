@@ -31,6 +31,10 @@ snowman init
 snowman model generate
 ```
 
+### Check Generated Python Model
+```sh
+snowman model diff --check
+```
 
 ## Query Builder
 
