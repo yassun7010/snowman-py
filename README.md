@@ -26,12 +26,12 @@ pip install snowman-py
 snowman init
 ```
 
-### Generate Python Model From Snowflake Information Schema
+### Generate Python Model From Snowflake Information Schemas
 ```sh
 snowman model generate
 ```
 
-### Check Difference Between Python Model and Snowflake Information Schema
+### Check Differences Between Python Model and Snowflake Information Schemas
 ```sh
 snowman model diff --check
 ```

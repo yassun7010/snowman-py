@@ -5,9 +5,9 @@ pub mod generate;
 
 #[derive(Subcommand)]
 pub enum Command {
-    /// Generate Python model classes from Snowflake dataabse schema.
+    /// Generate Python models from Snowflake database schemas.
     Generate(generate::Args),
 
-    /// Generate diff between Python model classes and Snowflake dataabse schema.
+    /// Generate differences between Python models and Snowflake database schemas.
     Diff(diff::Args),
 }
