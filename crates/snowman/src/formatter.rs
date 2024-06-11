@@ -9,6 +9,7 @@ pub fn run_ruff_format_if_exists(output_dirpath: &std::path::Path) -> Result<(),
         .arg(output_dirpath)
         .output()
     {
+        // Skip if ruff command is not found.
         if err.kind() == std::io::ErrorKind::NotFound {
             return Ok(());
         }
