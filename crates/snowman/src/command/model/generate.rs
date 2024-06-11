@@ -78,7 +78,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     )
     .await?;
 
-    run_ruff_format_if_exists(output_dirpath);
+    run_ruff_format_if_exists(output_dirpath)?;
 
     eprintln!("✅ Models generated successfully");
 

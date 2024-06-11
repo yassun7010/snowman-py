@@ -1,16 +1,24 @@
-pub fn run_ruff_format_if_exists(output_dirpath: &std::path::Path) {
-    // if ruff command found in local machine, run it on output_dirpath
-    match std::process::Command::new("ruff")
-        .arg("format")
+pub fn run_ruff_format_if_exists(output_dirpath: &std::path::Path) -> Result<(), std::io::Error> {
+    // For import sorting.
+    // See https://github.com/astral-sh/ruff/issues/8367#issuecomment-1850317629
+    if let Err(err) = std::process::Command::new("ruff")
+        .arg("check")
+        .arg("--select")
+        .arg("I")
+        .arg("--fix")
         .arg(output_dirpath)
         .output()
     {
-        Ok(_) => {}
-        Err(err) => {
-            if err.kind() == std::io::ErrorKind::NotFound {
-                return;
-            }
-            eprintln!("ruff command not found: {}", err);
+        if err.kind() == std::io::ErrorKind::NotFound {
+            return Ok(());
         }
-    }
+        return Err(err);
+    };
+
+    std::process::Command::new("ruff")
+        .arg("format")
+        .arg(output_dirpath)
+        .output()?;
+
+    Ok(())
 }

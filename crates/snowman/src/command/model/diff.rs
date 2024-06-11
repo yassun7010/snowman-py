@@ -89,7 +89,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
 fn run_ruff_format(code: &str) -> Result<String, std::io::Error> {
     let mut file = tempfile::NamedTempFile::new()?;
     file.write_all(code.as_bytes())?;
-    run_ruff_format_if_exists(file.path());
+    run_ruff_format_if_exists(file.path())?;
 
     std::fs::read_to_string(file.path())
 }
