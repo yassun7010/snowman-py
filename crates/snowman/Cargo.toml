@@ -24,3 +24,4 @@ clap_complete_nushell = "4.5.1"
 similar = { version = "2.5.0", features = ["inline"] }
 console = "0.15.8"
 tempfile = "3.10.1"
+ring = "0.16"                                             # Fix to 0.16.0 because it causes an error in the 0.17.8 series. See https://github.com/briansmith/ring/issues/1789
