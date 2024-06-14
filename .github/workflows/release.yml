@@ -46,7 +46,7 @@ jobs:
           target: ${{ matrix.platform.target }}
           args: --release --out dist
           sccache: false
-          manylinux: auto
+          manylinux: manylinux_2_28
           before-script-linux: |
             # If we're running on rhel centos, install needed packages.
             if command -v yum &> /dev/null; then
