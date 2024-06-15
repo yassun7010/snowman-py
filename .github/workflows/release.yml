@@ -40,9 +40,10 @@ jobs:
           - runner: ubuntu-latest
             target: aarch64
             manylinux: manylinux_2_28
-          - runner: ubuntu-latest
-            target: s390x
-            manylinux: manylinux_2_28
+          # Error:
+          # - runner: ubuntu-latest
+          #   target: s390x
+          #   manylinux: manylinux_2_28
     steps:
       - uses: actions/checkout@v4
       - name: Build wheels
