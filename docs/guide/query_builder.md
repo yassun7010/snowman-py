@@ -15,6 +15,8 @@ it does not currently support complex query syntax like `SELECT`.
     The reason for not supporting `pyformat` is to avoid key duplication
     when complex query patterns occur.
 
+    In other words, it uses `%s` to embed parameters, not `%(name)s`.
+
 ## Insert Query
 
 === "Execute"
