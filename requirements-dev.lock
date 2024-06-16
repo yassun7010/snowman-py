@@ -15,6 +15,8 @@ asn1crypto==1.5.1
     # via snowflake-connector-python
 babel==2.15.0
     # via mkdocs-material
+beautifulsoup4==4.12.3
+    # via webpreview
 bracex==2.4
     # via wcmatch
 cairocffi==1.7.0
@@ -81,6 +83,7 @@ mkdocs==1.6.0
     # via mkdocs-exclude
     # via mkdocs-material
     # via mkdocs-plugin-inline-svg
+    # via mkdocsjsonschemaplugin
     # via mkdocstrings
 mkdocs-autorefs==1.0.1
     # via mkdocstrings
@@ -92,6 +95,7 @@ mkdocs-material==9.5.26
 mkdocs-material-extensions==1.3.1
     # via mkdocs-material
 mkdocs-plugin-inline-svg==0.1.0
+mkdocsjsonschemaplugin==0.0.4
 mkdocstrings==0.25.1
     # via mkdocstrings-python
 mkdocstrings-python==1.10.3
@@ -163,6 +167,7 @@ regex==2024.5.15
 requests==2.31.0
     # via mkdocs-material
     # via snowflake-connector-python
+    # via webpreview
 ruff==0.4.3
 setuptools==69.5.1
     # via nodeenv
@@ -173,6 +178,8 @@ snowflake-connector-python==3.10.1
     # via turu-snowflake
 sortedcontainers==2.4.0
     # via snowflake-connector-python
+soupsieve==2.5
+    # via beautifulsoup4
 tinycss2==1.3.0
     # via cairosvg
     # via cssselect2
@@ -204,3 +211,5 @@ wcmatch==8.5.2
 webencodings==0.5.1
     # via cssselect2
     # via tinycss2
+webpreview==1.7.2
+    # via mkdocsjsonschemaplugin
