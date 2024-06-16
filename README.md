@@ -11,7 +11,7 @@
 </p>
 
 
-Python model and query builder for [Snowflake](https://www.snowflake.com/).
+**Snowman**: Python model and query builder for [Snowflake](https://www.snowflake.com/).
 
 ## Install
 

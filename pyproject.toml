@@ -39,6 +39,14 @@ dev-dependencies = [
     "pip>=24.0",
     "pandas>=2.2.2",
     "pyarrow>=16.1.0",
+    "mkdocs>=1.6.0",
+    "mkdocs-material[imaging]>=9.5.26",
+    "mkdocs-plugin-inline-svg>=0.1.0",
+    "mkdocs-exclude>=1.0.2",
+    "mkdocstrings[python]>=0.25.1",
+    "griffe>=0.45.3",
+    "griffe-inherited-docstrings>=1.0.0",
+    "mkdocs-awesome-pages-plugin>=2.9.2",
 ]
 
 [tool.hatch.metadata]
