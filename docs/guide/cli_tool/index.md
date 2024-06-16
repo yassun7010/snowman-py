@@ -3,7 +3,7 @@
 The `snowman` command is provided to assist in the integration between Snowflake and Python.
 
 ## Initialization
-### `snowman init`
+### `$ snowman init`
 
 Initialize Snowman configuration.
 
@@ -16,7 +16,7 @@ Initialize Snowman configuration.
     ```
 
 ## Python Model Generator
-### `snowman model generate`
+### `$ snowman model generate`
 
 Automatically generate Pydantic models from Snowflake information schemas.
 
@@ -25,7 +25,7 @@ Automatically generate Pydantic models from Snowflake information schemas.
     snowman model generate
     ```
 
-### `snowman model diff`
+### `$ snowman model diff`
 
 Check differences between Python models and Snowflake information schemas.
 

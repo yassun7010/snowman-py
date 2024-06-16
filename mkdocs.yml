@@ -90,10 +90,7 @@ nav:
   - Welcome: index.md
   - User Guide:
       - Installation: guide/installation.md
-      - Query Builder: guide/query_builder.md
-      - CLI:
-          - Introduction: guide/cli_tool/index.md
+      - CLI Tool:
+          - Usage: guide/cli_tool/index.md
           - Configuration: guide/cli_tool/configuration.md
-#     - ... | flat | cli/*.md
-# - Query Builder:
-# - CLI:
+      - Query Builder: guide/query_builder.md
