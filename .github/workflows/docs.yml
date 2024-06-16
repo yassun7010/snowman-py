@@ -28,4 +28,4 @@ jobs:
       - uses: eifinger/setup-rye@v2
       - run: rye --version
       - run: rye sync
-      - run: rye run mkdocs gh-deploy --force
+      - run: rye run docs-publish

@@ -61,6 +61,8 @@ lint = "rye lint --fix"
 typecheck = "pyright python/src/** python/tests/**"
 test = "rye test"
 ci = { chain = ["format", "lint", "typecheck", "test"] }
+docs-serve = "mkdocs serve"
+docs-publish = "mkdocs gh-deploy --force"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:snowflake"]
