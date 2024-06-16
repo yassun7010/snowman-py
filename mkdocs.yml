@@ -50,6 +50,7 @@ site_url: https://yassun7010.github.io/snowman-py/
 edit_uri: edit/main/docs/
 plugins:
   - search
+  - autorefs
   - awesome-pages:
   - inline-svg:
   - exclude:
@@ -83,9 +84,6 @@ markdown_extensions:
       anchor_linenums: true
   - pymdownx.tabbed:
       alternate_style: true
-  # - pymdownx.emoji:
-  #     emoji_index: !!python/name:material.extensions.emoji.twemoji
-  #     emoji_generator: !!python/name:material.extensions.emoji.to_svg
 nav:
   - Welcome: index.md
   - User Guide:
