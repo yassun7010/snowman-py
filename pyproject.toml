@@ -47,7 +47,6 @@ dev-dependencies = [
     "griffe>=0.45.3",
     "griffe-inherited-docstrings>=1.0.0",
     "mkdocs-awesome-pages-plugin>=2.9.2",
-    "mkdocsjsonschemaplugin>=0.0.4",
 ]
 
 [tool.hatch.metadata]
