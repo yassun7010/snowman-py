@@ -1,5 +1,6 @@
 ---
 hide:
+  - toc
   - navigation
 ---
 
