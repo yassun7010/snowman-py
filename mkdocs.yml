@@ -56,7 +56,7 @@ plugins:
   - exclude:
       glob:
         - "**/.pytest_cache/*"
-  # - social
+  - social
   - mkdocstrings:
       handlers:
         python:
