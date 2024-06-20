@@ -59,6 +59,10 @@ pub fn generate_pydantic_model(
     let mut pydantic_schema = String::new();
 
     pydantic_schema.push_str(&format!(
+        "# TABLE: {}.{}.{}\n",
+        table.database_name, table.schema_name, table.table_name,
+    ));
+    pydantic_schema.push_str(&format!(
         "@snowman.table(\"{}\", \"{}\", \"{}\")\n",
         table.database_name, table.schema_name, table.table_name,
     ));
