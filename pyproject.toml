@@ -67,3 +67,4 @@ docs-publish = "mkdocs gh-deploy --force"
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:snowflake"]
 addopts = "--doctest-modules"
+norecursedirs = ["docs", "site", "examples"]
