@@ -7,10 +7,10 @@ query, params = (
     insert.into(
         User,
     ).values(
-        {
-            "id": 1,
-            "name": "John Doe",
-        }
+        User(
+            id=1,
+            name="John Doe",
+        )
     )
 ).build()
 

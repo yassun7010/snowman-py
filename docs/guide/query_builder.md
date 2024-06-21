@@ -31,6 +31,12 @@ it does not currently support complex query syntax like `SELECT`.
         --8<-- "docs/data/insert_query_build.py"
         ```
 
+=== "Execute Many"
+    !!! example
+        ```python
+        --8<-- "docs/data/insert_query_executemany.py"
+        ```
+
 ## Update Query
 
 === "Execute"
