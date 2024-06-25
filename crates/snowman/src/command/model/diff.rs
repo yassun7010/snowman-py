@@ -44,12 +44,17 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             .unwrap_or_else(|| get_model_output_dirpath(&config)),
     );
 
-    let schemas = fetch_database_schemas(&connection, &config).await?;
+    let database_schemas = fetch_database_schemas(&connection, &config).await?;
 
-    let sources = futures::future::try_join_all(schemas.iter().map(|schema| async {
-        match snowman_generator::generate_schema_python_code(
+    let sources = futures::future::try_join_all(database_schemas.iter().map(|schema| async {
+        let tables = snowman_connector::query::get_schema_infomations(
             &connection,
-            schema,
+            &schema.database_name,
+            &schema.schema_name,
+        )
+        .await?;
+        match snowman_generator::generate_schema_python_code(
+            &tables,
             &pydantic_options,
             &insert_typeddict_options,
             &update_typeddict_options,
@@ -63,7 +68,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     .await?;
 
     let mut has_diff = false;
-    schemas
+    database_schemas
         .iter()
         .zip(sources.into_iter())
         .try_for_each(|(schema, new)| {

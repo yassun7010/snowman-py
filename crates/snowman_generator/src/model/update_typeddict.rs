@@ -33,31 +33,26 @@ pub fn get_update_typeddict_modules() -> Vec<&'static str> {
     vec!["typing", "snowman"]
 }
 
-pub fn generate_update_typeddicts(
-    database_name: &str,
-    schema_name: &str,
-    tables: &[Table],
-    options: &UpdateTypedDictOptions,
-) -> String {
+pub fn generate_update_typeddicts(tables: &[Table], options: &UpdateTypedDictOptions) -> String {
     tables
         .iter()
-        .map(|table| generate_update_typeddict(database_name, schema_name, table, options))
+        .map(|table| generate_update_typeddict(table, options))
         .collect::<Vec<String>>()
         .join("\n\n")
 }
 
-pub fn generate_update_typeddict(
-    _database_name: &str,
-    _schema_name: &str,
-    table: &Table,
-    options: &UpdateTypedDictOptions,
-) -> String {
+pub fn generate_update_typeddict(table: &Table, options: &UpdateTypedDictOptions) -> String {
     let mut text = String::new();
 
     text.push_str(&format!(
         "class {}(typing.TypedDict):",
         options.make_class_name(&table.table_name)
     ));
+
+    if table.columns.is_empty() {
+        return text + "\n    pass\n";
+    }
+
     for column in &table.columns {
         let mut data_type = format!("snowman.datatype.{}", column.data_type);
         if column.is_nullable {
