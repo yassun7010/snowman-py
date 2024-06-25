@@ -25,6 +25,12 @@ Automatically generate Pydantic models from Snowflake information schemas.
     snowman model generate
     ```
 
+??? note "Generated Code"
+    ```python
+    --8<-- "docs/data/model_generate.py"
+    ```
+
+
 ### `$ snowman model diff`
 
 Check differences between Python models and Snowflake information schemas.
