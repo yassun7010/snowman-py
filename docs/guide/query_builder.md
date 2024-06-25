@@ -10,7 +10,7 @@ it does not currently support complex query syntax like `SELECT`.
     * SQL reserved words can be written in a way that can be accessed like properties with a dot `.`
     * If a SQL reserved word matches a Python reserved word, an underscore `_` is added to the end of the property name
 
-    If you know `SQL`, you can build Snowman queries with a fluent python coding 😎
+    If you know `SQL`, you can build Snowman queries with a fluent python coding !! 🚀
 
 !!! note
     The [paramstyle](https://peps.python.org/pep-0249/#paramstyle) used by Snowman is `format`.
