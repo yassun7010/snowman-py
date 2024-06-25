@@ -81,26 +81,8 @@ pub fn generate_pydantic_model(
     pydantic_schema.push_str("    model_config = pydantic.ConfigDict(populate_by_name=True)\n");
 
     for column in &table.columns {
-        let mut data_type = column.data_type.clone();
-        if column.is_nullable {
-            data_type.push_str(" | None");
-        }
-        let (field, has_default) = calc_pydantic_field(column);
-        if has_default {
-            pydantic_schema.push_str(&format!(
-                "\n    {}: snowman.datatype.{} = {}\n",
-                column.column_name.to_case(Case::Snake),
-                data_type,
-                field,
-            ))
-        } else {
-            pydantic_schema.push_str(&format!(
-                "\n    {}: typing.Annotated[snowman.datatype.{}, {},]\n",
-                column.column_name.to_case(Case::Snake),
-                data_type,
-                field,
-            ))
-        };
+        pydantic_schema.push_str(&format!("\n    {}", generate_column(column)));
+
         if let Some(comment) = column.comment.as_ref() {
             if !comment.is_empty() {
                 pydantic_schema.push_str(&format!("    \"\"\"{}\"\"\"\n", comment));
@@ -130,8 +112,19 @@ impl<T: Into<String>> From<T> for Text {
     }
 }
 
-fn calc_pydantic_field(column: &Column) -> (String, bool) {
-    let mut has_default = false;
+enum PydanticDefault {
+    None,
+    Default(Text),
+    DefaultFactory,
+}
+
+fn generate_column(column: &Column) -> String {
+    let mut data_type = column.data_type.clone();
+    if column.is_nullable {
+        data_type.push_str(" | None");
+    }
+
+    let mut default = PydanticDefault::None;
     let mut args: Vec<(&str, Text)> = vec![];
 
     if let Some(comment) = column.comment.as_ref() {
@@ -150,26 +143,54 @@ fn calc_pydantic_field(column: &Column) -> (String, bool) {
                 "default_factory",
                 format!("snowman.datatype.{}.now", column.data_type).into(),
             ));
-            has_default = true;
+            default = PydanticDefault::DefaultFactory;
         }
         Some("CURRENT_DATE()") => {
             args.push((
                 "default_factory",
                 format!("snowman.datatype.{}.today", column.data_type).into(),
             ));
-            has_default = true;
+            default = PydanticDefault::DefaultFactory;
+        }
+        Some("TRUE") => {
+            default = PydanticDefault::Default("True".into());
+        }
+        Some("FALSE") => {
+            default = PydanticDefault::Default("False".into());
+        }
+        Some("NULL") => {
+            default = PydanticDefault::Default("None".into());
         }
         _ => {}
     }
 
-    (
-        format!(
-            "pydantic.Field({})",
-            args.iter()
-                .map(|(k, v)| format!("{}={}", k, v))
-                .collect::<Vec<String>>()
-                .join(", "),
+    let field = format!(
+        "pydantic.Field({})",
+        args.iter()
+            .map(|(k, v)| format!("{}={}", k, v))
+            .collect::<Vec<String>>()
+            .join(", "),
+    );
+
+    match default {
+        PydanticDefault::None => format!(
+            "{}: typing.Annotated[snowman.datatype.{}, {},]\n",
+            column.column_name.to_case(Case::Snake),
+            data_type,
+            field,
         ),
-        has_default,
-    )
+        PydanticDefault::Default(default) => format!(
+            "{}: typing.Annotated[snowman.datatype.{}, {},] = {}\n",
+            column.column_name.to_case(Case::Snake),
+            data_type,
+            field,
+            default,
+        ),
+        PydanticDefault::DefaultFactory => format!(
+            "{}: snowman.datatype.{} = {}\n",
+            column.column_name.to_case(Case::Snake),
+            data_type,
+            field,
+        ),
+    }
 }
