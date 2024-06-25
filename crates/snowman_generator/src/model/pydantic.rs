@@ -107,7 +107,10 @@ fn calc_pydantic_field(column: &Column) -> String {
             args.push(("title", comment));
         }
     }
-    args.push(("alias", &column.column_name));
+    if column.column_name != column.column_name.to_case(Case::Snake) {
+        args.push(("alias", &column.column_name));
+    }
+
     format!(
         "pydantic.Field({})",
         args.iter()

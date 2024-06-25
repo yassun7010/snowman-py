@@ -18,21 +18,21 @@ async fn test_generate_schema_python_code() {
         comment: Some("User Table".to_string()),
         columns: vec![
             Column {
-                column_name: "id".to_string(),
+                column_name: "ID".to_string(),
                 data_type: "INTEGER".to_string(),
                 is_nullable: false,
                 comment: Some("User ID".to_string()),
                 default_value: None,
             },
             Column {
-                column_name: "name".to_string(),
+                column_name: "NAME".to_string(),
                 data_type: "TEXT".to_string(),
                 is_nullable: false,
                 comment: Some("User Name".to_string()),
                 default_value: None,
             },
             Column {
-                column_name: "created_at".to_string(),
+                column_name: "CREATED_AT".to_string(),
                 data_type: "TIMESTAMP".to_string(),
                 is_nullable: false,
                 comment: Some("Created At".to_string()),
