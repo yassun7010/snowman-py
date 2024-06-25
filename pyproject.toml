@@ -62,7 +62,7 @@ typecheck = "pyright python/src/** python/tests/**"
 test = "rye test"
 ci = { chain = ["format", "lint", "typecheck", "test"] }
 generate-sample-model = "cargo run --bin generate_sample_model docs/data"
-docs-serve = { chain = ["generate-sample-model", "mkdocs serve"] }
+docs-serve = { chain = ["generate-sample-model", ["format"], "mkdocs serve"] }
 docs-publish = "mkdocs gh-deploy --force"
 
 [tool.pytest.ini_options]

@@ -6,9 +6,8 @@
 #
 
 import typing
-
-import pydantic
 import snowman
+import pydantic
 
 if typing.TYPE_CHECKING:
 
