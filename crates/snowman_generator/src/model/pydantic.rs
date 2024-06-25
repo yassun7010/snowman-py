@@ -138,6 +138,15 @@ fn generate_column(column: &Column) -> String {
     }
 
     match column.default_value.as_deref() {
+        Some("NULL") => {
+            default = PydanticDefault::Default("None".into());
+        }
+        Some("TRUE") => {
+            default = PydanticDefault::Default("True".into());
+        }
+        Some("FALSE") => {
+            default = PydanticDefault::Default("False".into());
+        }
         Some("CURRENT_TIMESTAMP()") => {
             args.push((
                 "default_factory",
@@ -151,15 +160,6 @@ fn generate_column(column: &Column) -> String {
                 format!("snowman.datatype.{}.today", column.data_type).into(),
             ));
             default = PydanticDefault::DefaultFactory;
-        }
-        Some("TRUE") => {
-            default = PydanticDefault::Default("True".into());
-        }
-        Some("FALSE") => {
-            default = PydanticDefault::Default("False".into());
-        }
-        Some("NULL") => {
-            default = PydanticDefault::Default("None".into());
         }
         _ => {}
     }
@@ -192,5 +192,98 @@ fn generate_column(column: &Column) -> String {
             data_type,
             field,
         ),
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use pretty_assertions::assert_eq;
+    use snowman_connector::schema::Column;
+
+    use crate::model::pydantic::generate_column;
+
+    #[test]
+    fn test_generate_column_by_null_default() {
+        let column = Column {
+            column_name: "ID".to_string(),
+            data_type: "INTEGER".to_string(),
+            is_nullable: true,
+            comment: Some("User ID".to_string()),
+            default_value: Some("NULL".to_string()),
+        };
+
+        let result = generate_column(&column);
+        assert_eq!(
+            result,
+            "id: typing.Annotated[snowman.datatype.INTEGER | None, pydantic.Field(title=\"User ID\", alias=\"ID\"),] = None\n"
+        );
+    }
+
+    #[test]
+    fn test_generate_column_by_true_default() {
+        let column = Column {
+            column_name: "IS_ACTIVE".to_string(),
+            data_type: "BOOLEAN".to_string(),
+            is_nullable: false,
+            comment: Some("Is Active".to_string()),
+            default_value: Some("TRUE".to_string()),
+        };
+
+        let result = generate_column(&column);
+        assert_eq!(
+            result,
+            "is_active: typing.Annotated[snowman.datatype.BOOLEAN, pydantic.Field(title=\"Is Active\", alias=\"IS_ACTIVE\"),] = True\n"
+        );
+    }
+
+    #[test]
+    fn test_generate_column_by_false_default() {
+        let column = Column {
+            column_name: "IS_ACTIVE".to_string(),
+            data_type: "BOOLEAN".to_string(),
+            is_nullable: false,
+            comment: Some("Is Active".to_string()),
+            default_value: Some("FALSE".to_string()),
+        };
+
+        let result = generate_column(&column);
+        assert_eq!(
+            result,
+            "is_active: typing.Annotated[snowman.datatype.BOOLEAN, pydantic.Field(title=\"Is Active\", alias=\"IS_ACTIVE\"),] = False\n"
+        );
+    }
+
+    #[test]
+    fn test_generate_column_by_current_timestamp_default() {
+        let column = Column {
+            column_name: "CREATED_AT".to_string(),
+            data_type: "TIMESTAMP".to_string(),
+            is_nullable: false,
+            comment: Some("Created At".to_string()),
+            default_value: Some("CURRENT_TIMESTAMP()".to_string()),
+        };
+
+        let result = super::generate_column(&column);
+        assert_eq!(
+            result,
+            "created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title=\"Created At\", alias=\"CREATED_AT\", default_factory=snowman.datatype.TIMESTAMP.now)\n"
+        );
+    }
+
+    #[test]
+    fn test_generate_column_by_current_date_default() {
+        let column = Column {
+            column_name: "CREATED_AT".to_string(),
+            data_type: "DATE".to_string(),
+            is_nullable: false,
+            comment: Some("Created At".to_string()),
+            default_value: Some("CURRENT_DATE()".to_string()),
+        };
+
+        let result = super::generate_column(&column);
+        assert_eq!(
+            result,
+            "created_at: snowman.datatype.DATE = pydantic.Field(title=\"Created At\", alias=\"CREATED_AT\", default_factory=snowman.datatype.DATE.today)\n"
+        );
     }
 }
