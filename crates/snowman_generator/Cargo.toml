@@ -13,3 +13,4 @@ snowman_connector.workspace = true
 convert_case.workspace = true
 itertools.workspace = true
 thiserror.workspace = true
+tokio.workspace = true
