@@ -1,5 +1,6 @@
 mod error;
 mod model;
+mod sql;
 mod traits;
 
 pub use error::Error;
@@ -18,6 +19,7 @@ pub use model::update_typeddict::{
 };
 use snowman_connector::query::DatabaseSchema;
 use snowman_connector::schema::Table;
+pub use sql::generate_sql_definition;
 pub use traits::ToPython;
 
 pub fn generate_modlue_init_py(database_names: &[&str]) -> String {

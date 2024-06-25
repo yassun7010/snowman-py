@@ -1,3 +1,5 @@
+use std::{path::PathBuf, str::FromStr};
+
 use snowman_connector::{
     query::DatabaseSchema,
     schema::{Column, Table},
@@ -17,21 +19,21 @@ async fn main() {
         comment: Some("User Table".to_string()),
         columns: vec![
             Column {
-                column_name: "id".to_string(),
+                column_name: "ID".to_string(),
                 data_type: "INTEGER".to_string(),
                 is_nullable: false,
                 comment: Some("User ID".to_string()),
                 default_value: None,
             },
             Column {
-                column_name: "name".to_string(),
+                column_name: "NAME".to_string(),
                 data_type: "TEXT".to_string(),
                 is_nullable: false,
                 comment: Some("User Name".to_string()),
                 default_value: None,
             },
             Column {
-                column_name: "created_at".to_string(),
+                column_name: "CREATED_AT".to_string(),
                 data_type: "TIMESTAMP".to_string(),
                 is_nullable: false,
                 comment: Some("Created At".to_string()),
@@ -40,15 +42,30 @@ async fn main() {
         ],
     }];
 
-    let code = generate_schema_python_code(
-        &tables,
-        &Default::default(),
-        &Default::default(),
-        &Default::default(),
+    let output_dir = PathBuf::from_str(&std::env::args().nth(1).unwrap()).unwrap();
+
+    // SQL Code.
+    std::fs::write(
+        output_dir.join("model_schema.sql"),
+        tables
+            .iter()
+            .map(snowman_generator::generate_sql_definition)
+            .collect::<Vec<String>>()
+            .join("\n\n"),
     )
-    .await
     .unwrap();
 
-    // output file of sys args
-    std::fs::write(std::env::args().nth(1).unwrap(), code).unwrap();
+    // Pydantic Model Code.
+    std::fs::write(
+        output_dir.join("model_generate.py"),
+        generate_schema_python_code(
+            &tables,
+            &Default::default(),
+            &Default::default(),
+            &Default::default(),
+        )
+        .await
+        .unwrap(),
+    )
+    .unwrap();
 }

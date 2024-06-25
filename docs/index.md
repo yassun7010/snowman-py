@@ -19,7 +19,13 @@ Snowman provides two main features:
 * Automatically generate Pydantic models from Snowflake information schemas
 * Query builder to generate SQL queries in a type-safe
 
-??? note "Generated Pydantic Model"
+!!! note "Generated Pydantic Model"
+    #### SQL DDL
+    ```sql
+    --8<-- "docs/data/model_schema.sql"
+    ```
+
+    #### Python Code
     ```python
     --8<-- "docs/data/model_generate.py"
     ```

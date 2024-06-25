@@ -5,7 +5,7 @@ The `snowman` command is provided to assist in the integration between Snowflake
 ## Initialization
 ### `$ snowman init`
 
-Initialize Snowman configuration.
+Initialize Snowman configuration. For more information on configuration items, please read [Configuration](./configuration.md#Configuration).
 
 !!! tip
     Initialize the `snowman.toml` file or set `[tool.snowman]` in `pyproject.toml` with the `--file` option. By default, the `snowman.toml` file is created.
@@ -26,6 +26,12 @@ Automatically generate Pydantic models from Snowflake information schemas.
     ```
 
 ??? note "Generated Code"
+    #### SQL DDL
+    ```sql
+    --8<-- "docs/data/model_schema.sql"
+    ```
+
+    #### Python Code
     ```python
     --8<-- "docs/data/model_generate.py"
     ```
