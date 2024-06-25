@@ -8,10 +8,10 @@ pub struct Args {
 #[derive(Copy, Clone, Default)]
 pub enum TargetFile {
     /// Use "snowman.toml".
-    #[default]
     SnowmanToml,
 
     /// Use "pyproject.toml".
+    #[default]
     PyProjectToml,
 }
 
