@@ -91,13 +91,13 @@ class User(pydantic.BaseModel, snowman.Table["_UserInsertTypedDict","_UserUpdate
     """User Table"""
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
-    id: typing.Annotated[snowman.datatype.INTEGER, pydantic.Field(title="User ID", alias="id"),]
+    id: typing.Annotated[snowman.datatype.INTEGER, pydantic.Field(title="User ID", alias="ID"),]
     """User ID"""
 
-    name: typing.Annotated[snowman.datatype.TEXT, pydantic.Field(title="User Name", alias="name"),]
+    name: typing.Annotated[snowman.datatype.TEXT, pydantic.Field(title="User Name", alias="NAME"),]
     """User Name"""
 
-    created_at: typing.Annotated[snowman.datatype.TIMESTAMP, pydantic.Field(title="Created At", alias="created_at"),]
+    created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=snowman.datatype.TIMESTAMP.now)
     """Created At"""
 "#
         .strip_prefix('\n')

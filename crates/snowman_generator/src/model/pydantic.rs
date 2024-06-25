@@ -85,12 +85,22 @@ pub fn generate_pydantic_model(
         if column.is_nullable {
             data_type.push_str(" | None");
         }
-        pydantic_schema.push_str(&format!(
-            "\n    {}: typing.Annotated[snowman.datatype.{}, {},]\n",
-            column.column_name.to_case(Case::Snake),
-            data_type,
-            calc_pydantic_field(column),
-        ));
+        let (field, has_default) = calc_pydantic_field(column);
+        if has_default {
+            pydantic_schema.push_str(&format!(
+                "\n    {}: snowman.datatype.{} = {}\n",
+                column.column_name.to_case(Case::Snake),
+                data_type,
+                field,
+            ))
+        } else {
+            pydantic_schema.push_str(&format!(
+                "\n    {}: typing.Annotated[snowman.datatype.{}, {},]\n",
+                column.column_name.to_case(Case::Snake),
+                data_type,
+                field,
+            ))
+        };
         if let Some(comment) = column.comment.as_ref() {
             if !comment.is_empty() {
                 pydantic_schema.push_str(&format!("    \"\"\"{}\"\"\"\n", comment));
@@ -100,22 +110,66 @@ pub fn generate_pydantic_model(
     pydantic_schema
 }
 
-fn calc_pydantic_field(column: &Column) -> String {
-    let mut args = vec![];
-    if let Some(comment) = column.comment.as_ref() {
-        if !comment.is_empty() {
-            args.push(("title", comment));
+enum Text {
+    Quoted(String),
+    Normal(String),
+}
+
+impl std::fmt::Display for Text {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Text::Quoted(text) => write!(f, "\"{}\"", text),
+            Text::Normal(text) => write!(f, "{}", text),
         }
     }
-    if column.column_name != column.column_name.to_case(Case::Snake) {
-        args.push(("alias", &column.column_name));
+}
+
+impl<T: Into<String>> From<T> for Text {
+    fn from(text: T) -> Self {
+        Text::Normal(text.into())
+    }
+}
+
+fn calc_pydantic_field(column: &Column) -> (String, bool) {
+    let mut has_default = false;
+    let mut args: Vec<(&str, Text)> = vec![];
+
+    if let Some(comment) = column.comment.as_ref() {
+        if !comment.is_empty() {
+            args.push(("title", Text::Quoted(comment.to_string())));
+        }
     }
 
-    format!(
-        "pydantic.Field({})",
-        args.iter()
-            .map(|(k, v)| format!("{}=\"{}\"", k, v))
-            .collect::<Vec<String>>()
-            .join(", "),
+    if column.column_name != column.column_name.to_case(Case::Snake) {
+        args.push(("alias", Text::Quoted(column.column_name.clone())));
+    }
+
+    match column.default_value.as_deref() {
+        Some("CURRENT_TIMESTAMP()") => {
+            args.push((
+                "default_factory",
+                format!("snowman.datatype.{}.now", column.data_type).into(),
+            ));
+            has_default = true;
+        }
+        Some("CURRENT_DATE()") => {
+            args.push((
+                "default_factory",
+                format!("snowman.datatype.{}.today", column.data_type).into(),
+            ));
+            has_default = true;
+        }
+        _ => {}
+    }
+
+    (
+        format!(
+            "pydantic.Field({})",
+            args.iter()
+                .map(|(k, v)| format!("{}={}", k, v))
+                .collect::<Vec<String>>()
+                .join(", "),
+        ),
+        has_default,
     )
 }
