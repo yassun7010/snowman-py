@@ -124,7 +124,6 @@ fn generate_column(column: &Column) -> String {
         data_type.push_str(" | None");
     }
 
-    let mut default = PydanticDefault::None;
     let mut args: Vec<(&str, Text)> = vec![];
 
     if let Some(comment) = column.comment.as_ref() {
@@ -137,32 +136,45 @@ fn generate_column(column: &Column) -> String {
         args.push(("alias", Text::Quoted(column.column_name.clone())));
     }
 
-    match column.default_value.as_deref() {
-        Some("NULL") => {
-            default = PydanticDefault::Default("None".into());
-        }
-        Some("TRUE") => {
-            default = PydanticDefault::Default("True".into());
-        }
-        Some("FALSE") => {
-            default = PydanticDefault::Default("False".into());
-        }
+    let default = match column.default_value.as_deref() {
+        // NULL
+        Some("NULL") => PydanticDefault::Default("None".into()),
+        // BOOLEAN
+        Some("TRUE") => PydanticDefault::Default("True".into()),
+        Some("FALSE") => PydanticDefault::Default("False".into()),
+        // TIMESTAMP
         Some("CURRENT_TIMESTAMP()") => {
             args.push((
                 "default_factory",
                 format!("snowman.datatype.{}.now", column.data_type).into(),
             ));
-            default = PydanticDefault::DefaultFactory;
+            PydanticDefault::DefaultFactory
         }
+        // DATE
         Some("CURRENT_DATE()") => {
             args.push((
                 "default_factory",
                 format!("snowman.datatype.{}.today", column.data_type).into(),
             ));
-            default = PydanticDefault::DefaultFactory;
+            PydanticDefault::DefaultFactory
         }
-        _ => {}
-    }
+        Some(default_value) => {
+            // INTEGER
+            if let Ok(default_value) = default_value.parse::<i64>() {
+                PydanticDefault::Default(default_value.to_string().into())
+            }
+            // FLOAT
+            else if let Ok(default_value) = default_value.parse::<f64>() {
+                PydanticDefault::Default(default_value.to_string().into())
+            }
+            // UNKNOWN
+            else {
+                PydanticDefault::None
+            }
+        }
+        // UNKNOWN
+        None => PydanticDefault::None,
+    };
 
     let field = format!(
         "pydantic.Field({})",
@@ -284,6 +296,40 @@ mod test {
         assert_eq!(
             result,
             "created_at: snowman.datatype.DATE = pydantic.Field(title=\"Created At\", alias=\"CREATED_AT\", default_factory=snowman.datatype.DATE.today)\n"
+        );
+    }
+
+    #[test]
+    fn test_generate_column_by_integer_default() {
+        let column = Column {
+            column_name: "AGE".to_string(),
+            data_type: "INTEGER".to_string(),
+            is_nullable: false,
+            comment: Some("Age".to_string()),
+            default_value: Some("20".to_string()),
+        };
+
+        let result = generate_column(&column);
+        assert_eq!(
+            result,
+            "age: typing.Annotated[snowman.datatype.INTEGER, pydantic.Field(title=\"Age\", alias=\"AGE\"),] = 20\n"
+        );
+    }
+
+    #[test]
+    fn test_generate_column_by_float_default() {
+        let column = Column {
+            column_name: "HEIGHT".to_string(),
+            data_type: "FLOAT".to_string(),
+            is_nullable: false,
+            comment: Some("Height".to_string()),
+            default_value: Some("170.5".to_string()),
+        };
+
+        let result = generate_column(&column);
+        assert_eq!(
+            result,
+            "height: typing.Annotated[snowman.datatype.FLOAT, pydantic.Field(title=\"Height\", alias=\"HEIGHT\"),] = 170.5\n"
         );
     }
 }
