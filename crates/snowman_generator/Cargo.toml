@@ -14,3 +14,6 @@ convert_case.workspace = true
 itertools.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
+
+[dev-dependencies]
+pretty_assertions = "1.4.0"

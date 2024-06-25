@@ -1,3 +1,4 @@
+use pretty_assertions::assert_eq;
 use snowman_connector::{
     query::DatabaseSchema,
     schema::{Column, Table},

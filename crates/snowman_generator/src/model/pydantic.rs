@@ -1,5 +1,5 @@
 use convert_case::{Case, Casing};
-use snowman_connector::schema::Table;
+use snowman_connector::schema::{Column, Table};
 
 use crate::{InsertTypedDictOptions, UpdateTypedDictOptions};
 
@@ -86,16 +86,10 @@ pub fn generate_pydantic_model(
             data_type.push_str(" | None");
         }
         pydantic_schema.push_str(&format!(
-            "\n    {}: typing.Annotated[snowman.datatype.{}, pydantic.Field({}alias=\"{}\"),]\n",
+            "\n    {}: typing.Annotated[snowman.datatype.{}, {},]\n",
             column.column_name.to_case(Case::Snake),
             data_type,
-            column
-                .comment
-                .as_ref()
-                .filter(|c| !c.is_empty())
-                .map(|c| format!("title=\"{}\", ", c))
-                .unwrap_or_default(),
-            column.column_name,
+            calc_pydantic_field(column),
         ));
         if let Some(comment) = column.comment.as_ref() {
             if !comment.is_empty() {
@@ -104,4 +98,21 @@ pub fn generate_pydantic_model(
         }
     }
     pydantic_schema
+}
+
+fn calc_pydantic_field(column: &Column) -> String {
+    let mut args = vec![];
+    if let Some(comment) = column.comment.as_ref() {
+        if !comment.is_empty() {
+            args.push(("title", comment));
+        }
+    }
+    args.push(("alias", &column.column_name));
+    format!(
+        "pydantic.Field({})",
+        args.iter()
+            .map(|(k, v)| format!("{}=\"{}\"", k, v))
+            .collect::<Vec<String>>()
+            .join(", "),
+    )
 }
