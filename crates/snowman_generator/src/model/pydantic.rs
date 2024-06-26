@@ -242,7 +242,7 @@ fn default_timestamp_ltz(params: &Parameters) -> Text {
 }
 
 fn default_timestamp_ntz() -> Text {
-    "lambda: datetime.datetime.now(datetime.timezone.utc)".into()
+    "datetime.datetime.utcnow".into()
 }
 
 #[cfg(test)]
@@ -319,7 +319,7 @@ mod test {
         let result = super::generate_column(&column, &Default::default());
         assert_eq!(
             result,
-            r#"created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
+            r#"created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=datetime.datetime.utcnow)
 "#
         );
     }
@@ -373,7 +373,7 @@ mod test {
         let result = super::generate_column(&column, &Default::default());
         assert_eq!(
             result,
-            r#"created_at: snowman.datatype.TIMESTAMP_NTZ = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
+            r#"created_at: snowman.datatype.TIMESTAMP_NTZ = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=datetime.datetime.utcnow)
 "#
         );
     }
