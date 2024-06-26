@@ -159,8 +159,14 @@ fn generate_column(column: &Column) -> String {
             PydanticDefault::DefaultFactory
         }
         Some(default_value) => {
+            // STRING
+            if default_value.starts_with('\'') && default_value.ends_with('\'') {
+                PydanticDefault::Default(Text::Quoted(
+                    default_value[1..default_value.len() - 1].replace('"', "\\\""),
+                ))
+            }
             // INTEGER
-            if let Ok(default_value) = default_value.parse::<i64>() {
+            else if let Ok(default_value) = default_value.parse::<i64>() {
                 PydanticDefault::Default(default_value.to_string().into())
             }
             // FLOAT
@@ -227,7 +233,8 @@ mod test {
         let result = generate_column(&column);
         assert_eq!(
             result,
-            "id: typing.Annotated[snowman.datatype.INTEGER | None, pydantic.Field(title=\"User ID\", alias=\"ID\"),] = None\n"
+            r#"id: typing.Annotated[snowman.datatype.INTEGER | None, pydantic.Field(title="User ID", alias="ID"),] = None
+"#
         );
     }
 
@@ -244,7 +251,8 @@ mod test {
         let result = generate_column(&column);
         assert_eq!(
             result,
-            "is_active: typing.Annotated[snowman.datatype.BOOLEAN, pydantic.Field(title=\"Is Active\", alias=\"IS_ACTIVE\"),] = True\n"
+            r#"is_active: typing.Annotated[snowman.datatype.BOOLEAN, pydantic.Field(title="Is Active", alias="IS_ACTIVE"),] = True
+"#
         );
     }
 
@@ -261,7 +269,8 @@ mod test {
         let result = generate_column(&column);
         assert_eq!(
             result,
-            "is_active: typing.Annotated[snowman.datatype.BOOLEAN, pydantic.Field(title=\"Is Active\", alias=\"IS_ACTIVE\"),] = False\n"
+            r#"is_active: typing.Annotated[snowman.datatype.BOOLEAN, pydantic.Field(title="Is Active", alias="IS_ACTIVE"),] = False
+"#
         );
     }
 
@@ -278,7 +287,8 @@ mod test {
         let result = super::generate_column(&column);
         assert_eq!(
             result,
-            "created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title=\"Created At\", alias=\"CREATED_AT\", default_factory=snowman.datatype.TIMESTAMP.now)\n"
+            r#"created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=snowman.datatype.TIMESTAMP.now)
+"#
         );
     }
 
@@ -295,7 +305,44 @@ mod test {
         let result = super::generate_column(&column);
         assert_eq!(
             result,
-            "created_at: snowman.datatype.DATE = pydantic.Field(title=\"Created At\", alias=\"CREATED_AT\", default_factory=snowman.datatype.DATE.today)\n"
+            r#"created_at: snowman.datatype.DATE = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=snowman.datatype.DATE.today)
+"#
+        );
+    }
+
+    #[test]
+    fn test_generate_column_by_string_default() {
+        let column = Column {
+            column_name: "NAME".to_string(),
+            data_type: "TEXT".to_string(),
+            is_nullable: false,
+            comment: Some("Name".to_string()),
+            default_value: Some("'John Doe'".to_string()),
+        };
+
+        let result = generate_column(&column);
+        assert_eq!(
+            result,
+            r#"name: typing.Annotated[snowman.datatype.TEXT, pydantic.Field(title="Name", alias="NAME"),] = "John Doe"
+"#
+        );
+    }
+
+    #[test]
+    fn test_generate_column_by_double_quoted_string_default() {
+        let column = Column {
+            column_name: "COMMENT".to_string(),
+            data_type: "TEXT".to_string(),
+            is_nullable: false,
+            comment: Some("Name".to_string()),
+            default_value: Some("'He said. \"Hello.\"'".to_string()),
+        };
+
+        let result = generate_column(&column);
+        assert_eq!(
+            result,
+            r#"comment: typing.Annotated[snowman.datatype.TEXT, pydantic.Field(title="Name", alias="COMMENT"),] = "He said. \"Hello.\""
+"#
         );
     }
 
@@ -312,7 +359,8 @@ mod test {
         let result = generate_column(&column);
         assert_eq!(
             result,
-            "age: typing.Annotated[snowman.datatype.INTEGER, pydantic.Field(title=\"Age\", alias=\"AGE\"),] = 20\n"
+            r#"age: typing.Annotated[snowman.datatype.INTEGER, pydantic.Field(title="Age", alias="AGE"),] = 20
+"#
         );
     }
 
@@ -329,7 +377,8 @@ mod test {
         let result = generate_column(&column);
         assert_eq!(
             result,
-            "height: typing.Annotated[snowman.datatype.FLOAT, pydantic.Field(title=\"Height\", alias=\"HEIGHT\"),] = 170.5\n"
+            r#"height: typing.Annotated[snowman.datatype.FLOAT, pydantic.Field(title="Height", alias="HEIGHT"),] = 170.5
+"#
         );
     }
 }
