@@ -26,12 +26,12 @@ Automatically generate Pydantic models from Snowflake information schemas.
     ```
 
 ??? note "Generated Code"
-    #### SQL DDL
+    #### Source: SQL DDL
     ```sql
     --8<-- "docs/data/model_schema.sql"
     ```
 
-    #### Python Code
+    #### Output: Python Code
     ```python
     --8<-- "docs/data/model_generate.py"
     ```
