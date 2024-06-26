@@ -20,7 +20,7 @@ Snowman provides two main features:
 * Query builder to generate SQL queries in a type-safe
 
 ???+ note "Generated Pydantic Model"
-    #### Source: SQL DDL
+    #### Source: Snowflake Infomation Schemas
     ```sql
     --8<-- "docs/data/model_schema.sql"
     ```
