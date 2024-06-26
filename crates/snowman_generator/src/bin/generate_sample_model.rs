@@ -34,7 +34,7 @@ async fn main() {
             },
             Column {
                 column_name: "CREATED_AT".to_string(),
-                data_type: "TIMESTAMP".to_string(),
+                data_type: "TIMESTAMP_TZ".to_string(),
                 is_nullable: false,
                 comment: Some("Created At".to_string()),
                 default_value: Some("CURRENT_TIMESTAMP()".to_string()),

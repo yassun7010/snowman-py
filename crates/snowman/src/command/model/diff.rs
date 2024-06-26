@@ -46,7 +46,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     );
 
     let database_schemas = fetch_database_schemas(&connection, &config).await?;
-    let parameters = get_parameters().await?;
+    let parameters = get_parameters(&connection).await?;
 
     let sources = futures::future::try_join_all(database_schemas.iter().map(|schema| async {
         let tables = snowman_connector::query::get_schema_infomations(

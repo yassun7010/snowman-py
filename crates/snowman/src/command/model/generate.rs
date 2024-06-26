@@ -32,7 +32,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     );
 
     let schemas = fetch_database_schemas(&connection, &config).await?;
-    let parameters = get_parameters().await?;
+    let parameters = get_parameters(&connection).await?;
 
     if schemas.is_empty() {
         Err(anyhow!("No database schema found to generate models."))?;

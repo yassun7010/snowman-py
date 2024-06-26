@@ -5,9 +5,11 @@
 # please refer to https://github.com/yassun7010/snowman-py .
 #
 
-import typing
-import snowman
+import datetime
 import pydantic
+import snowman
+import typing
+import zoneinfo
 
 if typing.TYPE_CHECKING:
 
@@ -18,7 +20,7 @@ if typing.TYPE_CHECKING:
         name: snowman.datatype.TEXT
         """User Name"""
 
-        created_at: typing.NotRequired[snowman.datatype.TIMESTAMP]
+        created_at: typing.NotRequired[snowman.datatype.TIMESTAMP_TZ]
         """Created At"""
 
     class _UserUpdateTypedDict(typing.TypedDict):
@@ -28,7 +30,7 @@ if typing.TYPE_CHECKING:
         name: typing.NotRequired[snowman.datatype.TEXT]
         """User Name"""
 
-        created_at: typing.NotRequired[snowman.datatype.TIMESTAMP]
+        created_at: typing.NotRequired[snowman.datatype.TIMESTAMP_TZ]
         """Created At"""
 
 
@@ -57,9 +59,11 @@ class User(
     ]
     """User Name"""
 
-    created_at: snowman.datatype.TIMESTAMP = pydantic.Field(
+    created_at: snowman.datatype.TIMESTAMP_TZ = pydantic.Field(
         title="Created At",
         alias="CREATED_AT",
-        default_factory=snowman.datatype.TIMESTAMP.now,
+        default_factory=lambda: datetime.datetime.now(
+            zoneinfo.ZoneInfo("America/Los_Angeles")
+        ),
     )
     """Created At"""
