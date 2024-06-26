@@ -20,6 +20,9 @@ if typing.TYPE_CHECKING:
         name: snowman.datatype.TEXT
         """User Name"""
 
+        age: typing.NotRequired[snowman.datatype.INTEGER | None]
+        """User Age"""
+
         created_at: typing.NotRequired[snowman.datatype.TIMESTAMP_TZ]
         """Created At"""
 
@@ -29,6 +32,9 @@ if typing.TYPE_CHECKING:
 
         name: typing.NotRequired[snowman.datatype.TEXT]
         """User Name"""
+
+        age: typing.NotRequired[snowman.datatype.INTEGER | None]
+        """User Age"""
 
         created_at: typing.NotRequired[snowman.datatype.TIMESTAMP_TZ]
         """Created At"""
@@ -52,6 +58,11 @@ class User(
         snowman.datatype.TEXT, pydantic.Field(title="User Name", alias="NAME")
     ]
     """User Name"""
+
+    age: typing.Annotated[
+        snowman.datatype.INTEGER | None, pydantic.Field(title="User Age", alias="AGE")
+    ] = None
+    """User Age"""
 
     created_at: snowman.datatype.TIMESTAMP_TZ = pydantic.Field(
         title="Created At", alias="CREATED_AT", default_factory=datetime.datetime.now
