@@ -4,7 +4,6 @@ mod sql;
 mod traits;
 
 pub use error::Error;
-
 use itertools::Itertools;
 pub use model::insert_typeddict::{
     generate_insert_typeddict, generate_insert_typeddicts, get_insert_typeddict_modules,
@@ -68,6 +67,7 @@ pub async fn generate_schema_python_code(
     pydantic_options: &PydanticOptions,
     insert_typeddict_options: &InsertTypedDictOptions,
     update_typeddict_options: &UpdateTypedDictOptions,
+    params: &snowman_connector::Parameters,
 ) -> Result<String, crate::Error> {
     let src = if tables.is_empty() {
         generate_module_docs().to_string()
@@ -82,6 +82,7 @@ pub async fn generate_schema_python_code(
                         get_pydantic_modules(),
                     )
                     .unique()
+                    .sorted()
                     .collect::<Vec<&str>>(),
                 ),
                 &generate_type_checking(&itertools::join(
@@ -96,6 +97,7 @@ pub async fn generate_schema_python_code(
                     pydantic_options,
                     insert_typeddict_options,
                     update_typeddict_options,
+                    params,
                 ),
             ],
             "\n",

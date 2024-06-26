@@ -1,11 +1,13 @@
+mod error;
+mod parameters;
+pub mod query;
+pub mod schema;
+
+pub use error::Error;
+pub use parameters::Parameters;
 use snowflake_connector_rs::{
     SnowflakeAuthMethod, SnowflakeClient, SnowflakeClientConfig, SnowflakeRow,
 };
-
-mod error;
-pub mod query;
-pub mod schema;
-pub use error::Error;
 
 pub struct Connection {
     inner: SnowflakeClient,

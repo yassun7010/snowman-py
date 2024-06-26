@@ -7,6 +7,7 @@ use crate::{
 };
 use console::{style, Style};
 use similar::{ChangeTag, TextDiff};
+use snowman_connector::query::get_parameters;
 use snowman_generator::ToPython;
 
 struct Line(Option<usize>);
@@ -45,6 +46,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     );
 
     let database_schemas = fetch_database_schemas(&connection, &config).await?;
+    let parameters = get_parameters().await?;
 
     let sources = futures::future::try_join_all(database_schemas.iter().map(|schema| async {
         let tables = snowman_connector::query::get_schema_infomations(
@@ -58,6 +60,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             &pydantic_options,
             &insert_typeddict_options,
             &update_typeddict_options,
+            &parameters,
         )
         .await
         {

@@ -46,6 +46,7 @@ async fn test_generate_schema_python_code() {
         &Default::default(),
         &Default::default(),
         &Default::default(),
+        &Default::default(),
     )
     .await
     .unwrap();
@@ -60,9 +61,11 @@ async fn test_generate_schema_python_code() {
 # please refer to https://github.com/yassun7010/snowman-py .
 #
 
-import typing
-import snowman
+import datetime
 import pydantic
+import snowman
+import typing
+import zoneinfo
 
 if typing.TYPE_CHECKING:
     class _UserInsertTypedDict(typing.TypedDict):
@@ -97,7 +100,7 @@ class User(pydantic.BaseModel, snowman.Table["_UserInsertTypedDict","_UserUpdate
     name: typing.Annotated[snowman.datatype.TEXT, pydantic.Field(title="User Name", alias="NAME"),]
     """User Name"""
 
-    created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=snowman.datatype.TIMESTAMP.now)
+    created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
     """Created At"""
 "#
         .strip_prefix('\n')
@@ -124,6 +127,7 @@ async fn test_generate_schema_python_code_of_empty_columns_table() {
         &Default::default(),
         &Default::default(),
         &Default::default(),
+        &Default::default(),
     )
     .await
     .unwrap();
@@ -138,9 +142,11 @@ async fn test_generate_schema_python_code_of_empty_columns_table() {
 # please refer to https://github.com/yassun7010/snowman-py .
 #
 
-import typing
-import snowman
+import datetime
 import pydantic
+import snowman
+import typing
+import zoneinfo
 
 if typing.TYPE_CHECKING:
     class _UserInsertTypedDict(typing.TypedDict):
