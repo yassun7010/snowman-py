@@ -13,5 +13,5 @@ with snowflake_conn.cursor() as cursor:
                 id=2,
                 name="Alice Smith",
             ),
-        ]
+        ],
     ).execute(cursor)

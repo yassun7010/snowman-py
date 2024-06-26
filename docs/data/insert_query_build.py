@@ -10,7 +10,7 @@ query, params = (
         User(
             id=1,
             name="John Doe",
-        )
+        ),
     )
 ).build()
 
@@ -26,7 +26,7 @@ expected = textwrap.dedent(
         %s,
         %s
     )
-    """
+    """,
 ).strip()
 
 assert query == expected

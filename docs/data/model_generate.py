@@ -6,10 +6,10 @@
 #
 
 import datetime
+import typing
+
 import pydantic
 import snowman
-import typing
-import zoneinfo
 
 if typing.TYPE_CHECKING:
 
@@ -37,25 +37,19 @@ if typing.TYPE_CHECKING:
 # TABLE: DATABASE.SCHEMA.USER
 @snowman.table("DATABASE", "SCHEMA", "USER")
 class User(
-    pydantic.BaseModel,
-    snowman.Table[
-        "_UserInsertTypedDict",
-        "_UserUpdateTypedDict",
-    ],
+    pydantic.BaseModel, snowman.Table["_UserInsertTypedDict", "_UserUpdateTypedDict"]
 ):
     """User Table"""
 
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
     id: typing.Annotated[
-        snowman.datatype.INTEGER,
-        pydantic.Field(title="User ID", alias="ID"),
+        snowman.datatype.INTEGER, pydantic.Field(title="User ID", alias="ID")
     ]
     """User ID"""
 
     name: typing.Annotated[
-        snowman.datatype.TEXT,
-        pydantic.Field(title="User Name", alias="NAME"),
+        snowman.datatype.TEXT, pydantic.Field(title="User Name", alias="NAME")
     ]
     """User Name"""
 

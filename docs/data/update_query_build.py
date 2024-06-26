@@ -21,7 +21,7 @@ expected = textwrap.dedent(
         name = %s
     WHERE
         id = %s
-    """
+    """,
 ).strip()
 
 assert query == expected
