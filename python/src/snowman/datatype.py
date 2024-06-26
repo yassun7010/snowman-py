@@ -34,5 +34,5 @@ TIMESTAMP_TZ = datetime.datetime
 VARIANT = Any
 OBJECT = dict[str, Any]
 ARRAY = list[Any]
-GEOGRAPHY = int
-GEOMETRY = int
+GEOGRAPHY = Any
+GEOMETRY = Any
