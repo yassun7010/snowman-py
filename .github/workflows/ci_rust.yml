@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - crates/**
+      - rust/**
   pull_request:
   workflow_dispatch:
 

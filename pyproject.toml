@@ -22,7 +22,7 @@ build-backend = "maturin"
 
 [tool.maturin]
 bindings = "bin"
-manifest-path = "crates/snowman/Cargo.toml"
+manifest-path = "rust/snowman/Cargo.toml"
 module-name = "snowman"
 python-source = "python/src"
 
