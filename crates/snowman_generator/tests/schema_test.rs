@@ -1,3 +1,4 @@
+use pretty_assertions::assert_eq;
 use snowman_connector::{
     query::DatabaseSchema,
     schema::{Column, Table},
@@ -17,21 +18,21 @@ async fn test_generate_schema_python_code() {
         comment: Some("User Table".to_string()),
         columns: vec![
             Column {
-                column_name: "id".to_string(),
+                column_name: "ID".to_string(),
                 data_type: "INTEGER".to_string(),
                 is_nullable: false,
                 comment: Some("User ID".to_string()),
                 default_value: None,
             },
             Column {
-                column_name: "name".to_string(),
+                column_name: "NAME".to_string(),
                 data_type: "TEXT".to_string(),
                 is_nullable: false,
                 comment: Some("User Name".to_string()),
                 default_value: None,
             },
             Column {
-                column_name: "created_at".to_string(),
+                column_name: "CREATED_AT".to_string(),
                 data_type: "TIMESTAMP".to_string(),
                 is_nullable: false,
                 comment: Some("Created At".to_string()),
@@ -90,13 +91,13 @@ class User(pydantic.BaseModel, snowman.Table["_UserInsertTypedDict","_UserUpdate
     """User Table"""
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
-    id: typing.Annotated[snowman.datatype.INTEGER, pydantic.Field(title="User ID", alias="id"),]
+    id: typing.Annotated[snowman.datatype.INTEGER, pydantic.Field(title="User ID", alias="ID"),]
     """User ID"""
 
-    name: typing.Annotated[snowman.datatype.TEXT, pydantic.Field(title="User Name", alias="name"),]
+    name: typing.Annotated[snowman.datatype.TEXT, pydantic.Field(title="User Name", alias="NAME"),]
     """User Name"""
 
-    created_at: typing.Annotated[snowman.datatype.TIMESTAMP, pydantic.Field(title="Created At", alias="created_at"),]
+    created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=snowman.datatype.TIMESTAMP.now)
     """Created At"""
 "#
         .strip_prefix('\n')
