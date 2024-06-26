@@ -160,7 +160,11 @@ fn generate_column(column: &Column) -> String {
         }
         Some(default_value) => {
             // STRING
-            if default_value.starts_with('\'') && default_value.ends_with('\'') {
+            if ["VARCHAR", "CHAR", "CHARACTER", "STRING", "TEXT"]
+                .contains(&column.data_type.as_str())
+                && default_value.starts_with('\'')
+                && default_value.ends_with('\'')
+            {
                 PydanticDefault::Default(Text::Quoted(
                     default_value[1..default_value.len() - 1].replace('"', "\\\""),
                 ))
