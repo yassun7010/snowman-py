@@ -1,13 +1,12 @@
 use crate::{
     config::{get_model_output_dirpath, get_pydantic_options, get_snowflake_connection},
     database::fetch_database_schemas,
-    formatter::run_ruff_format_if_exists,
 };
 
 use anyhow::anyhow;
 use itertools::Itertools;
-use snowman_connector::query::DatabaseSchema;
-use snowman_generator::ToPython;
+use snowman_connector::query::{get_parameters, DatabaseSchema};
+use snowman_generator::{formatter::run_ruff_format_if_exists, ToPython};
 use tokio::io::AsyncWriteExt;
 
 #[derive(clap::Args)]
@@ -32,6 +31,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     );
 
     let schemas = fetch_database_schemas(&connection, &config).await?;
+    let parameters = get_parameters(&connection).await?;
 
     if schemas.is_empty() {
         Err(anyhow!("No database schema found to generate models."))?;
@@ -62,6 +62,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             &pydantic_options,
             &insert_typeddict_options,
             &update_typeddict_options,
+            &parameters,
         )
         .await
     }))
@@ -92,6 +93,7 @@ async fn write_schema_py(
     pydantic_options: &snowman_generator::PydanticOptions,
     insert_typeddict_options: &snowman_generator::InsertTypedDictOptions,
     update_typeddict_options: &snowman_generator::UpdateTypedDictOptions,
+    params: &snowman_connector::Parameters,
 ) -> Result<(), anyhow::Error> {
     let tables = snowman_connector::query::get_schema_infomations(
         connection,
@@ -104,6 +106,7 @@ async fn write_schema_py(
         pydantic_options,
         insert_typeddict_options,
         update_typeddict_options,
+        params,
     )
     .await?;
 

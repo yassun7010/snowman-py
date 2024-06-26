@@ -4,7 +4,7 @@ pub fn run_ruff_format_if_exists(output_dirpath: &std::path::Path) -> Result<(),
     if let Err(err) = std::process::Command::new("ruff")
         .arg("check")
         .arg("--select")
-        .arg("I")
+        .arg("ALL")
         .arg("--fix")
         .arg(output_dirpath)
         .output()

@@ -4,10 +4,10 @@ use snowman_connector::{
     query::DatabaseSchema,
     schema::{Column, Table},
 };
-use snowman_generator::generate_schema_python_code;
+use snowman_generator::{formatter::run_ruff_format_if_exists, generate_schema_python_code};
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let database_schema = DatabaseSchema {
         database_name: "DATABASE".to_string(),
         schema_name: "SCHEMA".to_string(),
@@ -34,7 +34,7 @@ async fn main() {
             },
             Column {
                 column_name: "CREATED_AT".to_string(),
-                data_type: "TIMESTAMP".to_string(),
+                data_type: "TIMESTAMP_TZ".to_string(),
                 is_nullable: false,
                 comment: Some("Created At".to_string()),
                 default_value: Some("CURRENT_TIMESTAMP()".to_string()),
@@ -42,7 +42,8 @@ async fn main() {
         ],
     }];
 
-    let output_dir = PathBuf::from_str(&std::env::args().nth(1).unwrap()).unwrap();
+    let output_dir =
+        PathBuf::from_str(&std::env::args().nth(1).expect("need output_dirpath arg."))?;
 
     // SQL Code.
     std::fs::write(
@@ -52,8 +53,7 @@ async fn main() {
             .map(snowman_generator::generate_sql_definition)
             .collect::<Vec<String>>()
             .join("\n\n"),
-    )
-    .unwrap();
+    )?;
 
     // Pydantic Model Code.
     std::fs::write(
@@ -63,9 +63,12 @@ async fn main() {
             &Default::default(),
             &Default::default(),
             &Default::default(),
+            &Default::default(),
         )
-        .await
-        .unwrap(),
-    )
-    .unwrap();
+        .await?,
+    )?;
+
+    run_ruff_format_if_exists(&output_dir)?;
+
+    Ok(())
 }

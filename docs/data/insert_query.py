@@ -7,5 +7,5 @@ with snowflake_conn.cursor() as cursor:
         User(
             id=1,
             name="John Doe",
-        )
+        ),
     ).execute(cursor)

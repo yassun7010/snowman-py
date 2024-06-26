@@ -18,7 +18,7 @@ expected = textwrap.dedent(
         database.schema.users
     WHERE
         id = %s
-    """
+    """,
 ).strip()
 
 assert query == expected

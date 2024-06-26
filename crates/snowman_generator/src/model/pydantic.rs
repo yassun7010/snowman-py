@@ -1,7 +1,7 @@
+use crate::{InsertTypedDictOptions, UpdateTypedDictOptions};
 use convert_case::{Case, Casing};
 use snowman_connector::schema::{Column, Table};
-
-use crate::{InsertTypedDictOptions, UpdateTypedDictOptions};
+use snowman_connector::Parameters;
 
 #[derive(Debug, Clone, Default)]
 pub struct PydanticOptions {
@@ -23,7 +23,7 @@ impl PydanticOptions {
 }
 
 pub fn get_pydantic_modules() -> Vec<&'static str> {
-    vec!["pydantic", "snowman"]
+    vec!["pydantic", "snowman", "datetime", "zoneinfo"]
 }
 
 pub fn generate_pydantic_models(
@@ -31,6 +31,7 @@ pub fn generate_pydantic_models(
     pydantic_options: &PydanticOptions,
     insert_typeddict_options: &InsertTypedDictOptions,
     update_typeddict_options: &UpdateTypedDictOptions,
+    params: &Parameters,
 ) -> String {
     tables
         .iter()
@@ -40,6 +41,7 @@ pub fn generate_pydantic_models(
                 pydantic_options,
                 insert_typeddict_options,
                 update_typeddict_options,
+                params,
             )
         })
         .collect::<Vec<String>>()
@@ -55,6 +57,7 @@ pub fn generate_pydantic_model(
     pydantic_options: &PydanticOptions,
     insert_typeddict_options: &InsertTypedDictOptions,
     update_typeddict_options: &UpdateTypedDictOptions,
+    params: &Parameters,
 ) -> String {
     let mut pydantic_schema = String::new();
 
@@ -81,7 +84,7 @@ pub fn generate_pydantic_model(
     pydantic_schema.push_str("    model_config = pydantic.ConfigDict(populate_by_name=True)\n");
 
     for column in &table.columns {
-        pydantic_schema.push_str(&format!("\n    {}", generate_column(column)));
+        pydantic_schema.push_str(&format!("\n    {}", generate_column(column, params)));
 
         if let Some(comment) = column.comment.as_ref() {
             if !comment.is_empty() {
@@ -118,7 +121,7 @@ enum PydanticDefault {
     DefaultFactory,
 }
 
-fn generate_column(column: &Column) -> String {
+fn generate_column(column: &Column, params: &Parameters) -> String {
     let mut data_type = column.data_type.clone();
     if column.is_nullable {
         data_type.push_str(" | None");
@@ -144,10 +147,19 @@ fn generate_column(column: &Column) -> String {
         Some("FALSE") => PydanticDefault::Default("False".into()),
         // TIMESTAMP
         Some("CURRENT_TIMESTAMP()") => {
-            args.push((
-                "default_factory",
-                format!("snowman.datatype.{}.now", column.data_type).into(),
-            ));
+            let timestamp_type = match column.data_type.as_str() {
+                "TIMESTAMP" => params.timestamp_type_mapping.as_str(),
+                data_type => data_type,
+            };
+
+            let default_factory = match timestamp_type {
+                "TIMESTAMP_TZ" => default_timestamp_tz(),
+                "TIMESTAMP_LTZ" => default_timestamp_ltz(params),
+                "TIMESTAMP_NTZ" => default_timestamp_ntz(),
+                _ => unreachable!("Unsupported datetime type: {}", column.data_type),
+            };
+
+            args.push(("default_factory", default_factory));
             PydanticDefault::DefaultFactory
         }
         // DATE
@@ -217,6 +229,22 @@ fn generate_column(column: &Column) -> String {
     }
 }
 
+fn default_timestamp_tz() -> Text {
+    "datetime.datetime.now".to_string().into()
+}
+
+fn default_timestamp_ltz(params: &Parameters) -> Text {
+    format!(
+        "lambda: datetime.datetime.now(zoneinfo.ZoneInfo(\"{}\"))",
+        &params.timezone
+    )
+    .into()
+}
+
+fn default_timestamp_ntz() -> Text {
+    "lambda: datetime.datetime.now(datetime.timezone.utc)".into()
+}
+
 #[cfg(test)]
 mod test {
     use pretty_assertions::assert_eq;
@@ -234,7 +262,7 @@ mod test {
             default_value: Some("NULL".to_string()),
         };
 
-        let result = generate_column(&column);
+        let result = generate_column(&column, &Default::default());
         assert_eq!(
             result,
             r#"id: typing.Annotated[snowman.datatype.INTEGER | None, pydantic.Field(title="User ID", alias="ID"),] = None
@@ -252,7 +280,7 @@ mod test {
             default_value: Some("TRUE".to_string()),
         };
 
-        let result = generate_column(&column);
+        let result = generate_column(&column, &Default::default());
         assert_eq!(
             result,
             r#"is_active: typing.Annotated[snowman.datatype.BOOLEAN, pydantic.Field(title="Is Active", alias="IS_ACTIVE"),] = True
@@ -270,7 +298,7 @@ mod test {
             default_value: Some("FALSE".to_string()),
         };
 
-        let result = generate_column(&column);
+        let result = generate_column(&column, &Default::default());
         assert_eq!(
             result,
             r#"is_active: typing.Annotated[snowman.datatype.BOOLEAN, pydantic.Field(title="Is Active", alias="IS_ACTIVE"),] = False
@@ -288,10 +316,64 @@ mod test {
             default_value: Some("CURRENT_TIMESTAMP()".to_string()),
         };
 
-        let result = super::generate_column(&column);
+        let result = super::generate_column(&column, &Default::default());
         assert_eq!(
             result,
-            r#"created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=snowman.datatype.TIMESTAMP.now)
+            r#"created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
+"#
+        );
+    }
+
+    #[test]
+    fn test_generate_column_by_current_timestamp_tz_default() {
+        let column = Column {
+            column_name: "CREATED_AT".to_string(),
+            data_type: "TIMESTAMP_TZ".to_string(),
+            is_nullable: false,
+            comment: Some("Created At".to_string()),
+            default_value: Some("CURRENT_TIMESTAMP()".to_string()),
+        };
+
+        let result = super::generate_column(&column, &Default::default());
+        assert_eq!(
+            result,
+            r#"created_at: snowman.datatype.TIMESTAMP_TZ = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=datetime.datetime.now)
+"#
+        );
+    }
+
+    #[test]
+    fn test_generate_column_by_current_timestamp_ltz_default() {
+        let column = Column {
+            column_name: "CREATED_AT".to_string(),
+            data_type: "TIMESTAMP_LTZ".to_string(),
+            is_nullable: false,
+            comment: Some("Created At".to_string()),
+            default_value: Some("CURRENT_TIMESTAMP()".to_string()),
+        };
+
+        let result = super::generate_column(&column, &Default::default());
+        assert_eq!(
+            result,
+            r#"created_at: snowman.datatype.TIMESTAMP_LTZ = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=lambda: datetime.datetime.now(zoneinfo.ZoneInfo("America/Los_Angeles")))
+"#
+        );
+    }
+
+    #[test]
+    fn test_generate_column_by_current_timestamp_ntz_default() {
+        let column = Column {
+            column_name: "CREATED_AT".to_string(),
+            data_type: "TIMESTAMP_NTZ".to_string(),
+            is_nullable: false,
+            comment: Some("Created At".to_string()),
+            default_value: Some("CURRENT_TIMESTAMP()".to_string()),
+        };
+
+        let result = super::generate_column(&column, &Default::default());
+        assert_eq!(
+            result,
+            r#"created_at: snowman.datatype.TIMESTAMP_NTZ = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
 "#
         );
     }
@@ -306,7 +388,7 @@ mod test {
             default_value: Some("CURRENT_DATE()".to_string()),
         };
 
-        let result = super::generate_column(&column);
+        let result = super::generate_column(&column, &Default::default());
         assert_eq!(
             result,
             r#"created_at: snowman.datatype.DATE = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=snowman.datatype.DATE.today)
@@ -324,7 +406,7 @@ mod test {
             default_value: Some("'John Doe'".to_string()),
         };
 
-        let result = generate_column(&column);
+        let result = generate_column(&column, &Default::default());
         assert_eq!(
             result,
             r#"name: typing.Annotated[snowman.datatype.TEXT, pydantic.Field(title="Name", alias="NAME"),] = "John Doe"
@@ -342,7 +424,7 @@ mod test {
             default_value: Some("'He said. \"Hello.\"'".to_string()),
         };
 
-        let result = generate_column(&column);
+        let result = generate_column(&column, &Default::default());
         assert_eq!(
             result,
             r#"comment: typing.Annotated[snowman.datatype.TEXT, pydantic.Field(title="Name", alias="COMMENT"),] = "He said. \"Hello.\""
@@ -360,7 +442,7 @@ mod test {
             default_value: Some("20".to_string()),
         };
 
-        let result = generate_column(&column);
+        let result = generate_column(&column, &Default::default());
         assert_eq!(
             result,
             r#"age: typing.Annotated[snowman.datatype.INTEGER, pydantic.Field(title="Age", alias="AGE"),] = 20
@@ -378,7 +460,7 @@ mod test {
             default_value: Some("170.5".to_string()),
         };
 
-        let result = generate_column(&column);
+        let result = generate_column(&column, &Default::default());
         assert_eq!(
             result,
             r#"height: typing.Annotated[snowman.datatype.FLOAT, pydantic.Field(title="Height", alias="HEIGHT"),] = 170.5
