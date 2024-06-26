@@ -1,7 +1,7 @@
 #[derive(clap::Args)]
 pub struct Args {
     /// The file type of the Snowman configuration.
-    #[arg(long, value_enum, default_value = "snowman.toml")]
+    #[arg(long, value_enum, default_value = "pyproject.toml")]
     pub file: TargetFile,
 }
 
