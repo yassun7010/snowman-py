@@ -33,6 +33,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 default_value: None,
             },
             Column {
+                column_name: "AGE".to_string(),
+                data_type: "INTEGER".to_string(),
+                is_nullable: true,
+                comment: Some("User Age".to_string()),
+                default_value: Some("NULL".to_string()),
+            },
+            Column {
                 column_name: "CREATED_AT".to_string(),
                 data_type: "TIMESTAMP_TZ".to_string(),
                 is_nullable: false,
