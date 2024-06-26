@@ -151,18 +151,15 @@ fn generate_column(column: &Column, params: &Parameters) -> String {
                 "TIMESTAMP" => params.timestamp_type_mapping.as_str(),
                 data_type => data_type,
             };
-            match timestamp_type {
-                "TIMESTAMP_TZ" => {
-                    args.push(("default_factory", default_timestamp_tz()));
-                }
-                "TIMESTAMP_LTZ" => {
-                    args.push(("default_factory", default_timestamp_ltz(params)));
-                }
-                "TIMESTAMP_NTZ" => {
-                    args.push(("default_factory", default_timestamp_ntz()));
-                }
+
+            let default_factory = match timestamp_type {
+                "TIMESTAMP_TZ" => default_timestamp_tz(),
+                "TIMESTAMP_LTZ" => default_timestamp_ltz(params),
+                "TIMESTAMP_NTZ" => default_timestamp_ntz(),
                 _ => unreachable!("Unsupported datetime type: {}", column.data_type),
-            }
+            };
+
+            args.push(("default_factory", default_factory));
             PydanticDefault::DefaultFactory
         }
         // DATE
