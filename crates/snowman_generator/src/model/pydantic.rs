@@ -146,33 +146,27 @@ fn generate_column(column: &Column, params: &Parameters) -> String {
         Some("TRUE") => PydanticDefault::Default("True".into()),
         Some("FALSE") => PydanticDefault::Default("False".into()),
         // TIMESTAMP
-        Some("CURRENT_TIMESTAMP()") => match column.data_type.as_str() {
-            "TIMESTAMP" => {
-                let default_factory = match params.timestamp_type_mapping.as_str() {
-                    "TIMESTAMP_TZ" | "TIMESTAMP_LTZ" => default_timestamp_ltz(params),
-                    "TIMESTAMP_NTZ" => default_timestamp_ntz(),
-                    _ => unreachable!(
-                        "Unsupported timestamp type mapping: {}",
-                        params.timestamp_type_mapping
-                    ),
-                };
-                args.push(("default_factory", default_factory));
-                PydanticDefault::DefaultFactory
+        Some("CURRENT_TIMESTAMP()") => {
+            let timestamp_type = match column.data_type.as_str() {
+                "TIMESTAMP" => params.timestamp_type_mapping.as_str(),
+                data_type => data_type,
+            };
+            match timestamp_type {
+                "TIMESTAMP_TZ" => {
+                    args.push(("default_factory", default_timestamp_tz()));
+                    PydanticDefault::DefaultFactory
+                }
+                "TIMESTAMP_LTZ" => {
+                    args.push(("default_factory", default_timestamp_ltz(params)));
+                    PydanticDefault::DefaultFactory
+                }
+                "TIMESTAMP_NTZ" => {
+                    args.push(("default_factory", default_timestamp_ntz()));
+                    PydanticDefault::DefaultFactory
+                }
+                _ => unreachable!("Unsupported datetime type: {}", column.data_type),
             }
-            // Use Local Timezone
-            //
-            // If TIMESTAMP_TZ does not specify a timezone, it uses the local timezone, so treat it as TIMESTAMP_LTZ.
-            "TIMESTAMP_TZ" | "TIMESTAMP_LTZ" => {
-                args.push(("default_factory", default_timestamp_ltz(params)));
-                PydanticDefault::DefaultFactory
-            }
-            // Use UTC Timezone
-            "TIMESTAMP_NTZ" => {
-                args.push(("default_factory", default_timestamp_ntz()));
-                PydanticDefault::DefaultFactory
-            }
-            _ => unreachable!("Unsupported datetime type: {}", column.data_type),
-        },
+        }
         // DATE
         Some("CURRENT_DATE()") => {
             args.push((
@@ -238,6 +232,10 @@ fn generate_column(column: &Column, params: &Parameters) -> String {
             field,
         ),
     }
+}
+
+fn default_timestamp_tz() -> Text {
+    "datetime.datetime.now".to_string().into()
 }
 
 fn default_timestamp_ltz(params: &Parameters) -> Text {
@@ -327,6 +325,24 @@ mod test {
         assert_eq!(
             result,
             r#"created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
+"#
+        );
+    }
+
+    #[test]
+    fn test_generate_column_by_current_timestamp_tz_default() {
+        let column = Column {
+            column_name: "CREATED_AT".to_string(),
+            data_type: "TIMESTAMP_TZ".to_string(),
+            is_nullable: false,
+            comment: Some("Created At".to_string()),
+            default_value: Some("CURRENT_TIMESTAMP()".to_string()),
+        };
+
+        let result = super::generate_column(&column, &Default::default());
+        assert_eq!(
+            result,
+            r#"created_at: snowman.datatype.TIMESTAMP_TZ = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=datetime.datetime.now)
 "#
         );
     }

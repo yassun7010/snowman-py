@@ -60,10 +60,6 @@ class User(
     """User Name"""
 
     created_at: snowman.datatype.TIMESTAMP_TZ = pydantic.Field(
-        title="Created At",
-        alias="CREATED_AT",
-        default_factory=lambda: datetime.datetime.now(
-            zoneinfo.ZoneInfo("America/Los_Angeles")
-        ),
+        title="Created At", alias="CREATED_AT", default_factory=datetime.datetime.now
     )
     """Created At"""
