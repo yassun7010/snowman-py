@@ -1,4 +1,5 @@
 mod error;
+pub mod formatter;
 mod model;
 mod sql;
 mod traits;

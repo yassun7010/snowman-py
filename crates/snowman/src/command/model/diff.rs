@@ -3,11 +3,11 @@ use std::io::Write;
 use crate::{
     config::{get_model_output_dirpath, get_pydantic_options, get_snowflake_connection},
     database::fetch_database_schemas,
-    formatter::run_ruff_format_if_exists,
 };
 use console::{style, Style};
 use similar::{ChangeTag, TextDiff};
 use snowman_connector::query::get_parameters;
+use snowman_generator::formatter::run_ruff_format_if_exists;
 use snowman_generator::ToPython;
 
 struct Line(Option<usize>);

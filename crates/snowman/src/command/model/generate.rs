@@ -1,13 +1,12 @@
 use crate::{
     config::{get_model_output_dirpath, get_pydantic_options, get_snowflake_connection},
     database::fetch_database_schemas,
-    formatter::run_ruff_format_if_exists,
 };
 
 use anyhow::anyhow;
 use itertools::Itertools;
 use snowman_connector::query::{get_parameters, DatabaseSchema};
-use snowman_generator::ToPython;
+use snowman_generator::{formatter::run_ruff_format_if_exists, ToPython};
 use tokio::io::AsyncWriteExt;
 
 #[derive(clap::Args)]
