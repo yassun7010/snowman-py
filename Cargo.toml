@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/*"]
+members = ["rust/*"]
 resolver = "2"
 
 [workspace.package]
@@ -9,9 +9,9 @@ authors = ["yassun7010 <yassun7010@outlook.com>"]
 license = "MIT"
 
 [workspace.dependencies]
-snowman_config = { path = "crates/snowman_config" }
-snowman_connector = { path = "crates/snowman_connector" }
-snowman_generator = { path = "crates/snowman_generator" }
+snowman_config = { path = "rust/snowman_config" }
+snowman_connector = { path = "rust/snowman_connector" }
+snowman_generator = { path = "rust/snowman_generator" }
 
 convert_case = "0.6.0"
 log = "^0.4"
