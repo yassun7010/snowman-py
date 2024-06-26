@@ -154,18 +154,16 @@ fn generate_column(column: &Column, params: &Parameters) -> String {
             match timestamp_type {
                 "TIMESTAMP_TZ" => {
                     args.push(("default_factory", default_timestamp_tz()));
-                    PydanticDefault::DefaultFactory
                 }
                 "TIMESTAMP_LTZ" => {
                     args.push(("default_factory", default_timestamp_ltz(params)));
-                    PydanticDefault::DefaultFactory
                 }
                 "TIMESTAMP_NTZ" => {
                     args.push(("default_factory", default_timestamp_ntz()));
-                    PydanticDefault::DefaultFactory
                 }
                 _ => unreachable!("Unsupported datetime type: {}", column.data_type),
             }
+            PydanticDefault::DefaultFactory
         }
         // DATE
         Some("CURRENT_DATE()") => {
