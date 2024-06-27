@@ -110,7 +110,7 @@ async fn write_schema_py(
     )
     .await?;
 
-    let target_file = database_schema.schema_file_fullpath(output_dirpath);
+    let target_file = database_schema.schema_python_file_fullpath(output_dirpath);
 
     if let Some(parent_dir) = target_file.parent() {
         tokio::fs::create_dir_all(parent_dir).await?;
