@@ -75,7 +75,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
         .iter()
         .zip(sources.into_iter())
         .try_for_each(|(schema, new)| {
-            let target_file = schema.schema_file_fullpath(output_dirpath);
+            let target_file = schema.schema_python_file_fullpath(output_dirpath);
             let old = std::fs::read_to_string(&target_file).unwrap_or("".to_string());
 
             has_diff |= diff_generated_code(&old, &new, &target_file);

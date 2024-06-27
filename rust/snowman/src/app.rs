@@ -3,7 +3,7 @@ use clap::{
     Parser,
 };
 
-use crate::command::{config, init, model, snowman, Command};
+use crate::command::{config, init, model, snowman, sql, Command};
 
 #[derive(Parser)]
 #[command(version, styles=app_styles())]
@@ -40,6 +40,13 @@ pub fn run(args: impl Into<Args>) -> Result<(), anyhow::Error> {
                 .build()
                 .unwrap()
                 .block_on(async { model::diff::run(args).await })?,
+        },
+        Command::Sql(command) => match command {
+            sql::Command::Generate(args) => tokio::runtime::Builder::new_multi_thread()
+                .enable_all()
+                .build()
+                .unwrap()
+                .block_on(async { sql::generate::run(args).await })?,
         },
         Command::Config(command) => match command {
             config::Command::Print(args) => {
