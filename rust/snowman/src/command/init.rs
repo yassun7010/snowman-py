@@ -5,13 +5,12 @@ pub struct Args {
     pub file: TargetFile,
 }
 
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone)]
 pub enum TargetFile {
     /// Use "snowman.toml".
     SnowmanToml,
 
     /// Use "pyproject.toml".
-    #[default]
     PyProjectToml,
 }
 
