@@ -5,7 +5,7 @@ from pydantic import Field
 
 def DefaultFactory(default_factory: Callable[[], Any]) -> Any:
     """
-    The wrapper for cohabitation of Annotated and default_factory.
+    The wrapper for the combination of `Annotated` and `default_factory`.
 
     See: https://github.com/pydantic/pydantic/issues/9769
     """
