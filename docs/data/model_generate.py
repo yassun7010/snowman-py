@@ -64,7 +64,8 @@ class User(
     ] = None
     """User Age"""
 
-    created_at: snowman.datatype.TIMESTAMP_TZ = pydantic.Field(
-        title="Created At", alias="CREATED_AT", default_factory=datetime.datetime.now
-    )
+    created_at: typing.Annotated[
+        snowman.datatype.TIMESTAMP_TZ,
+        pydantic.Field(title="Created At", alias="CREATED_AT"),
+    ] = snowman.pydantic.DefaultFactory(datetime.datetime.now)
     """Created At"""

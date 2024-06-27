@@ -100,7 +100,7 @@ class User(pydantic.BaseModel, snowman.Table["_UserInsertTypedDict","_UserUpdate
     name: typing.Annotated[snowman.datatype.TEXT, pydantic.Field(title="User Name", alias="NAME"),]
     """User Name"""
 
-    created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=datetime.datetime.utcnow)
+    created_at: typing.Annotated[snowman.datatype.TIMESTAMP, pydantic.Field(title="Created At", alias="CREATED_AT"),] = snowman.pydantic.DefaultFactory(datetime.datetime.utcnow)
     """Created At"""
 "#
         .strip_prefix('\n')
