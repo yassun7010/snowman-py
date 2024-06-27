@@ -118,7 +118,7 @@ impl<T: Into<String>> From<T> for Text {
 enum PydanticDefault {
     None,
     Default(Text),
-    DefaultFactory,
+    DefaultFactory(Text),
 }
 
 fn generate_column(column: &Column, params: &Parameters) -> String {
@@ -159,17 +159,10 @@ fn generate_column(column: &Column, params: &Parameters) -> String {
                 _ => unreachable!("Unsupported datetime type: {}", column.data_type),
             };
 
-            args.push(("default_factory", default_factory));
-            PydanticDefault::DefaultFactory
+            PydanticDefault::DefaultFactory(default_factory)
         }
         // DATE
-        Some("CURRENT_DATE()") => {
-            args.push((
-                "default_factory",
-                format!("snowman.datatype.{}.today", column.data_type).into(),
-            ));
-            PydanticDefault::DefaultFactory
-        }
+        Some("CURRENT_DATE()") => PydanticDefault::DefaultFactory("datetime.date.today".into()),
         Some(default_value) => {
             // STRING
             if ["VARCHAR", "CHAR", "CHARACTER", "STRING", "TEXT"]
@@ -220,8 +213,8 @@ fn generate_column(column: &Column, params: &Parameters) -> String {
             field,
             default,
         ),
-        PydanticDefault::DefaultFactory => format!(
-            "{}: snowman.datatype.{} = {}\n",
+        PydanticDefault::DefaultFactory(default_factory) => format!(
+            "{}: typing.Annotated[snowman.datatype.{}, {},] = snowman.pydantic.DefaultFactory({default_factory})\n",
             column.column_name.to_case(Case::Snake),
             data_type,
             field,
@@ -319,7 +312,7 @@ mod test {
         let result = super::generate_column(&column, &Default::default());
         assert_eq!(
             result,
-            r#"created_at: snowman.datatype.TIMESTAMP = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=datetime.datetime.utcnow)
+            r#"created_at: typing.Annotated[snowman.datatype.TIMESTAMP, pydantic.Field(title="Created At", alias="CREATED_AT"),] = snowman.pydantic.DefaultFactory(datetime.datetime.utcnow)
 "#
         );
     }
@@ -337,7 +330,7 @@ mod test {
         let result = super::generate_column(&column, &Default::default());
         assert_eq!(
             result,
-            r#"created_at: snowman.datatype.TIMESTAMP_TZ = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=datetime.datetime.now)
+            r#"created_at: typing.Annotated[snowman.datatype.TIMESTAMP_TZ, pydantic.Field(title="Created At", alias="CREATED_AT"),] = snowman.pydantic.DefaultFactory(datetime.datetime.now)
 "#
         );
     }
@@ -355,7 +348,7 @@ mod test {
         let result = super::generate_column(&column, &Default::default());
         assert_eq!(
             result,
-            r#"created_at: snowman.datatype.TIMESTAMP_LTZ = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=lambda: datetime.datetime.now(zoneinfo.ZoneInfo("America/Los_Angeles")))
+            r#"created_at: typing.Annotated[snowman.datatype.TIMESTAMP_LTZ, pydantic.Field(title="Created At", alias="CREATED_AT"),] = snowman.pydantic.DefaultFactory(lambda: datetime.datetime.now(zoneinfo.ZoneInfo("America/Los_Angeles")))
 "#
         );
     }
@@ -373,7 +366,7 @@ mod test {
         let result = super::generate_column(&column, &Default::default());
         assert_eq!(
             result,
-            r#"created_at: snowman.datatype.TIMESTAMP_NTZ = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=datetime.datetime.utcnow)
+            r#"created_at: typing.Annotated[snowman.datatype.TIMESTAMP_NTZ, pydantic.Field(title="Created At", alias="CREATED_AT"),] = snowman.pydantic.DefaultFactory(datetime.datetime.utcnow)
 "#
         );
     }
@@ -391,7 +384,7 @@ mod test {
         let result = super::generate_column(&column, &Default::default());
         assert_eq!(
             result,
-            r#"created_at: snowman.datatype.DATE = pydantic.Field(title="Created At", alias="CREATED_AT", default_factory=snowman.datatype.DATE.today)
+            r#"created_at: typing.Annotated[snowman.datatype.DATE, pydantic.Field(title="Created At", alias="CREATED_AT"),] = snowman.pydantic.DefaultFactory(datetime.date.today)
 "#
         );
     }
