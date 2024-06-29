@@ -30,7 +30,7 @@
       },
       "allOf": [
         {
-          "$ref": "#/definitions/ConnectionV1"
+          "$ref": "#/definitions/ConnectionConfig"
         }
       ]
     },
@@ -43,7 +43,7 @@
       },
       "allOf": [
         {
-          "$ref": "#/definitions/ModelConfigV1"
+          "$ref": "#/definitions/ModelConfig"
         }
       ]
     },
@@ -55,14 +55,14 @@
       },
       "allOf": [
         {
-          "$ref": "#/definitions/PydanticOptionsV1"
+          "$ref": "#/definitions/PydanticConfig"
         }
       ]
     }
   },
   "additionalProperties": false,
   "definitions": {
-    "ConnectionV1": {
+    "ConnectionConfig": {
       "type": "object",
       "properties": {
         "account": {
@@ -196,7 +196,7 @@
         }
       }
     },
-    "ModelConfigV1": {
+    "ModelConfig": {
       "type": "object",
       "oneOf": [
         {
@@ -249,7 +249,7 @@
       },
       "additionalProperties": false
     },
-    "PydanticOptionsV1": {
+    "PydanticConfig": {
       "type": "object",
       "properties": {
         "model_name_prefix": {

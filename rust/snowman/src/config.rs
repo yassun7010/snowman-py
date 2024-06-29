@@ -15,7 +15,7 @@ pub fn get_pydantic_options(config: &Config) -> PydanticOptions {
 
 pub fn get_model_output_dirpath(config: &Config) -> std::path::PathBuf {
     let Config {
-        model: snowman_config::ModelConfigV1 { output_dir, .. },
+        model: snowman_config::ModelConfig { output_dir, .. },
         ..
     } = config;
 

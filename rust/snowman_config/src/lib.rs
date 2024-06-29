@@ -13,22 +13,22 @@ const CONFIG_FILENAME: &str = "snowman.toml";
 pub struct Config {
     /// # The Snowflake connection configuration.
     #[serde(default)]
-    pub connection: ConnectionV1,
+    pub connection: ConnectionConfig,
 
     /// # The Python model configuration.
     ///
     /// It is mainly used for the Snowman model generate command.
     #[serde(default)]
-    pub model: ModelConfigV1,
+    pub model: ModelConfig,
 
     /// # The Pydantic options.
     #[serde(default)]
-    pub pydantic: PydanticOptionsV1,
+    pub pydantic: PydanticConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
-pub struct ConnectionV1 {
+pub struct ConnectionConfig {
     /// # The Snowflake account name.
     #[serde(default = "account_default")]
     pub account: StringOrEnv,
@@ -63,9 +63,9 @@ pub struct ConnectionV1 {
     pub schema: Option<StringOrEnv>,
 }
 
-impl Default for ConnectionV1 {
+impl Default for ConnectionConfig {
     fn default() -> Self {
-        ConnectionV1 {
+        ConnectionConfig {
             account: account_default(),
             user: user_default(),
             password: password_default(),
@@ -79,7 +79,7 @@ impl Default for ConnectionV1 {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
-pub struct ModelConfigV1 {
+pub struct ModelConfig {
     /// # The output directory of the generated model.
     #[serde(default = "get_pwd")]
     pub output_dir: std::path::PathBuf,
@@ -109,7 +109,7 @@ impl Default for DatabasePattern {
     }
 }
 
-impl ModelConfigV1 {
+impl ModelConfig {
     pub fn include_database(&self, database_name: &str) -> bool {
         match self
             .database_pattern
@@ -167,7 +167,7 @@ impl DatabaseConfig {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
-pub struct PydanticOptionsV1 {
+pub struct PydanticConfig {
     /// # The prefix of the model name.
     pub model_name_prefix: Option<String>,
 
