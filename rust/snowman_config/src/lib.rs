@@ -8,37 +8,6 @@ pub use error::Error;
 
 const CONFIG_FILENAME: &str = "snowman.toml";
 
-#[doc(hidden)]
-#[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
-struct PyProjectToml {
-    tool: Option<Tool>,
-}
-
-#[doc(hidden)]
-#[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
-struct Tool {
-    snowman: Option<Config>,
-}
-
-#[doc(hidden)]
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-pub enum ConfigSource {
-    /// "snowman.toml" filepath.
-    SnowmanToml(std::path::PathBuf),
-
-    /// "pyproject.toml" filepath.
-    PyProjectToml(std::path::PathBuf),
-}
-
-impl AsRef<std::path::Path> for ConfigSource {
-    fn as_ref(&self) -> &std::path::Path {
-        match self {
-            ConfigSource::SnowmanToml(path) => path.as_ref(),
-            ConfigSource::PyProjectToml(path) => path.as_ref(),
-        }
-    }
-}
-
 #[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
@@ -359,6 +328,37 @@ pub fn append_pyproject_tool(filepath: &std::path::Path) -> Result<(), crate::Er
     file.write_all(DEFAULT_PYPROJECT_TOML_STRING.as_bytes())?;
 
     Ok(())
+}
+
+#[doc(hidden)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
+struct PyProjectToml {
+    tool: Option<Tool>,
+}
+
+#[doc(hidden)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
+struct Tool {
+    snowman: Option<Config>,
+}
+
+#[doc(hidden)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+pub enum ConfigSource {
+    /// "snowman.toml" filepath.
+    SnowmanToml(std::path::PathBuf),
+
+    /// "pyproject.toml" filepath.
+    PyProjectToml(std::path::PathBuf),
+}
+
+impl AsRef<std::path::Path> for ConfigSource {
+    fn as_ref(&self) -> &std::path::Path {
+        match self {
+            ConfigSource::SnowmanToml(path) => path.as_ref(),
+            ConfigSource::PyProjectToml(path) => path.as_ref(),
+        }
+    }
 }
 
 const DEFAULT_CONFIG_STRING: &str = r#"# [Snowman](https://github.com/yassun7010/snowman-py)
