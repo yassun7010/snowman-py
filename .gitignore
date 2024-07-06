@@ -12,4 +12,6 @@ site/
 # venv
 .venv
 .env
+site/
+.cache/
 libcairo.2.dylib
