@@ -1,6 +1,6 @@
 [project]
 name = "snowman-sample"
-version = "0.0.20"
+version = "0.0.21"
 description = "Add your description here"
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
 dependencies = [
