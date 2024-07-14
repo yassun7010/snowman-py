@@ -178,11 +178,11 @@ tinycss2==1.3.0
     # via cssselect2
 tomlkit==0.12.4
     # via snowflake-connector-python
-turu==0.10.5
-turu-core==0.10.5
+turu==0.11.1
+turu-core==0.11.1
     # via turu
     # via turu-snowflake
-turu-snowflake==0.10.5
+turu-snowflake==0.11.1
     # via turu
 types-pytz==2024.1.0.20240417
     # via pandas-stubs

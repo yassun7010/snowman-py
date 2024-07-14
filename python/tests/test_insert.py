@@ -51,7 +51,9 @@ class TestInsertQuery:
         user: User,
         mock_turu_snowflake_connection: "turu.snowflake.MockConnection",
     ):
-        mock_turu_snowflake_connection.inject_response(None, [])
+        from turu.core.tag import Insert
+
+        mock_turu_snowflake_connection.inject_operation_with_tag(Insert[User])
         with mock_turu_snowflake_connection.cursor() as cursor:
             builder = snowman.query.insert.into(User).values(user)
             builder.execute(cursor)
@@ -64,7 +66,9 @@ class TestInsertQuery:
         user: User,
         mock_turu_snowflake_connection: "turu.snowflake.MockConnection",
     ):
-        mock_turu_snowflake_connection.inject_response(None, [])
+        from turu.core.tag import Insert
+
+        mock_turu_snowflake_connection.inject_operation_with_tag(Insert[User])
         with mock_turu_snowflake_connection.cursor() as cursor:
             builder = snowman.query.insert.into(User).values([user, user])
             builder.execute(cursor)

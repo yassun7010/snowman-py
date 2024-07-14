@@ -1,8 +1,14 @@
 import textwrap
+from typing import TYPE_CHECKING
 
+import pytest
 import snowman
 from conftest import User
 from snowflake.connector.cursor import SnowflakeCursor
+from snowman._features import USE_TURU
+
+if TYPE_CHECKING:
+    import turu.snowflake
 
 
 class TestUpdateQuery:
@@ -56,3 +62,16 @@ class TestUpdateQuery:
             ).strip()
         )
         assert params == (1, "Alice", 1)
+
+    @pytest.mark.skipif(not USE_TURU, reason="Not installed turu")
+    def test_insert_execute_by_turu(
+        self,
+        user: User,
+        mock_turu_snowflake_connection: "turu.snowflake.MockConnection",
+    ):
+        from turu.core.tag import Update
+
+        mock_turu_snowflake_connection.inject_operation_with_tag(Update[User])
+        with mock_turu_snowflake_connection.cursor() as cursor:
+            builder = snowman.query.update(User).set(user).where("id = %s", [1])
+            builder.execute(cursor)
