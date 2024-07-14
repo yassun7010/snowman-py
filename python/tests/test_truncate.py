@@ -1,6 +1,13 @@
+from typing import TYPE_CHECKING
+
+import pytest
 import snowman
 from conftest import User
 from snowflake.connector.cursor import SnowflakeCursor
+from snowman._features import USE_TURU
+
+if TYPE_CHECKING:
+    import turu.snowflake
 
 
 class TestTruncateQuery:
@@ -30,3 +37,16 @@ class TestTruncateQuery:
 
         assert query == "TRUNCATE TABLE IF EXISTS database.public.users"
         assert params == ()
+
+    @pytest.mark.skipif(not USE_TURU, reason="Not installed turu")
+    def test_insert_execute_by_turu(
+        self,
+        user: User,
+        mock_turu_snowflake_connection: "turu.snowflake.MockConnection",
+    ):
+        from turu.core.tag import Truncate
+
+        mock_turu_snowflake_connection.inject_operation_with_tag(Truncate[User])
+        with mock_turu_snowflake_connection.cursor() as cursor:
+            builder = snowman.query.truncate(User)
+            builder.execute(cursor)

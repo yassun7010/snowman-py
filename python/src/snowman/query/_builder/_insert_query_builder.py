@@ -13,7 +13,12 @@ from snowman.relation.table import (
     Table,
 )
 
-from ._builder import QueryBuilder, QueryWithParams
+from ._builder import (
+    QueryBuilder,
+    QueryWithParams,
+    execute_with_tag,
+    executemany_with_tag,
+)
 
 
 class InsertQueryBuilder:
@@ -188,7 +193,19 @@ VALUES (
             )
 
         elif self._use_execute_many:
-            cursor.executemany(*self.build())
+            query, params = self.build()
+            executemany_with_tag(
+                snowman._features.InsertTag[self._table],  # type: ignore
+                cursor,
+                query,
+                params,
+            )
 
         else:
-            cursor.execute(*self.build())
+            query, params = self.build()
+            execute_with_tag(
+                snowman._features.InsertTag[self._table],  # type: ignore
+                cursor,
+                query,
+                params,
+            )

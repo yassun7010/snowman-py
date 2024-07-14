@@ -4,10 +4,12 @@ from typing import Any, Generic, Sequence, Type, cast
 from pydantic import BaseModel
 from typing_extensions import override
 
+from snowman._features import UpdateTag
+from snowman.cursor import Cursor
 from snowman.relation import full_table_name
 from snowman.relation.table import GenericTable, GenericUpdateColumnTypedDict
 
-from ._builder import QueryBuilder, QueryWithParams
+from ._builder import QueryBuilder, QueryWithParams, execute_with_tag
 
 
 class UpdateStatement(Generic[GenericTable, GenericUpdateColumnTypedDict]):
@@ -100,4 +102,15 @@ WHERE
         return QueryWithParams(
             query,
             tuple(itertools.chain(self._columns.values(), self._where_params)),
+        )
+
+    @override
+    def execute(self, cursor: Cursor) -> None:
+        query, params = self.build()
+
+        execute_with_tag(
+            UpdateTag[self._table],  # type: ignore
+            cursor,
+            query,
+            params,
         )

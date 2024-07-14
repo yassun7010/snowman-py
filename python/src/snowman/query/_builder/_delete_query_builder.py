@@ -2,10 +2,12 @@ from typing import Any, Generic, Sequence, Type
 
 from typing_extensions import override
 
+from snowman._features import DeleteTag
+from snowman.cursor import Cursor
 from snowman.relation import full_table_name
 from snowman.relation.table import GenericTable
 
-from ._builder import QueryBuilder, QueryWithParams
+from ._builder import QueryBuilder, QueryWithParams, execute_with_tag
 
 
 class DeleteQueryBuilder:
@@ -57,3 +59,14 @@ WHERE
 """.strip()
 
         return QueryWithParams(query, tuple(self._where_params))
+
+    @override
+    def execute(self, cursor: Cursor) -> None:
+        query, params = self.build()
+
+        execute_with_tag(
+            DeleteTag[self._table],  # type: ignore
+            cursor,
+            query,
+            params,
+        )
