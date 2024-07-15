@@ -13,8 +13,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         schema_name: "SCHEMA".to_string(),
     };
     let tables = vec![Table {
-        database_name: database_schema.database_name,
-        schema_name: database_schema.schema_name,
+        database_name: database_schema.database_name.clone(),
+        schema_name: database_schema.schema_name.clone(),
         table_name: "USER".to_string(),
         comment: Some("User Table".to_string()),
         columns: vec![
@@ -67,6 +67,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         output_dir.join("model_generate.py"),
         generate_schema_python_code(
             &tables,
+            &database_schema,
             &Default::default(),
             &Default::default(),
             &Default::default(),

@@ -20,7 +20,7 @@ pub use model::update_typeddict::{
 use snowman_connector::query::DatabaseSchema;
 use snowman_connector::schema::Table;
 pub use sql::generate_sql_definition;
-pub use traits::{ToPython, ToSQL};
+pub use traits::{ToPython, ToPythonModule, ToSQL};
 
 pub fn generate_modlue_init_py(database_names: &[&str]) -> String {
     database_names
@@ -63,13 +63,45 @@ pub fn generate_type_checking(inner_code: &str) -> String {
             .join("\n")
 }
 
+pub async fn generate_schema_python_typehint(
+    tables: &[Table],
+    insert_typeddict_options: &InsertTypedDictOptions,
+    update_typeddict_options: &UpdateTypedDictOptions,
+) -> Result<String, crate::Error> {
+    let src = if tables.is_empty() {
+        generate_module_docs().to_string()
+    } else {
+        itertools::join(
+            [
+                generate_module_docs(),
+                &generate_import_modules(
+                    &itertools::chain!(
+                        get_insert_typeddict_modules(),
+                        get_update_typeddict_modules(),
+                    )
+                    .unique()
+                    .sorted()
+                    .collect::<Vec<&str>>(),
+                ),
+                &generate_insert_typeddicts(tables, insert_typeddict_options),
+                &generate_update_typeddicts(tables, update_typeddict_options),
+            ],
+            "\n",
+        )
+    };
+
+    Ok(src)
+}
+
 pub async fn generate_schema_python_code(
     tables: &[Table],
+    database_schema: &DatabaseSchema,
     pydantic_options: &PydanticOptions,
     insert_typeddict_options: &InsertTypedDictOptions,
     update_typeddict_options: &UpdateTypedDictOptions,
     params: &snowman_connector::Parameters,
 ) -> Result<String, crate::Error> {
+    let schema_module_name = database_schema.schema_module();
     let src = if tables.is_empty() {
         generate_module_docs().to_string()
     } else {
@@ -86,12 +118,8 @@ pub async fn generate_schema_python_code(
                     .sorted()
                     .collect::<Vec<&str>>(),
                 ),
-                &generate_type_checking(&itertools::join(
-                    [
-                        &generate_insert_typeddicts(tables, insert_typeddict_options),
-                        &generate_update_typeddicts(tables, update_typeddict_options),
-                    ],
-                    "\n",
+                &generate_type_checking(&format!(
+                    "from . import _{schema_module_name} as _{schema_module_name}\n"
                 )),
                 &generate_pydantic_models(
                     tables,

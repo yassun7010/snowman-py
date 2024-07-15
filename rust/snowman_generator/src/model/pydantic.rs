@@ -1,3 +1,4 @@
+use crate::traits::ToPythonModule;
 use crate::{InsertTypedDictOptions, UpdateTypedDictOptions};
 use convert_case::{Case, Casing};
 use snowman_connector::schema::{Column, Table};
@@ -70,9 +71,11 @@ pub fn generate_pydantic_model(
         table.database_name, table.schema_name, table.table_name,
     ));
     pydantic_schema.push_str(&format!(
-        "class {}(pydantic.BaseModel, snowman.Table[\"{}\",\"{}\",]):\n",
+        "class {}(pydantic.BaseModel, snowman.Table[\"_{}.{}\",\"_{}.{}\",]):\n",
         pydantic_options.make_class_name(&table.table_name),
+        table.schema_module(),
         insert_typeddict_options.make_class_name(&table.table_name),
+        table.schema_module(),
         update_typeddict_options.make_class_name(&table.table_name)
     ));
     if let Some(comment) = &table.comment {

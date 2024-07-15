@@ -48,34 +48,36 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     let database_schemas = fetch_database_schemas(&connection, &config).await?;
     let parameters = get_parameters(&connection).await?;
 
-    let sources = futures::future::try_join_all(database_schemas.iter().map(|schema| async {
-        let tables = snowman_connector::query::get_schema_infomations(
-            &connection,
-            &schema.database_name,
-            &schema.schema_name,
-        )
+    let sources =
+        futures::future::try_join_all(database_schemas.iter().map(|database_schema| async {
+            let tables = snowman_connector::query::get_schema_infomations(
+                &connection,
+                &database_schema.database_name,
+                &database_schema.schema_name,
+            )
+            .await?;
+            match snowman_generator::generate_schema_python_code(
+                &tables,
+                database_schema,
+                &pydantic_options,
+                &insert_typeddict_options,
+                &update_typeddict_options,
+                &parameters,
+            )
+            .await
+            {
+                Ok(source) => run_ruff_format(&source).map_err(Into::into),
+                Err(err) => Err(err),
+            }
+        }))
         .await?;
-        match snowman_generator::generate_schema_python_code(
-            &tables,
-            &pydantic_options,
-            &insert_typeddict_options,
-            &update_typeddict_options,
-            &parameters,
-        )
-        .await
-        {
-            Ok(source) => run_ruff_format(&source).map_err(Into::into),
-            Err(err) => Err(err),
-        }
-    }))
-    .await?;
 
     let mut has_diff = false;
     database_schemas
         .iter()
         .zip(sources.into_iter())
         .try_for_each(|(schema, new)| {
-            let target_file = schema.schema_python_file_fullpath(output_dirpath);
+            let target_file = schema.schema_python_code_fullpath(output_dirpath);
             let old = std::fs::read_to_string(&target_file).unwrap_or("".to_string());
 
             has_diff |= diff_generated_code(&old, &new, &target_file);
