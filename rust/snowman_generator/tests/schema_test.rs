@@ -12,8 +12,8 @@ async fn test_generate_schema_python_code() {
         schema_name: "SCHEMA".to_string(),
     };
     let tables = vec![Table {
-        database_name: database_schema.database_name,
-        schema_name: database_schema.schema_name,
+        database_name: database_schema.database_name.clone(),
+        schema_name: database_schema.schema_name.clone(),
         table_name: "USER".to_string(),
         comment: Some("User Table".to_string()),
         columns: vec![
@@ -43,6 +43,7 @@ async fn test_generate_schema_python_code() {
 
     let code = generate_schema_python_code(
         &tables,
+        &database_schema,
         &Default::default(),
         &Default::default(),
         &Default::default(),
@@ -68,29 +69,11 @@ import typing
 import zoneinfo
 
 if typing.TYPE_CHECKING:
-    class _UserInsertTypedDict(typing.TypedDict):
-        id: snowman.datatype.INTEGER
-        """User ID"""
-
-        name: snowman.datatype.TEXT
-        """User Name"""
-
-        created_at: typing.NotRequired[snowman.datatype.TIMESTAMP]
-        """Created At"""
-
-    class _UserUpdateTypedDict(typing.TypedDict):
-        id: typing.NotRequired[snowman.datatype.INTEGER]
-        """User ID"""
-
-        name: typing.NotRequired[snowman.datatype.TEXT]
-        """User Name"""
-
-        created_at: typing.NotRequired[snowman.datatype.TIMESTAMP]
-        """Created At"""
+    from . import _schema as _schema
 
 # TABLE: DATABASE.SCHEMA.USER
 @snowman.table("DATABASE", "SCHEMA", "USER")
-class User(pydantic.BaseModel, snowman.Table["_UserInsertTypedDict","_UserUpdateTypedDict",]):
+class User(pydantic.BaseModel, snowman.Table["_schema._UserInsertTypedDict","_schema._UserUpdateTypedDict",]):
     """User Table"""
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
@@ -115,8 +98,8 @@ async fn test_generate_schema_python_code_of_empty_columns_table() {
         schema_name: "SCHEMA".to_string(),
     };
     let tables = vec![Table {
-        database_name: database_schema.database_name,
-        schema_name: database_schema.schema_name,
+        database_name: database_schema.database_name.clone(),
+        schema_name: database_schema.schema_name.clone(),
         table_name: "USER".to_string(),
         comment: Some("User Table".to_string()),
         columns: vec![],
@@ -124,6 +107,7 @@ async fn test_generate_schema_python_code_of_empty_columns_table() {
 
     let code = generate_schema_python_code(
         &tables,
+        &database_schema,
         &Default::default(),
         &Default::default(),
         &Default::default(),
@@ -149,15 +133,11 @@ import typing
 import zoneinfo
 
 if typing.TYPE_CHECKING:
-    class _UserInsertTypedDict(typing.TypedDict):
-        pass
-
-    class _UserUpdateTypedDict(typing.TypedDict):
-        pass
+    from . import _schema as _schema
 
 # TABLE: DATABASE.SCHEMA.USER
 @snowman.table("DATABASE", "SCHEMA", "USER")
-class User(pydantic.BaseModel, snowman.Table["_UserInsertTypedDict","_UserUpdateTypedDict",]):
+class User(pydantic.BaseModel, snowman.Table["_schema._UserInsertTypedDict","_schema._UserUpdateTypedDict",]):
     """User Table"""
     model_config = pydantic.ConfigDict(populate_by_name=True)
 "#

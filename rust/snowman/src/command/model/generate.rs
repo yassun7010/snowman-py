@@ -6,6 +6,7 @@ use crate::{
 use anyhow::anyhow;
 use itertools::Itertools;
 use snowman_connector::query::{get_parameters, DatabaseSchema};
+use snowman_generator::ToPythonModule;
 use snowman_generator::{formatter::run_ruff_format_if_exists, ToPython};
 use tokio::io::AsyncWriteExt;
 
@@ -45,15 +46,32 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     }
 
     // remove existing files
-    schemas.iter().try_for_each(|schema| {
-        let database_module_path = output_dirpath.join(schema.database_module());
-        if database_module_path.exists() {
-            std::fs::remove_dir_all(&database_module_path)?;
+    schemas.iter().try_for_each(|database_schema| {
+        for filepath in [
+            database_schema.schema_python_code_fullpath(output_dirpath),
+            database_schema.schema_python_typehint_fullpath(output_dirpath),
+        ] {
+            if filepath.exists() {
+                std::fs::remove_file(&filepath)?;
+            }
         }
+
         Ok::<_, anyhow::Error>(())
     })?;
 
-    // generate models
+    // Generate __init__.py for each database module
+    futures::future::try_join_all(
+        schemas
+            .iter()
+            .into_group_map_by(|x| x.database_module())
+            .into_iter()
+            .map(|(database_module, schemas)| async move {
+                write_database_init_py(output_dirpath, &database_module, &schemas).await
+            }),
+    )
+    .await?;
+
+    // Generate models
     futures::future::try_join_all(schemas.iter().map(|schema| async {
         write_schema_py(
             &connection,
@@ -66,17 +84,6 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
         )
         .await
     }))
-    .await?;
-
-    futures::future::try_join_all(
-        schemas
-            .iter()
-            .into_group_map_by(|x| x.database_module())
-            .into_iter()
-            .map(|(database_module, schemas)| async move {
-                write_database_init_py(output_dirpath, &database_module, &schemas).await
-            }),
-    )
     .await?;
 
     run_ruff_format_if_exists(output_dirpath)?;
@@ -101,24 +108,34 @@ async fn write_schema_py(
         &database_schema.schema_name,
     )
     .await?;
-    let src = snowman_generator::generate_schema_python_code(
-        &tables,
-        pydantic_options,
-        insert_typeddict_options,
-        update_typeddict_options,
-        params,
-    )
-    .await?;
 
-    let target_file = database_schema.schema_python_file_fullpath(output_dirpath);
-
-    if let Some(parent_dir) = target_file.parent() {
-        tokio::fs::create_dir_all(parent_dir).await?;
-    }
-
-    tokio::fs::File::create(target_file)
+    tokio::fs::File::create(database_schema.schema_python_typehint_fullpath(output_dirpath))
         .await?
-        .write_all(src.as_bytes())
+        .write_all(
+            snowman_generator::generate_schema_python_typehint(
+                &tables,
+                insert_typeddict_options,
+                update_typeddict_options,
+            )
+            .await?
+            .as_bytes(),
+        )
+        .await?;
+
+    tokio::fs::File::create(database_schema.schema_python_code_fullpath(output_dirpath))
+        .await?
+        .write_all(
+            snowman_generator::generate_schema_python_code(
+                &tables,
+                database_schema,
+                pydantic_options,
+                insert_typeddict_options,
+                update_typeddict_options,
+                params,
+            )
+            .await?
+            .as_bytes(),
+        )
         .await?;
 
     Ok(())
@@ -129,7 +146,13 @@ async fn write_database_init_py(
     database_module: &str,
     schemas: &[&DatabaseSchema],
 ) -> Result<(), anyhow::Error> {
-    tokio::fs::File::create(output_dirpath.join(database_module).join("__init__.py"))
+    let database_dirpath = output_dirpath.join(database_module);
+
+    if !database_dirpath.exists() {
+        tokio::fs::create_dir_all(&database_dirpath).await?;
+    }
+
+    tokio::fs::File::create(database_dirpath.join("__init__.py"))
         .await?
         .write_all(
             snowman_generator::generate_database_init_python_code(schemas)

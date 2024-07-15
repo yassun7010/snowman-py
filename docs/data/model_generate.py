@@ -12,38 +12,14 @@ import pydantic
 import snowman
 
 if typing.TYPE_CHECKING:
-
-    class _UserInsertTypedDict(typing.TypedDict):
-        id: snowman.datatype.INTEGER
-        """User ID"""
-
-        name: snowman.datatype.TEXT
-        """User Name"""
-
-        age: typing.NotRequired[snowman.datatype.INTEGER | None]
-        """User Age"""
-
-        created_at: typing.NotRequired[snowman.datatype.TIMESTAMP_TZ]
-        """Created At"""
-
-    class _UserUpdateTypedDict(typing.TypedDict):
-        id: typing.NotRequired[snowman.datatype.INTEGER]
-        """User ID"""
-
-        name: typing.NotRequired[snowman.datatype.TEXT]
-        """User Name"""
-
-        age: typing.NotRequired[snowman.datatype.INTEGER | None]
-        """User Age"""
-
-        created_at: typing.NotRequired[snowman.datatype.TIMESTAMP_TZ]
-        """Created At"""
+    from . import _schema as _schema
 
 
 # TABLE: DATABASE.SCHEMA.USER
 @snowman.table("DATABASE", "SCHEMA", "USER")
 class User(
-    pydantic.BaseModel, snowman.Table["_UserInsertTypedDict", "_UserUpdateTypedDict"]
+    pydantic.BaseModel,
+    snowman.Table["_schema._UserInsertTypedDict", "_schema._UserUpdateTypedDict"],
 ):
     """User Table"""
 
