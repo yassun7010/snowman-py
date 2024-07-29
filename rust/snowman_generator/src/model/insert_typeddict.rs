@@ -58,7 +58,7 @@ pub fn generate_insert_typeddict(table: &Table, options: &InsertTypedDictOptions
         if column.is_nullable {
             data_type.push_str(" | None");
         }
-        if let Some(_default_value) = &column.default_value {
+        if column.default_value.is_some() || column.is_nullable {
             data_type = format!("typing.NotRequired[{}]", data_type);
         }
         text.push_str(&format!(
