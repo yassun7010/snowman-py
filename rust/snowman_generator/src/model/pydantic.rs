@@ -144,7 +144,7 @@ fn generate_column(column: &Column, params: &Parameters) -> String {
         args.push(("alias", Text::Quoted(column.column_name.clone())));
     }
 
-    let mut default = match column.default_value.as_deref() {
+    let default = match column.default_value.as_deref() {
         // NULL
         Some("NULL") => PydanticDefault::Default("None".into()),
         // BOOLEAN
@@ -193,14 +193,16 @@ fn generate_column(column: &Column, params: &Parameters) -> String {
             }
         }
         // UNKNOWN
-        None => PydanticDefault::Unset,
+        None => {
+            // If the default value is not set and the column is nullable, the default value is set to None.
+            // This works correctly with Snowflake's 'insert' / 'update'.
+            if column.is_nullable {
+                PydanticDefault::Default("None".into())
+            } else {
+                PydanticDefault::Unset
+            }
+        }
     };
-
-    // If the default value is not set and the column is nullable, the default value is set to None.
-    // This works correctly with Snowflake's 'insert' / 'update'.
-    if default == PydanticDefault::Unset && column.is_nullable {
-        default = PydanticDefault::Default("None".into())
-    }
 
     let field = format!(
         "pydantic.Field({})",
