@@ -98,6 +98,7 @@ pub fn generate_pydantic_model(
     pydantic_schema
 }
 
+#[derive(Debug, PartialEq, Eq)]
 enum Text {
     Quoted(String),
     Normal(String),
@@ -118,8 +119,9 @@ impl<T: Into<String>> From<T> for Text {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
 enum PydanticDefault {
-    None,
+    Unset,
     Default(Text),
     DefaultFactory(Text),
 }
@@ -142,7 +144,7 @@ fn generate_column(column: &Column, params: &Parameters) -> String {
         args.push(("alias", Text::Quoted(column.column_name.clone())));
     }
 
-    let default = match column.default_value.as_deref() {
+    let mut default = match column.default_value.as_deref() {
         // NULL
         Some("NULL") => PydanticDefault::Default("None".into()),
         // BOOLEAN
@@ -187,12 +189,18 @@ fn generate_column(column: &Column, params: &Parameters) -> String {
             }
             // UNKNOWN
             else {
-                PydanticDefault::None
+                PydanticDefault::Unset
             }
         }
         // UNKNOWN
-        None => PydanticDefault::None,
+        None => PydanticDefault::Unset,
     };
+
+    // If the default value is not set and the column is nullable, the default value is set to None.
+    // This works correctly with Snowflake's 'insert' / 'update'.
+    if default == PydanticDefault::Unset && column.is_nullable {
+        default = PydanticDefault::Default("None".into())
+    }
 
     let field = format!(
         "pydantic.Field({})",
@@ -203,7 +211,7 @@ fn generate_column(column: &Column, params: &Parameters) -> String {
     );
 
     match default {
-        PydanticDefault::None => format!(
+        PydanticDefault::Unset => format!(
             "{}: typing.Annotated[snowman.datatype.{}, {},]\n",
             column.column_name.to_case(Case::Snake),
             data_type,
@@ -388,6 +396,24 @@ mod test {
         assert_eq!(
             result,
             r#"created_at: typing.Annotated[snowman.datatype.DATE, pydantic.Field(title="Created At", alias="CREATED_AT"),] = snowman.pydantic.DefaultFactory(datetime.date.today)
+"#
+        );
+    }
+
+    #[test]
+    fn test_generate_column_when_nullable_and_default_unset() {
+        let column = Column {
+            column_name: "DELETED_AT".to_string(),
+            data_type: "DATE".to_string(),
+            is_nullable: true,
+            comment: Some("Deleted At".to_string()),
+            default_value: None,
+        };
+
+        let result = super::generate_column(&column, &Default::default());
+        assert_eq!(
+            result,
+            r#"deleted_at: typing.Annotated[snowman.datatype.DATE | None, pydantic.Field(title="Deleted At", alias="DELETED_AT"),] = None
 "#
         );
     }
