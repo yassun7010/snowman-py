@@ -1,8 +1,7 @@
 import textwrap
 
 from snowman.query import insert
-
-from docs.data.your.database.aaaschema import User
+from your.database.schema import User
 
 query, params = (
     insert.into(
