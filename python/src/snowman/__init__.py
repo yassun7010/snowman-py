@@ -1,7 +1,14 @@
+"""
+# [Snowman](https://github.com/yassun7010/snowman-py)
+
+Python model and query builder for [Snowflake](https://www.snowflake.com/).
+"""
+
 import importlib
 import importlib.metadata
 
 from . import datatype as datatype
+from . import pydantic as pydantic
 from . import query as query
 from .query.column import Column as Column
 from .relation.table import PydanticTable as PydanticTable

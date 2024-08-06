@@ -13,16 +13,37 @@ from snowman.relation.table import (
     Table,
 )
 
-from ._builder import QueryBuilder, QueryWithParams
+from ._builder import (
+    QueryBuilder,
+    QueryWithParams,
+    execute_with_tag,
+    executemany_with_tag,
+)
 
 
 class InsertQueryBuilder:
     """
     Insert records into a table.
 
+    >>> from typing import TypedDict
+    >>> import pydantic
     >>> from snowman.query import insert
-    >>> from your.database.schema import User
     >>>
+    >>> class _UserInsertColumns(TypedDict):
+    ...     id: int
+    ...     name: str
+    ...
+    >>> class _UserUpdateColumns(TypedDict, total=False):
+    ...     id: int
+    ...     name: str
+    ...
+    >>> @snowman.table("database", "schema", "users")
+    ... class User(
+    ...     pydantic.BaseModel, snowman.Table["_UserInsertColumns", "_UserUpdateColumns"]
+    ... ):
+    ...     id: int
+    ...     name: str
+    ...
     >>> query, _ = (
     ...     insert.into(
     ...         User
@@ -34,9 +55,13 @@ class InsertQueryBuilder:
     >>> print(query)
     INSERT INTO
         database.schema.users
+    (
+        id,
+        name
+    )
     VALUES (
-        %(id)s,
-        %(name)s
+        %s,
+        %s
     )
     """
 
@@ -47,6 +72,7 @@ class InsertQueryBuilder:
     def into(
         self,
         table: Type[Table[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]],
+        /,
     ):
         return InsertIntoQueryBuilder(
             table,
@@ -58,6 +84,7 @@ class InsertOverwriteQueryBuilder:
     def into(
         self,
         table: Type[Table[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]],
+        /,
     ):
         return InsertIntoQueryBuilder(
             table,
@@ -83,6 +110,7 @@ class InsertIntoQueryBuilder(Generic[GenericTable, GenericInsertColumnTypedDict]
         | GenericInsertColumnTypedDict
         | Sequence[GenericTable | GenericInsertColumnTypedDict]
         | snowman._features.PandasDataFrame,
+        /,
     ) -> "InsertIntoValuesQueryBuilder[GenericTable, GenericInsertColumnTypedDict]":
         if isinstance(values, snowman._features.PandasDataFrame):
             dataframe = values
@@ -117,6 +145,7 @@ class InsertIntoValuesQueryBuilder(
         self._values = values
         self._dataframe = dataframe
         self._overwrite = overwrite
+        self._use_execute_many = len(values) != 1
 
     @override
     def build(self) -> QueryWithParams:
@@ -124,13 +153,16 @@ class InsertIntoValuesQueryBuilder(
             raise snowmanNotDataFrameAvailableError()
 
         overwrite = "OVERWRITE " if self._overwrite else ""
-        values = ",\n    ".join(
-            [f"%({column_name})s" for column_name in table_column_names(self._table)]
-        )
+        names = table_column_names(self._table)
+        keys = ",\n    ".join(names)
+        values = ",\n    ".join("%s" for _ in names)
 
         query = f"""
 INSERT {overwrite}INTO
     {full_table_name(self._table)}
+(
+    {keys}
+)
 VALUES (
     {values}
 )
@@ -138,9 +170,13 @@ VALUES (
 
         return QueryWithParams(
             query,
-            table_columns_dict(self._values[0])
-            if len(self._values) == 1
-            else tuple(table_columns_dict(value) for value in self._values),
+            (
+                tuple(
+                    tuple(table_columns_dict(value).values()) for value in self._values
+                )
+                if self._use_execute_many
+                else tuple(table_columns_dict(self._values[0]).values())
+            ),
         )
 
     @override
@@ -155,7 +191,21 @@ VALUES (
                 database=self._table.__databas_name__,
                 schema=self._table.__schema_name__,
             )
-            return
+
+        elif self._use_execute_many:
+            query, params = self.build()
+            executemany_with_tag(
+                snowman._features.InsertTag[self._table],  # type: ignore
+                cursor,
+                query,
+                params,
+            )
 
         else:
-            super().execute(cursor)
+            query, params = self.build()
+            execute_with_tag(
+                snowman._features.InsertTag[self._table],  # type: ignore
+                cursor,
+                query,
+                params,
+            )

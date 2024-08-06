@@ -15,7 +15,35 @@ class TestInsertQuery:
     def test_insert_execute_by_snowflake_cursor(
         self, user: User, mock_snowflake_cursor: SnowflakeCursor
     ):
-        snowman.query.insert.into(User).values(user).execute(mock_snowflake_cursor)
+        builder = snowman.query.insert.into(User).values(user)
+        builder.execute(mock_snowflake_cursor)
+        assert builder._use_execute_many is False
+
+    def test_insert_executemany_by_snowflake_cursor(
+        self, user: User, mock_snowflake_cursor: SnowflakeCursor
+    ):
+        builder = snowman.query.insert.into(User).values([user, user])
+        builder.execute(mock_snowflake_cursor)
+        assert builder._use_execute_many is True
+
+    def test_insert_execute_when_typed_dict(
+        self, mock_snowflake_cursor: SnowflakeCursor
+    ):
+        builder = snowman.query.insert.into(User).values({"id": 1, "name": "Alice"})
+        builder.execute(mock_snowflake_cursor)
+        assert builder._use_execute_many is False
+
+    def test_insert_executemany_when_typed_dict(
+        self, mock_snowflake_cursor: SnowflakeCursor
+    ):
+        builder = snowman.query.insert.into(User).values(
+            [
+                {"id": 1, "name": "Alice"},
+                {"id": 2, "name": "Bob"},
+            ]
+        )
+        builder.execute(mock_snowflake_cursor)
+        assert builder._use_execute_many is True
 
     @pytest.mark.skipif(not USE_TURU, reason="Not installed turu")
     def test_insert_execute_by_turu(
@@ -23,9 +51,29 @@ class TestInsertQuery:
         user: User,
         mock_turu_snowflake_connection: "turu.snowflake.MockConnection",
     ):
-        mock_turu_snowflake_connection.inject_response(None, [])
+        from turu.core.tag import Insert
+
+        mock_turu_snowflake_connection.inject_operation_with_tag(Insert[User])
         with mock_turu_snowflake_connection.cursor() as cursor:
-            snowman.query.insert.into(User).values(user).execute(cursor)
+            builder = snowman.query.insert.into(User).values(user)
+            builder.execute(cursor)
+
+            assert builder._use_execute_many is False
+
+    @pytest.mark.skipif(not USE_TURU, reason="Not installed turu")
+    def test_insert_executemany_by_turu(
+        self,
+        user: User,
+        mock_turu_snowflake_connection: "turu.snowflake.MockConnection",
+    ):
+        from turu.core.tag import Insert
+
+        mock_turu_snowflake_connection.inject_operation_with_tag(Insert[User])
+        with mock_turu_snowflake_connection.cursor() as cursor:
+            builder = snowman.query.insert.into(User).values([user, user])
+            builder.execute(cursor)
+
+            assert builder._use_execute_many is True
 
     def test_insert_into_query_execute_build(self, user: User):
         query, params = snowman.query.insert.into(User).values(user).build()
@@ -36,14 +84,18 @@ class TestInsertQuery:
                 """
                 INSERT INTO
                     database.public.users
+                (
+                    id,
+                    name
+                )
                 VALUES (
-                    %(id)s,
-                    %(name)s
+                    %s,
+                    %s
                 )
                 """
             ).strip()
         )
-        assert params == user.model_dump()
+        assert params == (1, "Alice")
 
     def test_insert_into_query_execute_many_build(self, user: User):
         values = [user, user]
@@ -55,14 +107,18 @@ class TestInsertQuery:
                 """
                 INSERT INTO
                     database.public.users
+                (
+                    id,
+                    name
+                )
                 VALUES (
-                    %(id)s,
-                    %(name)s
+                    %s,
+                    %s
                 )
                 """
             ).strip()
         )
-        assert params == tuple(value.model_dump() for value in values)
+        assert params == ((1, "Alice"), (1, "Alice"))
 
     def test_insert_into_query_overwrite_execute_build(self, user: User):
         query, params = snowman.query.insert.overwrite.into(User).values(user).build()
@@ -73,14 +129,18 @@ class TestInsertQuery:
                 """
                 INSERT OVERWRITE INTO
                     database.public.users
+                (
+                    id,
+                    name
+                )
                 VALUES (
-                    %(id)s,
-                    %(name)s
+                    %s,
+                    %s
                 )
                 """
             ).strip()
         )
-        assert params == user.model_dump()
+        assert params == (1, "Alice")
 
     @pytest.mark.skipif(not USE_PANDAS, reason="Not installed pandas")
     def test_insert_into_query_build_use_dataframe(self):

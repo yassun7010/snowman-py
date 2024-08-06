@@ -1,6 +1,6 @@
 [project]
 name = "snowman-py"
-version = "0.0.7"
+version = "0.0.24"
 description = "Python model and query builder for Snowflake."
 authors = [{ name = "yassun7010", email = "yassun7010@outlook.com" }]
 dependencies = [
@@ -22,7 +22,7 @@ build-backend = "maturin"
 
 [tool.maturin]
 bindings = "bin"
-manifest-path = "crates/snowman/Cargo.toml"
+manifest-path = "rust/snowman/Cargo.toml"
 module-name = "snowman"
 python-source = "python/src"
 
@@ -32,13 +32,21 @@ dev-dependencies = [
     "pytest>=8.2.1",
     "pyright>=1.1.361",
     "ruff>=0.4.3",
-    "turu[snowflake]>=0.10.5",
+    "turu[snowflake]>=0.11.1",
     "pyarrow-stubs>=10.0.1.7",
     "pandas-stubs>=2.2.1.240316",
     "pytest-mock>=3.14.0",
     "pip>=24.0",
     "pandas>=2.2.2",
     "pyarrow>=16.1.0",
+    "mkdocs>=1.6.0",
+    "mkdocs-material[imaging]>=9.5.26",
+    "mkdocs-plugin-inline-svg>=0.1.0",
+    "mkdocs-exclude>=1.0.2",
+    "mkdocstrings[python]>=0.25.1",
+    "griffe>=0.45.3",
+    "griffe-inherited-docstrings>=1.0.0",
+    "mkdocs-awesome-pages-plugin>=2.9.2",
 ]
 
 [tool.hatch.metadata]
@@ -53,7 +61,11 @@ lint = "rye lint --fix"
 typecheck = "pyright python/src/** python/tests/**"
 test = "rye test"
 ci = { chain = ["format", "lint", "typecheck", "test"] }
+generate-sample-model = "cargo run --bin generate_sample_model docs/data"
+docs-serve = { chain = ["generate-sample-model", "format", "mkdocs serve"] }
+docs-publish = "mkdocs gh-deploy --force"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:snowflake"]
 addopts = "--doctest-modules"
+norecursedirs = ["docs", "site", "examples"]

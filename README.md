@@ -1,148 +1,30 @@
 # Snowman
 
-<!-- --8<-- [start:badges] -->
-[![pypi package](https://badge.fury.io/py/snowman-py.svg)](https://pypi.org/project/snowman-py)
-[![python-test](https://github.com/yassun7010/snowman-py/actions/workflows/ci_python.yml/badge.svg)](https://github.com/yassun7010/snowman-py/actions)
-[![rust-test](https://github.com/yassun7010/snowman-py/actions/workflows/ci_rust.yml/badge.svg)](https://github.com/yassun7010/snowman-py/actions)
-<!-- --8<-- [end:badges] -->
-
 <p align="center">
-    <img alt="logo" src="https://raw.githubusercontent.com/yassun7010/snowman-py/main/images/logo.svg" width="300" />
+    <img alt="logo" src="https://raw.githubusercontent.com/yassun7010/snowman-py/main/docs/images/logo.svg" width="300" />
 </p>
 
+<!-- --8<-- [start:badges] -->
+<p align="center">
+    <a href="https://yassun7010.github.io/snowman-py/"><img alt="docs" src="https://github.com/yassun7010/snowman-py/actions/workflows/docs.yml/badge.svg"></a>
+    <a href="https://pypi.org/project/snowman-py"><img alt="pypi package" src="https://badge.fury.io/py/snowman-py.svg"></a>
+    <a href="https://github.com/yassun7010/snowman-py/actions"><img alt="python-test" src="https://github.com/yassun7010/snowman-py/actions/workflows/ci_python.yml/badge.svg"></a>
+    <a href="https://github.com/yassun7010/snowman-py/actions"><img alt="rust-test" src="https://github.com/yassun7010/snowman-py/actions/workflows/ci_rust.yml/badge.svg"></a>
+</p>
+<!-- --8<-- [end:badges] -->
 
-Python model and query builder for [Snowflake](https://www.snowflake.com/).
+**Snowman**: Python Model and Query Builder for [Snowflake](https://www.snowflake.com/).
+
+---
+
+**Documentation**: <a href="https://yassun7010.github.io/snowman-py/" target="_blank">https://yassun7010.github.io/snowman-py/</a>
+
+**Source Code**: <a href="https://github.com/yassun7010/snowman-py" target="_blank">https://github.com/yassun7010/snowman-py</a>
+
+---
 
 ## Install
 
 ```sh
 pip install snowman-py
-```
-
-## CLI Tool
-
-### Initialize Snowman Configuration
-```sh
-snowman init
-# Outdated: snowman config create
-```
-
-### Generate Python Model From Snowflake Information Schema
-```sh
-snowman model generate
-```
-
-
-## Query Builder
-
-### Insert Query
-
-```python
-import textwrap
-
-from snowman.query import insert
-
-from your.database.schema import User
-
-query, params = (
-    insert.into(
-        User,
-    ).values(
-        {
-            "id": 1,
-            "name": "John Doe",
-        }
-    )
-).build()
-
-expected = textwrap.dedent(
-    """
-    INSERT INTO
-        database.schema.users
-    VALUES (
-        %(id)s,
-        %(name)s
-    )
-    """
-).strip()
-
-assert query == expected
-```
-
-### Update Query
-
-```python
-import textwrap
-
-from snowman.query import update
-
-from your.database.schema import User
-
-query, params = (
-    update(
-        User,
-    )
-    .set(
-        {"name": "Jane Doe"},
-    )
-    .where(
-        "id = 1",
-    )
-).build()
-
-expected = textwrap.dedent(
-    """
-    UPDATE
-        database.schema.users
-    SET
-        name = %(name)s
-    WHERE
-        id = 1
-    """
-).strip()
-
-assert query == expected
-```
-
-### Delete Query
-
-```python
-import textwrap
-
-from snowman.query import delete
-
-from your.database.schema import User
-
-query, params = (
-    delete.from_(
-        User,
-    ).where(
-        "id = 1",
-    )
-).build()
-
-expected = textwrap.dedent(
-    """
-    DELETE FROM
-        database.schema.users
-    WHERE
-        id = 1
-    """
-).strip()
-
-assert query == expected
-```
-
-### Truncate Query
-
-```python
-from snowman.query import truncate
-
-from your.database.schema import User
-
-query, params = truncate.table(User).build()
-
-expected = "TRUNCATE TABLE database.schema.users"
-
-assert query == expected
 ```

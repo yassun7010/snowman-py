@@ -5,8 +5,13 @@ build/
 dist/
 wheels/
 target/
+site/
+.cache/
 *.egg-info
 
 # venv
 .venv
 .env
+site/
+.cache/
+libcairo.2.dylib

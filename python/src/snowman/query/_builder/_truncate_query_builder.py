@@ -1,10 +1,13 @@
 from typing import Generic, Type
+
 from typing_extensions import override
 
+from snowman._features import TruncateTag
+from snowman.cursor import Cursor
 from snowman.relation import full_table_name
 from snowman.relation.table import GenericTable
 
-from ._builder import QueryBuilder, QueryWithParams
+from ._builder import QueryBuilder, QueryWithParams, execute_with_tag
 
 
 class TruncateQueryBuilder:
@@ -49,4 +52,14 @@ class TruncateTableQueryBuilder(Generic[GenericTable], QueryBuilder):
     def build(self) -> QueryWithParams:
         query = f"TRUNCATE TABLE{ ' IF EXISTS' if self._if_exists else ''} {full_table_name(self._table)}"
 
-        return QueryWithParams(query, {})
+        return QueryWithParams(query, ())
+
+    @override
+    def execute(self, cursor: Cursor) -> None:
+        query, params = self.build()
+        execute_with_tag(
+            TruncateTag[self._table],  # type: ignore
+            cursor,
+            query,
+            params,
+        )

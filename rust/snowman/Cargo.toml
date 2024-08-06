@@ -1,0 +1,26 @@
+[package]
+name = "snowman"
+description = "Python model and query builder for Snowflake."
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+askama = "0.12.1"
+clap = { version = "4.5.4", features = ["derive"] }
+dotenvy = "0.15.7"
+futures = "0.3.30"
+openssl.workspace = true
+serde_json = { workspace = true }
+snowman_config.workspace = true
+snowman_connector.workspace = true
+snowman_generator.workspace = true
+tokio.workspace = true
+itertools.workspace = true
+anyhow = { version = "1.0.86", features = ["backtrace"] }
+clap_complete = "4.5.2"
+clap_complete_nushell = "4.5.1"
+similar = { version = "2.5.0", features = ["inline"] }
+console = "0.15.8"
+tempfile = "3.10.1"
