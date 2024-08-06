@@ -12,14 +12,14 @@ import pydantic
 import snowman
 
 if typing.TYPE_CHECKING:
-    from . import _schema as _schema
+    from .your.database import _my_schema as _my_schema
 
 
-# TABLE: DATABASE.SCHEMA.USER
-@snowman.table("DATABASE", "SCHEMA", "USER")
+# TABLE: MY_DATABASE.MY_SCHEMA.USER
+@snowman.table("MY_DATABASE", "MY_SCHEMA", "USER")
 class User(
     pydantic.BaseModel,
-    snowman.Table["_schema._UserInsertTypedDict", "_schema._UserUpdateTypedDict"],
+    snowman.Table["_my_schema._UserInsertTypedDict", "_my_schema._UserUpdateTypedDict"],
 ):
     """User Table"""
 
