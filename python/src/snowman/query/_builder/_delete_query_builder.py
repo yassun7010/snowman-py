@@ -1,9 +1,10 @@
-from typing import Any, Generic, Sequence, Type
+from typing import Any, Callable, Generic, Sequence, Type, overload
 
 from typing_extensions import override
 
 from snowman._features import DeleteTag
 from snowman.cursor import Cursor
+from snowman.query.condition.to_condition import ToCondition
 from snowman.relation import full_table_name
 from snowman.relation.table import GenericTable
 
@@ -21,9 +22,24 @@ class DeleteFromStatement(Generic[GenericTable]):
     def __init__(self, table: Type[GenericTable]):
         self._table = table
 
+    @overload
+    def where(
+        self,
+        condition: Callable[[], ToCondition],
+        /,
+    ) -> "UpdateFromWhereQueryBuilder[GenericTable]": ...
+
+    @overload
     def where(
         self,
         condition: str,
+        params: Sequence[Any] | None = None,
+        /,
+    ) -> "UpdateFromWhereQueryBuilder[GenericTable]": ...
+
+    def where(
+        self,
+        condition: str | Callable[[], ToCondition],
         params: Sequence[Any] | None = None,
         /,
     ) -> "UpdateFromWhereQueryBuilder[GenericTable]":

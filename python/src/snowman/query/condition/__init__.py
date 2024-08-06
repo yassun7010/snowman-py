@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Generic
 from typing_extensions import override
 
 from snowman._generic import PyType
-from snowman.query.condition.to_condition import ToCondition
+from snowman.query.condition.to_condition import ConditionWithParams, ToCondition
 
 if TYPE_CHECKING:
     from snowman.query.column import _Column
@@ -19,9 +19,11 @@ class IsCondition(ToCondition[PyType]):
         self._value = value
 
     @override
-    def to_condition(self, params: list[Any]) -> str:
+    def to_condition(self, params: list[Any]) -> ConditionWithParams:
         value = "NULL" if self._value is None else str(self._value).upper()
-        return f"{self._base} IS {value}"
+        return ConditionWithParams(
+            condition="%s IS %s", params=(str(self._base), value)
+        )
 
 
 class IsNotCondition(ToCondition[PyType]):
