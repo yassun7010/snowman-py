@@ -51,6 +51,9 @@ class DeleteFromStatement(Generic[GenericTable]):
         e.g)
             `.where("id = %s AND name = %s", [1, "Alice"])`
         """
+        if callable(condition):
+            condition, params = condition().to_condition()
+
         return UpdateFromWhereQueryBuilder(self._table, condition, params or ())
 
 

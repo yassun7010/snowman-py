@@ -3,12 +3,13 @@ from typing import TYPE_CHECKING, Annotated, Any, Generic, Self, Type
 from typing_extensions import overload
 
 from snowman._generic import PyType
-from snowman.query.condition import IsCondition, IsNotCondition
+from snowman.query.condition.is_condition import IsCondition
+from snowman.query.condition.is_not_condition import IsNotCondition
 from snowman.query.condition.to_condition import ToCondition
 
 if TYPE_CHECKING:
 
-    class Column(ToCondition[PyType]):
+    class _Column(ToCondition[PyType]):
         @overload
         def __get__(self, instance: None, owner: Type[Any]) -> "Self": ...
 
@@ -19,14 +20,11 @@ if TYPE_CHECKING:
             self, instance: object | None, owner: Type[Any]
         ) -> "Self | PyType": ...
 
-        @property
-        def is_(self) -> "ColumnIs[PyType]": ...
-
 else:
-    Column = Annotated[PyType, ...]
+    _Column = Annotated[PyType, ...]
 
 
-class _Column(Generic[PyType]):
+class Column(Generic[PyType]):
     def __init__(
         self,
         data_type: Type[PyType],
@@ -63,11 +61,38 @@ class _Column(Generic[PyType]):
 
 
 class ColumnIs(Generic[PyType]):
-    def __init__(self, column: _Column[PyType]):
+    def __init__(self, column: Column[PyType]):
         self._column = column
 
-    def not_(self, value: bool | None) -> "IsNotCondition[PyType]":
-        return IsNotCondition(self._column, value)
+    @property
+    def not_(self) -> "ColumnIsNot[PyType]":
+        return ColumnIsNot(self._column)
 
-    def __call__(self, value: bool | None) -> "IsCondition[PyType]":
-        return IsCondition(self._column, value)
+    @property
+    def null(self) -> "IsCondition[PyType]":
+        return IsCondition(self._column, None)
+
+    @property
+    def true(self) -> "IsCondition[PyType]":
+        return IsCondition(self._column, True)
+
+    @property
+    def false(self) -> "IsCondition[PyType]":
+        return IsCondition(self._column, False)
+
+
+class ColumnIsNot(Generic[PyType]):
+    def __init__(self, column: Column[PyType]):
+        self._column = column
+
+    @property
+    def null(self) -> "IsNotCondition[PyType]":
+        return IsNotCondition(self._column, None)
+
+    @property
+    def true(self) -> "IsNotCondition[PyType]":
+        return IsNotCondition(self._column, True)
+
+    @property
+    def false(self) -> "IsNotCondition[PyType]":
+        return IsNotCondition(self._column, False)

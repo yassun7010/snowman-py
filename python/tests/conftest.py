@@ -6,6 +6,7 @@ import snowman
 from pydantic import BaseModel
 from pytest_mock import MockFixture
 from snowman._features import USE_TURU
+from snowman.query.column import Column
 from snowman.relation.table import Table
 
 if USE_TURU:
@@ -53,3 +54,14 @@ def user() -> User:
     user = User(id=1, name="Alice")
 
     return user
+
+
+@pytest.fixture
+def id_column() -> Column[int]:
+    return Column(
+        int,
+        database_name="database",
+        schema_name="schema",
+        table_name="table",
+        column_name="id",
+    )
