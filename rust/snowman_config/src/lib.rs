@@ -404,7 +404,7 @@ mod test {
 
     #[test]
     fn test_database_config_default_include_schema() {
-        assert!(DatabaseConfig::default().include_schema("MY_SCHEMA"));
+        assert!(DatabaseConfig::default().include_schema("SCHEMA"));
     }
 
     #[test]
@@ -425,6 +425,6 @@ mod test {
             ])),
         };
 
-        assert!(database_config.include_schema("MY_SCHEMA"));
+        assert!(database_config.include_schema("SCHEMA"));
     }
 }

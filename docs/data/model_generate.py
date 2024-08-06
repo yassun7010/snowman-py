@@ -1,1 +1,1 @@
-my_database/my_schema.py
+your/database/schema.py
