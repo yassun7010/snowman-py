@@ -83,7 +83,7 @@ class TestInsertQuery:
             == textwrap.dedent(
                 """
                 INSERT INTO
-                    database.public.users
+                    database.schema.users
                 (
                     id,
                     name
@@ -106,7 +106,7 @@ class TestInsertQuery:
             == textwrap.dedent(
                 """
                 INSERT INTO
-                    database.public.users
+                    database.schema.users
                 (
                     id,
                     name
@@ -128,7 +128,7 @@ class TestInsertQuery:
             == textwrap.dedent(
                 """
                 INSERT OVERWRITE INTO
-                    database.public.users
+                    database.schema.users
                 (
                     id,
                     name

@@ -43,7 +43,7 @@ class _UserUpdateColumns(TypedDict, total=False):
     name: str
 
 
-@snowman.table("database", "public", "users")
+@snowman.table("database", "schema", "users")
 class User(BaseModel, Table[_UserInsertColumns, _UserUpdateColumns]):
     id: int
     name: str
@@ -62,6 +62,6 @@ def id_column() -> Column[int]:
         int,
         database_name="database",
         schema_name="schema",
-        table_name="table",
+        table_name="users",
         column_name="id",
     )

@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Generic, NamedTuple
-
-from snowman._generic import PyType
+from typing import Any, NamedTuple
 
 
 class ConditionWithParams(NamedTuple):
@@ -9,6 +7,6 @@ class ConditionWithParams(NamedTuple):
     params: tuple[Any, ...]
 
 
-class ToCondition(Generic[PyType], ABC):
+class ToCondition(ABC):
     @abstractmethod
     def to_condition(self) -> ConditionWithParams: ...

@@ -32,7 +32,7 @@ class TestUpdateQuery:
             == textwrap.dedent(
                 """
                 UPDATE
-                    database.public.users
+                    database.schema.users
                 SET
                     name = %s
                 WHERE
@@ -52,7 +52,7 @@ class TestUpdateQuery:
             == textwrap.dedent(
                 """
                 UPDATE
-                    database.public.users
+                    database.schema.users
                 SET
                     id = %s,
                     name = %s

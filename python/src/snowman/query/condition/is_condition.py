@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from snowman.query.column import Column
 
 
-class IsCondition(ToCondition[PyType]):
+class IsCondition(ToCondition):
     def __init__(self, base: "Column[PyType]", value: bool | None):
         self._base = base
         self._value = value

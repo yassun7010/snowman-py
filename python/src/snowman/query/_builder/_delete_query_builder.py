@@ -1,4 +1,4 @@
-from typing import Any, Callable, Generic, Sequence, Type, overload
+from typing import TYPE_CHECKING, Any, Callable, Generic, Sequence, Type, overload
 
 from typing_extensions import override
 
@@ -9,6 +9,9 @@ from snowman.relation import full_table_name
 from snowman.relation.table import GenericTable
 
 from ._builder import QueryBuilder, QueryWithParams, execute_with_tag
+
+if TYPE_CHECKING:
+    from snowman.context.where_context import WhereContext
 
 
 class DeleteQueryBuilder:
@@ -25,7 +28,7 @@ class DeleteFromStatement(Generic[GenericTable]):
     @overload
     def where(
         self,
-        condition: Callable[[], ToCondition],
+        condition: Callable[["WhereContext"], ToCondition],
         /,
     ) -> "UpdateFromWhereQueryBuilder[GenericTable]": ...
 
@@ -39,7 +42,7 @@ class DeleteFromStatement(Generic[GenericTable]):
 
     def where(
         self,
-        condition: str | Callable[[], ToCondition],
+        condition: str | Callable[["WhereContext"], ToCondition],
         params: Sequence[Any] | None = None,
         /,
     ) -> "UpdateFromWhereQueryBuilder[GenericTable]":
@@ -52,7 +55,9 @@ class DeleteFromStatement(Generic[GenericTable]):
             `.where("id = %s AND name = %s", [1, "Alice"])`
         """
         if callable(condition):
-            condition, params = condition().to_condition()
+            from snowman.context.where_context import WhereContext
+
+            condition, params = condition(WhereContext()).to_condition()
 
         return UpdateFromWhereQueryBuilder(self._table, condition, params or ())
 
