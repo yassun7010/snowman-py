@@ -1,7 +1,8 @@
 import textwrap
 
 from snowman.query import delete
-from your.database.schema import User
+
+from docs.data.your.database.aaaschema import User
 
 query, params = (
     delete.from_(
