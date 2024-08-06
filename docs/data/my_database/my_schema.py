@@ -12,7 +12,7 @@ import pydantic
 import snowman
 
 if typing.TYPE_CHECKING:
-    from .your.my_database import _my_schema as _my_schema
+    from .my_database import _my_schema as _my_schema
 
 
 # TABLE: MY_DATABASE.MY_SCHEMA.USER
