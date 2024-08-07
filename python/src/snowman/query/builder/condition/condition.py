@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, NamedTuple
 
 if TYPE_CHECKING:
-    from snowman.query.condition.and_condition import AndCondition
-    from snowman.query.condition.or_condition import OrCondition
+    from snowman.query.builder.condition.and_condition import AndCondition
+    from snowman.query.builder.condition.or_condition import OrCondition
 
 
 class ConditionWithParams(NamedTuple):
@@ -16,11 +16,11 @@ class Condition(ABC):
     def to_sql(self) -> ConditionWithParams: ...
 
     def and_(self, other: "Condition") -> "AndCondition":
-        from snowman.query.condition.and_condition import AndCondition
+        from snowman.query.builder.condition.and_condition import AndCondition
 
         return AndCondition(self, other)
 
     def or_(self, other: "Condition") -> "OrCondition":
-        from snowman.query.condition.or_condition import OrCondition
+        from snowman.query.builder.condition.or_condition import OrCondition
 
         return OrCondition(self, other)

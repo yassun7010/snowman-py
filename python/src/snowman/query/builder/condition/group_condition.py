@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from snowman.query.condition.condition import Condition, ConditionWithParams
+from snowman.query.builder.condition.condition import Condition, ConditionWithParams
 
 if TYPE_CHECKING:
     pass

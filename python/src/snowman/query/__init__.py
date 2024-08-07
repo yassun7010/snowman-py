@@ -1,4 +1,4 @@
-from ._builder import delete as delete
-from ._builder import insert as insert
-from ._builder import truncate as truncate
-from ._builder import update as update
+from .builder import delete as delete
+from .builder import insert as insert
+from .builder import truncate as truncate
+from .builder import update as update

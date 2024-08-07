@@ -1,8 +1,8 @@
 from typing import assert_type
 
 import pytest
+from snowman.query.builder.condition.not_in_condition import NotInCondition
 from snowman.query.column import Column
-from snowman.query.condition.not_in_condition import NotInCondition
 
 
 class TestNotInCondition:

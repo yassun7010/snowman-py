@@ -1,8 +1,8 @@
 from typing import Generic, Type
 
+from snowman.query.builder.condition.condition import Condition
+from snowman.query.builder.condition.group_condition import GroupCondition
 from snowman.query.column import column
-from snowman.query.condition.condition import Condition
-from snowman.query.condition.group_condition import GroupCondition
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,

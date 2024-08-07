@@ -5,7 +5,7 @@ from typing_extensions import override
 from snowman._features import DeleteTag
 from snowman.context.where_context import WhereContext
 from snowman.cursor import Cursor
-from snowman.query.condition.condition import Condition
+from snowman.query.builder.condition.condition import Condition
 from snowman.relation import full_table_name
 from snowman.relation.table import (
     GenericColumnAccessor,

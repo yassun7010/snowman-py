@@ -1,8 +1,8 @@
 from typing import assert_type
 
 import pytest
+from snowman.query.builder.condition.eq_condition import EqCondition
 from snowman.query.column import Column
-from snowman.query.condition.eq_condition import EqCondition
 from snowman.typing import TypeMissMatch, UseIsInsteadOfEq
 
 
