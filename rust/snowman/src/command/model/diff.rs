@@ -36,6 +36,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     let config = snowman_config::load_from_source(&config_source)?;
     let connection = get_snowflake_connection(&config)?;
 
+    let column_accessor_options = snowman_generator::ColumnAccessorOptions::default();
     let insert_typeddict_options = snowman_generator::InsertTypedDictOptions::default();
     let update_typeddict_options = snowman_generator::UpdateTypedDictOptions::default();
     let pydantic_options = get_pydantic_options(&config);
@@ -60,6 +61,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
                 &tables,
                 database_schema,
                 &pydantic_options,
+                &column_accessor_options,
                 &insert_typeddict_options,
                 &update_typeddict_options,
                 &parameters,

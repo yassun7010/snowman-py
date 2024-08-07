@@ -6,6 +6,10 @@ mod traits;
 
 pub use error::Error;
 use itertools::Itertools;
+pub use model::column_accessor::{
+    generate_column_accessor, generate_column_accessors, get_column_accessor_modules,
+    ColumnAccessorOptions,
+};
 pub use model::insert_typeddict::{
     generate_insert_typeddict, generate_insert_typeddicts, get_insert_typeddict_modules,
     InsertTypedDictOptions,
@@ -97,6 +101,7 @@ pub async fn generate_schema_python_code(
     tables: &[Table],
     database_schema: &DatabaseSchema,
     pydantic_options: &PydanticOptions,
+    column_accessor_options: &ColumnAccessorOptions,
     insert_typeddict_options: &InsertTypedDictOptions,
     update_typeddict_options: &UpdateTypedDictOptions,
     params: &snowman_connector::Parameters,
@@ -124,6 +129,7 @@ pub async fn generate_schema_python_code(
                 &generate_pydantic_models(
                     tables,
                     pydantic_options,
+                    column_accessor_options,
                     insert_typeddict_options,
                     update_typeddict_options,
                     params,
