@@ -1,9 +1,9 @@
+from dataclasses import dataclass
 from typing import TypedDict
 
 import pytest
 import snowflake.connector.cursor
 import snowman
-from pydantic import BaseModel
 from pytest_mock import MockFixture
 from snowman._features import USE_TURU
 from snowman.query.column import Column
@@ -33,6 +33,12 @@ def mock_turu_snowflake_connection(
         return mocker.MagicMock(spec=snowflake.connector.connection.SnowflakeConnection)
 
 
+@dataclass
+class _UserAccessColumns:
+    id: Column[int]
+    name: Column[str]
+
+
 class _UserInsertColumns(TypedDict):
     id: int
     name: str
@@ -44,7 +50,7 @@ class _UserUpdateColumns(TypedDict, total=False):
 
 
 @snowman.table("database", "schema", "users")
-class User(BaseModel, Table[_UserInsertColumns, _UserUpdateColumns]):
+class User(Table[_UserAccessColumns, _UserInsertColumns, _UserUpdateColumns]):
     id: int
     name: str
 

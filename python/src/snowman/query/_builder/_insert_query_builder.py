@@ -7,6 +7,7 @@ from snowman.cursor import Cursor, _get_snowflake_connection
 from snowman.exception import snowmanNotDataFrameAvailableError
 from snowman.relation import full_table_name, table_column_names, table_columns_dict
 from snowman.relation.table import (
+    GenericAccessColumnDataclass,
     GenericInsertColumnTypedDict,
     GenericTable,
     GenericUpdateColumnTypedDict,
@@ -28,6 +29,7 @@ class InsertQueryBuilder:
     >>> from typing import TypedDict
     >>> import pydantic
     >>> from snowman.query import insert
+    >>> from snowman.query.column import Column
     >>>
     >>> class _UserInsertColumns(TypedDict):
     ...     id: int
@@ -37,9 +39,13 @@ class InsertQueryBuilder:
     ...     id: int
     ...     name: str
     ...
+    >>> class _UserAccessColumns(TypedDict):
+    ...     id: Column[int]
+    ...     name: Column[str]
+    ...
     >>> @snowman.table("database", "schema", "users")
     ... class User(
-    ...     pydantic.BaseModel, snowman.Table["_UserInsertColumns", "_UserUpdateColumns"]
+    ...     pydantic.BaseModel, snowman.Table["_UserAccessColumns", "_UserInsertColumns", "_UserUpdateColumns"]
     ... ):
     ...     id: int
     ...     name: str
@@ -71,7 +77,13 @@ class InsertQueryBuilder:
 
     def into(
         self,
-        table: Type[Table[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]],
+        table: Type[
+            Table[
+                GenericAccessColumnDataclass,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+        ],
         /,
     ):
         return InsertIntoQueryBuilder(
@@ -83,7 +95,13 @@ class InsertQueryBuilder:
 class InsertOverwriteQueryBuilder:
     def into(
         self,
-        table: Type[Table[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]],
+        table: Type[
+            Table[
+                GenericAccessColumnDataclass,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+        ],
         /,
     ):
         return InsertIntoQueryBuilder(
@@ -188,7 +206,7 @@ VALUES (
                 conn=_get_snowflake_connection(cursor),
                 df=self._dataframe,
                 table_name=self._table.__table_name__,
-                database=self._table.__databas_name__,
+                database=self._table.__database_name__,
                 schema=self._table.__schema_name__,
             )
 

@@ -1,27 +1,15 @@
-from typing import TYPE_CHECKING, Annotated, Any, Generic, Self, Type
-
-from typing_extensions import overload
+from typing import Any, Generic, Type, cast
 
 from snowman._generic import PyType
 from snowman.query.condition.eq_condition import EqCondition
 from snowman.query.condition.is_condition import IsCondition
 from snowman.query.condition.is_not_condition import IsNotCondition
-
-if TYPE_CHECKING:
-
-    class _Column(Generic[PyType]):
-        @overload
-        def __get__(self, instance: None, owner: Type[Any]) -> "Self": ...
-
-        @overload
-        def __get__(self, instance: object, owner: Type[Any]) -> PyType: ...
-
-        def __get__(
-            self, instance: object | None, owner: Type[Any]
-        ) -> "Self | PyType": ...
-
-else:
-    _Column = Annotated[PyType, ...]
+from snowman.relation.table import (
+    GenericAccessColumnDataclass,
+    GenericInsertColumnTypedDict,
+    GenericUpdateColumnTypedDict,
+    Table,
+)
 
 
 class Column(Generic[PyType]):
@@ -53,6 +41,41 @@ class Column(Generic[PyType]):
 
     def __repr__(self) -> str:
         return f"{self._database_name}.{self._schema_name}.{self._table_name}.{self._column_name}"
+
+
+class ColumnAccessor:
+    def __init__(
+        self,
+        table: Type[
+            Table[
+                GenericAccessColumnDataclass,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+        ],
+    ):
+        self._table = table
+
+    def __getattr__(self, key: str) -> Column[Any]:
+        return Column(
+            cast(type, self._table.model_fields[key].annotation),
+            database_name=self._table.__database_name__,
+            schema_name=self._table.__schema_name__,
+            table_name=self._table.__table_name__,
+            column_name=key,
+        )
+
+
+def get_columns(
+    table: Type[
+        Table[
+            GenericAccessColumnDataclass,
+            GenericInsertColumnTypedDict,
+            GenericUpdateColumnTypedDict,
+        ]
+    ],
+) -> GenericAccessColumnDataclass:
+    return cast(GenericAccessColumnDataclass, ColumnAccessor(table))
 
 
 class ColumnIs(Generic[PyType]):

@@ -3,6 +3,7 @@ from typing import Any, Type, cast
 from pydantic import BaseModel
 
 from snowman.relation.table import (
+    GenericAccessColumnDataclass,
     GenericInsertColumnTypedDict,
     GenericUpdateColumnTypedDict,
     Table,
@@ -10,7 +11,7 @@ from snowman.relation.table import (
 
 
 def full_table_name(table: Type[Table]) -> str:
-    return f"{table.__databas_name__}.{table.__schema_name__}.{table.__table_name__}"
+    return f"{table.__database_name__}.{table.__schema_name__}.{table.__table_name__}"
 
 
 def table_column_names(table: Type[Table]) -> list[str]:
@@ -22,7 +23,11 @@ def table_column_names(table: Type[Table]) -> list[str]:
 
 
 def table_columns_dict(
-    table: Table[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]
+    table: Table[
+        GenericAccessColumnDataclass,
+        GenericInsertColumnTypedDict,
+        GenericUpdateColumnTypedDict,
+    ]
     | GenericInsertColumnTypedDict
     | GenericUpdateColumnTypedDict,
 ) -> dict[str, Any]:
