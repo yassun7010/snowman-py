@@ -1,14 +1,19 @@
 from typing import assert_type
 
+import pytest
 from snowman.query.column import Column
-from snowman.typing import TypeMissMatch
+from snowman.typing import TypeMissMatch, UseIsInsteadOfEq
 
 
 class TestEqCondition:
-    def test_eq_condition(self, id_column: Column[int]):
-        condition = (id_column == 1).to_condition()
+    def test_eq_condition(self, int_column: Column[int]):
+        condition = (int_column == 1).to_condition()
         assert condition.condition == "id = %s"
         assert condition.params == (1,)
 
-    def test_eq_condition_type_miss_match(self, id_column: Column[int]):
-        assert_type(id_column == "1", TypeMissMatch[int, str])
+    def test_eq_condition_type_miss_match(self, int_column: Column[int]):
+        assert_type(int_column == "1", TypeMissMatch[int, str])
+
+    @pytest.mark.parametrize("value", [True, False, None])
+    def test_eq_condition_use_is(self, int_column: Column[int], value: bool | None):
+        assert_type(int_column == value, UseIsInsteadOfEq)

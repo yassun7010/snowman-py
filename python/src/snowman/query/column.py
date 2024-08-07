@@ -13,7 +13,12 @@ from snowman.relation.table import (
 )
 
 if TYPE_CHECKING:
-    from snowman.typing import TypeMissMatch, U
+    from snowman.typing import (
+        TypeMissMatch,
+        U,
+        UseIsInsteadOfEq,
+        UseIsNotInsteadOfNe,
+    )
 
 
 class Column(Generic[PyType]):
@@ -38,12 +43,16 @@ class Column(Generic[PyType]):
         return ColumnIs(self)
 
     @overload
+    def __eq__(self, value: bool | None) -> "UseIsInsteadOfEq": ...  # type: ignore
+    @overload
     def __eq__(self, value: PyType) -> EqCondition: ...  # type: ignore
     @overload
     def __eq__(self, value: "U") -> "TypeMissMatch[PyType, U]": ...
     def __eq__(self, value: PyType) -> EqCondition:  # type: ignore
         return EqCondition(self, value)
 
+    @overload
+    def __ne__(self, value: bool | None) -> "UseIsNotInsteadOfNe": ...  # type: ignore
     @overload
     def __ne__(self, value: PyType) -> EqCondition: ...  # type: ignore
     @overload
@@ -94,29 +103,59 @@ def get_columns(
 
 
 class ColumnIs(Generic[PyType]):
+    """
+    A class for using the IS operator
+
+    #### Usage:
+        ```python
+        User.id.is_.true
+        User.id.is_.false
+        User.id.is_.null
+        User.id.is_(True)
+        ```
+    """
+
     def __init__(self, column: Column[PyType]):
         self._column = column
+
+    def __call__(self, value: bool | None) -> IsCondition:
+        return IsCondition(self._column, value)
 
     @property
     def not_(self) -> "ColumnIsNot":
         return ColumnIsNot(self._column)
 
     @property
-    def null(self) -> "IsCondition":
+    def null(self) -> IsCondition:
         return IsCondition(self._column, None)
 
     @property
-    def true(self) -> "IsCondition":
+    def true(self) -> IsCondition:
         return IsCondition(self._column, True)
 
     @property
-    def false(self) -> "IsCondition":
+    def false(self) -> IsCondition:
         return IsCondition(self._column, False)
 
 
 class ColumnIsNot(Generic[PyType]):
+    """
+    A class for using the IS NOT operator
+
+    #### Usage:
+        ```python
+        User.id.is_.not_.true
+        User.id.is_.not_.false
+        User.id.is_.not_.null
+        User.id.is_.not_(True)
+        ```
+    """
+
     def __init__(self, column: Column[PyType]):
         self._column = column
+
+    def __call__(self, value: bool | None) -> IsNotCondition:
+        return IsNotCondition(self._column, value)
 
     @property
     def null(self) -> "IsNotCondition":

@@ -94,7 +94,7 @@ def company() -> Company:
 
 
 @pytest.fixture
-def id_column() -> Column[int]:
+def int_column() -> Column[int]:
     return Column(
         int,
         database_name=User.__database_name__,
