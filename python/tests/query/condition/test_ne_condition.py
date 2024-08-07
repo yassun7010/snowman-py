@@ -8,8 +8,10 @@ from snowman.typing import TypeMissMatch, UseIsNotInsteadOfNe
 
 class TestNeCondition:
     def test_ne_condition(self, int_column: Column[int]):
-        condition: NeCondition = int_column != 1
+        condition = int_column != 1
         sql = condition.to_sql()
+
+        assert_type(condition, NeCondition)
         assert sql.condition == "id != %s"
         assert sql.params == (1,)
 
@@ -19,3 +21,10 @@ class TestNeCondition:
     @pytest.mark.parametrize("value", [True, False, None])
     def test_ne_condition_use_is(self, int_column: Column[int], value: bool | None):
         assert_type(int_column != value, UseIsNotInsteadOfNe)
+
+    @pytest.mark.parametrize("value", [1, None])
+    def test_ne_condition_use_nullable(
+        self, int_nullable_column: Column[int | None], value: int | None
+    ):
+        # NOTE: Consider whether null safety can be supported
+        assert_type(int_nullable_column != value, NeCondition)

@@ -44,7 +44,9 @@ class Column(Generic[PyType]):
         return ColumnIs(self)
 
     @overload
-    def __eq__(self, value: bool | None) -> "UseIsInsteadOfEq": ...  # type: ignore
+    def __eq__(self, value: bool) -> "UseIsInsteadOfEq": ...  # type: ignore
+    @overload
+    def __eq__(self, value: None) -> "UseIsInsteadOfEq": ...  # type: ignore
     @overload
     def __eq__(self, value: PyType) -> EqCondition: ...  # type: ignore
     @overload
@@ -53,7 +55,9 @@ class Column(Generic[PyType]):
         return EqCondition(self, value)
 
     @overload
-    def __ne__(self, value: bool | None) -> "UseIsNotInsteadOfNe": ...  # type: ignore
+    def __ne__(self, value: bool) -> "UseIsNotInsteadOfNe": ...  # type: ignore
+    @overload
+    def __ne__(self, value: None) -> "UseIsNotInsteadOfNe": ...  # type: ignore
     @overload
     def __ne__(self, value: PyType) -> NeCondition: ...  # type: ignore
     @overload

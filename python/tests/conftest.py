@@ -102,3 +102,14 @@ def int_column() -> Column[int]:
         table_name=User.__table_name__,
         column_name="id",
     )
+
+
+@pytest.fixture
+def int_nullable_column() -> Column[int | None]:
+    return Column(
+        int | None,  # type: ignore[valid-type]
+        database_name=User.__database_name__,
+        schema_name=User.__schema_name__,
+        table_name=User.__table_name__,
+        column_name="id",
+    )
