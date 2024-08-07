@@ -1,9 +1,10 @@
-from typing import TYPE_CHECKING, Any, Generic, Type, cast, overload
+from typing import TYPE_CHECKING, Any, Generic, Sequence, Type, cast, overload
 
 from snowman._generic import PyType
 from snowman.query.condition.eq_condition import EqCondition
 from snowman.query.condition.ge_condition import GeCondition
 from snowman.query.condition.gt_condition import GtCondition
+from snowman.query.condition.in_condition import InCondition
 from snowman.query.condition.is_condition import IsCondition
 from snowman.query.condition.is_not_condition import IsNotCondition
 from snowman.query.condition.le_condition import LeCondition
@@ -45,6 +46,9 @@ class Column(Generic[PyType]):
     @property
     def is_(self) -> "ColumnIs[PyType]":
         return ColumnIs(self)
+
+    def in_(self, values: Sequence[PyType], /) -> InCondition:
+        return InCondition(self, values)
 
     @overload
     def __eq__(self, value: bool) -> "UseIsInsteadOfEq": ...  # type: ignore
