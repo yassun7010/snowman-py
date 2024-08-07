@@ -1,6 +1,6 @@
 from typing import Generic, Type
 
-from snowman.query.column import get_columns
+from snowman.query.column import column
 from snowman.query.condition.condition import Condition
 from snowman.query.condition.group_condition import GroupCondition
 from snowman.relation.table import (
@@ -22,7 +22,7 @@ class WhereContext(Generic[GenericColumnAccessor]):
             ]
         ],
     ) -> GenericColumnAccessor:
-        return get_columns(table)
+        return column(table)
 
     def group(self, condition: Condition, /) -> "GroupCondition":
         return GroupCondition(condition)

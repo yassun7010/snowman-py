@@ -90,6 +90,13 @@ class UpdateSetQueryBuilder(
     @overload
     def where(
         self,
+        condition: Condition,
+        /,
+    ) -> "UpdateSetWhereQueryBuidler": ...
+
+    @overload
+    def where(
+        self,
         condition: str,
         params: Sequence[Any] | None = None,
         /,
@@ -97,7 +104,9 @@ class UpdateSetQueryBuilder(
 
     def where(
         self,
-        condition: str | Callable[[WhereContext[GenericColumnAccessor]], Condition],
+        condition: Callable[[WhereContext[GenericColumnAccessor]], Condition]
+        | Condition
+        | str,
         params: Sequence[Any] | None = None,
         /,
     ) -> "UpdateSetWhereQueryBuidler":
@@ -111,6 +120,9 @@ class UpdateSetQueryBuilder(
         """
         if callable(condition):
             condition, params = condition(WhereContext()).to_sql()
+
+        elif isinstance(condition, Condition):
+            condition, params = condition.to_sql()
 
         return UpdateSetWhereQueryBuidler(
             self._table,

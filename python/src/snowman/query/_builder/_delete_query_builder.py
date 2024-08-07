@@ -55,6 +55,13 @@ class DeleteFromStatement(Generic[GenericColumnAccessor]):
     @overload
     def where(
         self,
+        condition: Condition,
+        /,
+    ) -> "DeleteFromWhereQueryBuilder": ...
+
+    @overload
+    def where(
+        self,
         condition: str,
         params: Sequence[Any] | None = None,
         /,
@@ -62,7 +69,9 @@ class DeleteFromStatement(Generic[GenericColumnAccessor]):
 
     def where(
         self,
-        condition: str | Callable[[WhereContext[GenericColumnAccessor]], Condition],
+        condition: Callable[[WhereContext[GenericColumnAccessor]], Condition]
+        | Condition
+        | str,
         params: Sequence[Any] | None = None,
         /,
     ) -> "DeleteFromWhereQueryBuilder":
@@ -76,6 +85,9 @@ class DeleteFromStatement(Generic[GenericColumnAccessor]):
         """
         if callable(condition):
             condition, params = condition(WhereContext()).to_sql()
+
+        elif isinstance(condition, Condition):
+            condition, params = condition.to_sql()
 
         return DeleteFromWhereQueryBuilder(self._table, condition, params or ())
 

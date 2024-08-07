@@ -5,6 +5,7 @@ import pytest
 import snowman
 from conftest import User
 from snowflake.connector.cursor import SnowflakeCursor
+from snowman import column as c
 from snowman._features import USE_TURU
 
 if TYPE_CHECKING:
@@ -42,11 +43,36 @@ class TestUpdateQuery:
         )
         assert params == ("taro", 1)
 
-    def test_update_query_pydantic_build_using_condition(self, user: User):
+    def test_update_query_pydantic_build_using_condition_callable(self, user: User):
         query, params = (
             snowman.query.update(User)
             .set(user)
             .where(lambda c: (c(User).id == 1).and_(c(User).name != "Alice"))
+            .build()
+        )
+
+        assert (
+            query
+            == textwrap.dedent(
+                """
+                UPDATE
+                    database.schema.users
+                SET
+                    id = %s,
+                    name = %s
+                WHERE
+                    id = %s
+                    AND name != %s
+                """
+            ).strip()
+        )
+        assert params == (1, "Alice", 1, "Alice")
+
+    def test_update_query_pydantic_build_using_condition(self, user: User):
+        query, params = (
+            snowman.query.update(User)
+            .set(user)
+            .where((c(User).id == 1).and_(c(User).name != "Alice"))
             .build()
         )
 

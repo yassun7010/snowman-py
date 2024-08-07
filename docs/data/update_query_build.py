@@ -1,6 +1,7 @@
 import datetime
 import textwrap
 
+from snowman import column as c
 from snowman.query import update
 from your.database.schema import User
 
@@ -12,11 +13,9 @@ query, params = (
         {"name": "Jane Doe"},
     )
     .where(
-        lambda c: (
-            (c(User).name.in_(["Jane", "Doe"]))
-            .and_(c(User).age > 18)
-            .and_(c(User).created_at >= datetime.datetime(2001, 1, 1))
-        )
+        (c(User).name.in_(["Jane", "Doe"]))
+        .and_(c(User).age > 18)
+        .and_(c(User).created_at >= datetime.datetime(2001, 1, 1))
     )
 ).build()
 
