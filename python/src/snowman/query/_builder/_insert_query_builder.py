@@ -7,7 +7,7 @@ from snowman.cursor import Cursor, _get_snowflake_connection
 from snowman.exception import snowmanNotDataFrameAvailableError
 from snowman.relation import full_table_name, table_column_names, table_columns_dict
 from snowman.relation.table import (
-    GenericAccessColumnDataclass,
+    GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericTable,
     GenericUpdateColumnTypedDict,
@@ -79,7 +79,7 @@ class InsertQueryBuilder:
         self,
         table: Type[
             Table[
-                GenericAccessColumnDataclass,
+                GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
@@ -97,7 +97,7 @@ class InsertOverwriteQueryBuilder:
         self,
         table: Type[
             Table[
-                GenericAccessColumnDataclass,
+                GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]

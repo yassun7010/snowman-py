@@ -5,7 +5,7 @@ from snowman.query.condition.eq_condition import EqCondition
 from snowman.query.condition.is_condition import IsCondition
 from snowman.query.condition.is_not_condition import IsNotCondition
 from snowman.relation.table import (
-    GenericAccessColumnDataclass,
+    GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericUpdateColumnTypedDict,
     Table,
@@ -48,7 +48,7 @@ class ColumnAccessor:
         self,
         table: Type[
             Table[
-                GenericAccessColumnDataclass,
+                GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
@@ -69,13 +69,13 @@ class ColumnAccessor:
 def get_columns(
     table: Type[
         Table[
-            GenericAccessColumnDataclass,
+            GenericColumnAccessor,
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,
         ]
     ],
-) -> GenericAccessColumnDataclass:
-    return cast(GenericAccessColumnDataclass, ColumnAccessor(table))
+) -> GenericColumnAccessor:
+    return cast(GenericColumnAccessor, ColumnAccessor(table))
 
 
 class ColumnIs(Generic[PyType]):

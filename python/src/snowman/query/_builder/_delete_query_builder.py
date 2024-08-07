@@ -8,7 +8,7 @@ from snowman.cursor import Cursor
 from snowman.query.condition.to_condition import ToCondition
 from snowman.relation import full_table_name
 from snowman.relation.table import (
-    GenericAccessColumnDataclass,
+    GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericUpdateColumnTypedDict,
     Table,
@@ -22,22 +22,22 @@ class DeleteQueryBuilder:
         self,
         table: Type[
             Table[
-                GenericAccessColumnDataclass,
+                GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
         ],
         /,
-    ) -> "DeleteFromStatement[GenericAccessColumnDataclass]":
+    ) -> "DeleteFromStatement[GenericColumnAccessor]":
         return DeleteFromStatement(table)
 
 
-class DeleteFromStatement(Generic[GenericAccessColumnDataclass]):
+class DeleteFromStatement(Generic[GenericColumnAccessor]):
     def __init__(
         self,
         table: Type[
             Table[
-                GenericAccessColumnDataclass,
+                GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
@@ -48,7 +48,7 @@ class DeleteFromStatement(Generic[GenericAccessColumnDataclass]):
     @overload
     def where(
         self,
-        condition: Callable[[WhereContext[GenericAccessColumnDataclass]], ToCondition],
+        condition: Callable[[WhereContext[GenericColumnAccessor]], ToCondition],
         /,
     ) -> "DeleteFromWhereQueryBuilder": ...
 
@@ -62,8 +62,7 @@ class DeleteFromStatement(Generic[GenericAccessColumnDataclass]):
 
     def where(
         self,
-        condition: str
-        | Callable[[WhereContext[GenericAccessColumnDataclass]], ToCondition],
+        condition: str | Callable[[WhereContext[GenericColumnAccessor]], ToCondition],
         params: Sequence[Any] | None = None,
         /,
     ) -> "DeleteFromWhereQueryBuilder":
@@ -86,7 +85,7 @@ class DeleteFromWhereQueryBuilder(QueryBuilder):
         self,
         table: Type[
             Table[
-                GenericAccessColumnDataclass,
+                GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]

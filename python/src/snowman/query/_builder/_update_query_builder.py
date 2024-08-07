@@ -10,7 +10,7 @@ from snowman.cursor import Cursor
 from snowman.query.condition.to_condition import ToCondition
 from snowman.relation import full_table_name
 from snowman.relation.table import (
-    GenericAccessColumnDataclass,
+    GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericTable,
     GenericUpdateColumnTypedDict,
@@ -22,7 +22,7 @@ from ._builder import QueryBuilder, QueryWithParams, execute_with_tag
 
 class UpdateStatement(
     Generic[
-        GenericAccessColumnDataclass,
+        GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
     ]
@@ -31,7 +31,7 @@ class UpdateStatement(
         self,
         table: Type[
             Table[
-                GenericAccessColumnDataclass,
+                GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
@@ -45,18 +45,18 @@ class UpdateStatement(
     def set(
         self,
         fields: Table[
-            GenericAccessColumnDataclass,
+            GenericColumnAccessor,
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,
         ]
         | GenericUpdateColumnTypedDict,
-    ) -> "UpdateSetQueryBuilder[GenericAccessColumnDataclass,GenericInsertColumnTypedDict,GenericUpdateColumnTypedDict]":
+    ) -> "UpdateSetQueryBuilder[GenericColumnAccessor,GenericInsertColumnTypedDict,GenericUpdateColumnTypedDict]":
         return UpdateSetQueryBuilder(self._table, fields)
 
 
 class UpdateSetQueryBuilder(
     Generic[
-        GenericAccessColumnDataclass,
+        GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
     ]
@@ -65,13 +65,13 @@ class UpdateSetQueryBuilder(
         self,
         table: Type[
             Table[
-                GenericAccessColumnDataclass,
+                GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
         ],
         columns: Table[
-            GenericAccessColumnDataclass,
+            GenericColumnAccessor,
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,
         ]
@@ -83,7 +83,7 @@ class UpdateSetQueryBuilder(
     @overload
     def where(
         self,
-        condition: Callable[[WhereContext[GenericAccessColumnDataclass]], ToCondition],
+        condition: Callable[[WhereContext[GenericColumnAccessor]], ToCondition],
         /,
     ) -> "UpdateSetWhereQueryBuidler": ...
 
@@ -97,8 +97,7 @@ class UpdateSetQueryBuilder(
 
     def where(
         self,
-        condition: str
-        | Callable[[WhereContext[GenericAccessColumnDataclass]], ToCondition],
+        condition: str | Callable[[WhereContext[GenericColumnAccessor]], ToCondition],
         params: Sequence[Any] | None = None,
         /,
     ) -> "UpdateSetWhereQueryBuidler":
@@ -124,7 +123,7 @@ class UpdateSetQueryBuilder(
 class UpdateSetWhereQueryBuidler(
     Generic[
         GenericTable,
-        GenericAccessColumnDataclass,
+        GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
     ],
@@ -134,7 +133,7 @@ class UpdateSetWhereQueryBuidler(
         self,
         table: type[
             Table[
-                GenericAccessColumnDataclass,
+                GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]

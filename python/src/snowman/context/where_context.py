@@ -2,22 +2,22 @@ from typing import Generic, Type
 
 from snowman.query.column import get_columns
 from snowman.relation.table import (
-    GenericAccessColumnDataclass,
+    GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericUpdateColumnTypedDict,
     Table,
 )
 
 
-class WhereContext(Generic[GenericAccessColumnDataclass]):
+class WhereContext(Generic[GenericColumnAccessor]):
     def __call__(
         self,
         table: Type[
             Table[
-                GenericAccessColumnDataclass,
+                GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
         ],
-    ) -> GenericAccessColumnDataclass:
+    ) -> GenericColumnAccessor:
         return get_columns(table)

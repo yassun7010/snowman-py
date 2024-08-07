@@ -30,8 +30,8 @@ class UpdateColumnTypedDict(TypedDict, total=False):
     pass
 
 
-GenericAccessColumnDataclass = TypeVar(
-    "GenericAccessColumnDataclass",
+GenericColumnAccessor = TypeVar(
+    "GenericColumnAccessor",
 )
 
 GenericInsertColumnTypedDict = TypeVar(
@@ -73,7 +73,7 @@ class _TableMetaclass(PydanticModelMetaclass):
 class Table(
     BaseModel,
     Generic[
-        GenericAccessColumnDataclass,
+        GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
     ],
@@ -89,7 +89,7 @@ class Table(
     __table_name__: ClassVar[str]
 
     # NOTE: This field exists only for type definition and is not accessed at runtime.
-    __access_columns__: Type[GenericAccessColumnDataclass] | None = None
+    __access_columns__: Type[GenericColumnAccessor] | None = None
     __insert_columns__: Type[GenericInsertColumnTypedDict] | None = None
     __update_columns__: Type[GenericUpdateColumnTypedDict] | None = None
 
