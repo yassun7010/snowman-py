@@ -55,6 +55,30 @@ class User(Table[_UserAccessColumns, _UserInsertColumns, _UserUpdateColumns]):
     name: str
 
 
+@dataclass
+class _CompanyAccessColumns:
+    id: Column[int]
+    name: Column[str]
+
+
+class _CompanyInsertColumns(TypedDict):
+    id: int
+    name: str
+
+
+class _CompanyUpdateColumns(TypedDict, total=False):
+    id: int
+    name: str
+
+
+@snowman.table("database", "schema", "companies")
+class Company(
+    Table[_CompanyAccessColumns, _CompanyInsertColumns, _CompanyUpdateColumns]
+):
+    id: int
+    name: str
+
+
 @pytest.fixture
 def user() -> User:
     user = User(id=1, name="Alice")
@@ -63,11 +87,18 @@ def user() -> User:
 
 
 @pytest.fixture
+def company() -> Company:
+    company = Company(id=1, name="Apple")
+
+    return company
+
+
+@pytest.fixture
 def id_column() -> Column[int]:
     return Column(
         int,
-        database_name="database",
-        schema_name="schema",
-        table_name="users",
+        database_name=User.__database_name__,
+        schema_name=User.__schema_name__,
+        table_name=User.__table_name__,
         column_name="id",
     )

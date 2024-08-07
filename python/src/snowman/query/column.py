@@ -1,15 +1,19 @@
-from typing import Any, Generic, Type, cast
+from typing import TYPE_CHECKING, Any, Generic, Type, cast, overload
 
 from snowman._generic import PyType
 from snowman.query.condition.eq_condition import EqCondition
 from snowman.query.condition.is_condition import IsCondition
 from snowman.query.condition.is_not_condition import IsNotCondition
+from snowman.query.condition.ne_condition import NeCondition
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericUpdateColumnTypedDict,
     Table,
 )
+
+if TYPE_CHECKING:
+    from snowman.typing import TypeMissMatch, U
 
 
 class Column(Generic[PyType]):
@@ -33,8 +37,19 @@ class Column(Generic[PyType]):
     def is_(self) -> "ColumnIs[PyType]":
         return ColumnIs(self)
 
-    def __eq__(self, value: PyType) -> EqCondition:  # pyright: ignore[reportIncompatibleMethodOverride]
+    @overload
+    def __eq__(self, value: PyType) -> EqCondition: ...  # type: ignore
+    @overload
+    def __eq__(self, value: "U") -> "TypeMissMatch[PyType, U]": ...
+    def __eq__(self, value: PyType) -> EqCondition:  # type: ignore
         return EqCondition(self, value)
+
+    @overload
+    def __ne__(self, value: PyType) -> EqCondition: ...  # type: ignore
+    @overload
+    def __ne__(self, value: "U") -> "TypeMissMatch[PyType, U]": ...
+    def __ne__(self, value: PyType) -> NeCondition:  # type: ignore
+        return NeCondition(self, value)
 
     def __str__(self) -> str:
         return self._column_name
