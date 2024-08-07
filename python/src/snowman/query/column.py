@@ -135,7 +135,7 @@ class ColumnAccessor:
         )
 
 
-def get_columns(
+def column(
     table: Type[
         Table[
             GenericColumnAccessor,
@@ -144,6 +144,14 @@ def get_columns(
         ]
     ],
 ) -> GenericColumnAccessor:
+    """
+    Extract column information from the table.
+
+    #### Usage:
+        ```python
+        repr(column(User).id) == "database.schema.users.id"
+        ```
+    """
     return cast(GenericColumnAccessor, ColumnAccessor(table))
 
 
