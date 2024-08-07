@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any, Generic, Type, cast, overload
 
 from snowman._generic import PyType
 from snowman.query.condition.eq_condition import EqCondition
+from snowman.query.condition.ge_condition import GeCondition
 from snowman.query.condition.gt_condition import GtCondition
 from snowman.query.condition.is_condition import IsCondition
 from snowman.query.condition.is_not_condition import IsNotCondition
@@ -73,6 +74,13 @@ class Column(Generic[PyType]):
     def __le__(self, value: "U") -> "TypeMissMatch[PyType, U]": ...
     def __le__(self, value: PyType) -> LeCondition:  # type: ignore
         return LeCondition(self, value)
+
+    @overload
+    def __ge__(self, value: PyType) -> GeCondition: ...  # type: ignore
+    @overload
+    def __ge__(self, value: "U") -> "TypeMissMatch[PyType, U]": ...
+    def __ge__(self, value: PyType) -> GeCondition:  # type: ignore
+        return GeCondition(self, value)
 
     @overload
     def __lt__(self, value: PyType) -> LtCondition: ...  # type: ignore
