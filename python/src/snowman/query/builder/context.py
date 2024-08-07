@@ -24,5 +24,9 @@ class WhereContext(Generic[GenericColumnAccessor]):
     ) -> GenericColumnAccessor:
         return column(table)
 
-    def group(self, condition: Condition, /) -> "GroupCondition":
-        return GroupCondition(condition)
+    def group(self, condition: Condition, /) -> GroupCondition:
+        return group(condition)
+
+
+def group(condition: Condition) -> GroupCondition:
+    return GroupCondition(condition)
