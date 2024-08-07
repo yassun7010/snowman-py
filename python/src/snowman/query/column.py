@@ -10,6 +10,7 @@ from snowman.query.condition.is_not_condition import IsNotCondition
 from snowman.query.condition.le_condition import LeCondition
 from snowman.query.condition.lt_condition import LtCondition
 from snowman.query.condition.ne_condition import NeCondition
+from snowman.query.condition.not_in_condition import NotInCondition
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
@@ -49,6 +50,10 @@ class Column(Generic[PyType]):
 
     def in_(self, values: Sequence[PyType], /) -> InCondition:
         return InCondition(self, values)
+
+    @property
+    def not_(self) -> "ColumnNot[PyType]":
+        return ColumnNot(self)
 
     @overload
     def __eq__(self, value: bool) -> "UseIsInsteadOfEq": ...  # type: ignore
@@ -208,3 +213,20 @@ class ColumnIsNot(Generic[PyType]):
     @property
     def false(self) -> "IsNotCondition":
         return IsNotCondition(self._column, False)
+
+
+class ColumnNot(Generic[PyType]):
+    """
+    A class for using the NOT operator
+
+    #### Usage:
+        ```python
+        User.id.not_.in_([1, 2, 3])
+        ```
+    """
+
+    def __init__(self, column: Column[PyType]):
+        self._column = column
+
+    def in_(self, values: Sequence[PyType], /) -> NotInCondition:
+        return NotInCondition(self._column, values)
