@@ -42,6 +42,30 @@ class TestUpdateQuery:
         )
         assert params == ("taro", 1)
 
+    def test_update_query_pydantic_build_using_condition(self, user: User):
+        query, params = (
+            snowman.query.update(User)
+            .set(user)
+            .where(lambda c: c(User).id == 1)
+            .build()
+        )
+
+        assert (
+            query
+            == textwrap.dedent(
+                """
+                UPDATE
+                    database.schema.users
+                SET
+                    id = %s,
+                    name = %s
+                WHERE
+                    id = %s
+                """
+            ).strip()
+        )
+        assert params == (1, "Alice", 1)
+
     def test_update_query_pydantic_build(self, user: User):
         query, params = (
             snowman.query.update(User).set(user).where("id = %s", [1]).build()

@@ -33,7 +33,7 @@ class Column(Generic[PyType]):
     def is_(self) -> "ColumnIs[PyType]":
         return ColumnIs(self)
 
-    def __eq__(self, value: PyType) -> EqCondition:
+    def __eq__(self, value: PyType) -> EqCondition:  # pyright: ignore[reportIncompatibleMethodOverride]
         return EqCondition(self, value)
 
     def __str__(self) -> str:

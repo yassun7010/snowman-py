@@ -1,21 +1,41 @@
 import itertools
-from typing import Any, Generic, Sequence, Type, cast
+from typing import Any, Callable, Generic, Sequence, Type, cast, overload
 
 from pydantic import BaseModel
 from typing_extensions import override
 
 from snowman._features import UpdateTag
+from snowman.context.where_context import WhereContext
 from snowman.cursor import Cursor
+from snowman.query.condition.to_condition import ToCondition
 from snowman.relation import full_table_name
-from snowman.relation.table import GenericTable, GenericUpdateColumnTypedDict
+from snowman.relation.table import (
+    GenericAccessColumnDataclass,
+    GenericInsertColumnTypedDict,
+    GenericTable,
+    GenericUpdateColumnTypedDict,
+    Table,
+)
 
 from ._builder import QueryBuilder, QueryWithParams, execute_with_tag
 
 
-class UpdateStatement(Generic[GenericTable, GenericUpdateColumnTypedDict]):
+class UpdateStatement(
+    Generic[
+        GenericAccessColumnDataclass,
+        GenericInsertColumnTypedDict,
+        GenericUpdateColumnTypedDict,
+    ]
+):
     def __init__(
         self,
-        table: Type[GenericTable],
+        table: Type[
+            Table[
+                GenericAccessColumnDataclass,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+        ],
         /,
         *,
         _columns_type: Type[GenericUpdateColumnTypedDict] | None = None,
@@ -24,28 +44,61 @@ class UpdateStatement(Generic[GenericTable, GenericUpdateColumnTypedDict]):
 
     def set(
         self,
-        fields: GenericTable | GenericUpdateColumnTypedDict,
-    ) -> "UpdateSetQueryBuilder[GenericTable, GenericUpdateColumnTypedDict]":
+        fields: Table[
+            GenericAccessColumnDataclass,
+            GenericInsertColumnTypedDict,
+            GenericUpdateColumnTypedDict,
+        ]
+        | GenericUpdateColumnTypedDict,
+    ) -> "UpdateSetQueryBuilder[GenericAccessColumnDataclass,GenericInsertColumnTypedDict,GenericUpdateColumnTypedDict]":
         return UpdateSetQueryBuilder(self._table, fields)
 
 
-class UpdateSetQueryBuilder(Generic[GenericTable, GenericUpdateColumnTypedDict]):
+class UpdateSetQueryBuilder(
+    Generic[
+        GenericAccessColumnDataclass,
+        GenericInsertColumnTypedDict,
+        GenericUpdateColumnTypedDict,
+    ]
+):
     def __init__(
         self,
-        table: Type[GenericTable],
-        columns: GenericTable | GenericUpdateColumnTypedDict,
+        table: Type[
+            Table[
+                GenericAccessColumnDataclass,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+        ],
+        columns: Table[
+            GenericAccessColumnDataclass,
+            GenericInsertColumnTypedDict,
+            GenericUpdateColumnTypedDict,
+        ]
+        | GenericUpdateColumnTypedDict,
     ):
         self._table = table
-        self._columns = cast(
-            dict,
-            columns.model_dump(exclude_unset=True)
-            if isinstance(columns, BaseModel)
-            else columns,
-        )
+        self._columns = columns
 
+    @overload
+    def where(
+        self,
+        condition: Callable[[WhereContext[GenericAccessColumnDataclass]], ToCondition],
+        /,
+    ) -> "UpdateSetWhereQueryBuidler": ...
+
+    @overload
     def where(
         self,
         condition: str,
+        params: Sequence[Any] | None = None,
+        /,
+    ) -> "UpdateSetWhereQueryBuidler": ...
+
+    def where(
+        self,
+        condition: str
+        | Callable[[WhereContext[GenericAccessColumnDataclass]], ToCondition],
         params: Sequence[Any] | None = None,
         /,
     ) -> "UpdateSetWhereQueryBuidler":
@@ -57,6 +110,9 @@ class UpdateSetQueryBuilder(Generic[GenericTable, GenericUpdateColumnTypedDict])
         e.g)
             `.where("id = %s AND name = %s", [1, "Alice"])`
         """
+        if callable(condition):
+            condition, params = condition(WhereContext()).to_condition()
+
         return UpdateSetWhereQueryBuidler(
             self._table,
             self._columns,
@@ -66,11 +122,23 @@ class UpdateSetQueryBuilder(Generic[GenericTable, GenericUpdateColumnTypedDict])
 
 
 class UpdateSetWhereQueryBuidler(
-    Generic[GenericTable, GenericUpdateColumnTypedDict], QueryBuilder
+    Generic[
+        GenericTable,
+        GenericAccessColumnDataclass,
+        GenericInsertColumnTypedDict,
+        GenericUpdateColumnTypedDict,
+    ],
+    QueryBuilder,
 ):
     def __init__(
         self,
-        table: type[GenericTable],
+        table: type[
+            Table[
+                GenericAccessColumnDataclass,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+        ],
         columns: GenericTable | GenericUpdateColumnTypedDict,
         *,
         where_condition: str,

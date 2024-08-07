@@ -45,7 +45,7 @@ class InsertQueryBuilder:
     ...
     >>> @snowman.table("database", "schema", "users")
     ... class User(
-    ...     pydantic.BaseModel, snowman.Table["_UserAccessColumns", "_UserInsertColumns", "_UserUpdateColumns"]
+    ...     snowman.Table["_UserAccessColumns", "_UserInsertColumns", "_UserUpdateColumns"]
     ... ):
     ...     id: int
     ...     name: str
