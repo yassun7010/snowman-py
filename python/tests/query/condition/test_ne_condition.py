@@ -1,8 +1,8 @@
 from typing import assert_type
 
 import pytest
+from snowman.query.builder.condition.ne_condition import NeCondition
 from snowman.query.column import Column
-from snowman.query.condition.ne_condition import NeCondition
 from snowman.typing import TypeMissMatch, UseIsNotInsteadOfNe
 
 

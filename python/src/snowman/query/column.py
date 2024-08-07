@@ -1,16 +1,16 @@
 from typing import TYPE_CHECKING, Any, Generic, Sequence, Type, cast, overload
 
 from snowman._generic import PyType
-from snowman.query.condition.eq_condition import EqCondition
-from snowman.query.condition.ge_condition import GeCondition
-from snowman.query.condition.gt_condition import GtCondition
-from snowman.query.condition.in_condition import InCondition
-from snowman.query.condition.is_condition import IsCondition
-from snowman.query.condition.is_not_condition import IsNotCondition
-from snowman.query.condition.le_condition import LeCondition
-from snowman.query.condition.lt_condition import LtCondition
-from snowman.query.condition.ne_condition import NeCondition
-from snowman.query.condition.not_in_condition import NotInCondition
+from snowman.query.builder.condition.eq_condition import EqCondition
+from snowman.query.builder.condition.ge_condition import GeCondition
+from snowman.query.builder.condition.gt_condition import GtCondition
+from snowman.query.builder.condition.in_condition import InCondition
+from snowman.query.builder.condition.is_condition import IsCondition
+from snowman.query.builder.condition.is_not_condition import IsNotCondition
+from snowman.query.builder.condition.le_condition import LeCondition
+from snowman.query.builder.condition.lt_condition import LtCondition
+from snowman.query.builder.condition.ne_condition import NeCondition
+from snowman.query.builder.condition.not_in_condition import NotInCondition
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,

@@ -1,6 +1,6 @@
 from typing_extensions import override
 
-from snowman.query.condition.condition import Condition, ConditionWithParams
+from snowman.query.builder.condition.condition import Condition, ConditionWithParams
 
 
 class OrCondition(Condition):

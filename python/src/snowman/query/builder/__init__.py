@@ -4,10 +4,10 @@ Snowman provides simple query builder for `insert` / `update` / `delete` / `trun
 
 from typing import Type
 
-from snowman.query._builder._delete_query_builder import DeleteQueryBuilder
-from snowman.query._builder._insert_query_builder import InsertQueryBuilder
-from snowman.query._builder._truncate_query_builder import TruncateQueryBuilder
-from snowman.query._builder._update_query_builder import UpdateStatement
+from snowman.query.builder._delete_query_builder import DeleteQueryBuilder
+from snowman.query.builder._insert_query_builder import InsertQueryBuilder
+from snowman.query.builder._truncate_query_builder import TruncateQueryBuilder
+from snowman.query.builder._update_query_builder import UpdateStatement
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,

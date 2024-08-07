@@ -1,7 +1,7 @@
 from typing import assert_type
 
+from snowman.query.builder.condition.group_condition import GroupCondition
 from snowman.query.column import Column
-from snowman.query.condition.group_condition import GroupCondition
 
 
 class TestGroupCondition:

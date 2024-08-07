@@ -1,8 +1,8 @@
 from typing import assert_type
 
 import pytest
+from snowman.query.builder.condition.in_condition import InCondition
 from snowman.query.column import Column
-from snowman.query.condition.in_condition import InCondition
 
 
 class TestInCondition:
