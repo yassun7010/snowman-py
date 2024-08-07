@@ -46,7 +46,7 @@ class TestUpdateQuery:
         query, params = (
             snowman.query.update(User)
             .set(user)
-            .where(lambda c: c(User).id == 1)
+            .where(lambda c: (c(User).id == 1).and_(c(User).name != "Alice"))
             .build()
         )
 
@@ -61,10 +61,11 @@ class TestUpdateQuery:
                     name = %s
                 WHERE
                     id = %s
+                    AND name != %s
                 """
             ).strip()
         )
-        assert params == (1, "Alice", 1)
+        assert params == (1, "Alice", 1, "Alice")
 
     def test_update_query_pydantic_build(self, user: User):
         query, params = (

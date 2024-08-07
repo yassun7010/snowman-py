@@ -25,7 +25,8 @@ class TestDeleteQuery:
                 DELETE FROM
                     database.schema.users
                 WHERE
-                    id = %s AND name = %s
+                    id = %s
+                    AND name = %s
                 """
             ).strip()
         )

@@ -27,7 +27,9 @@ expected = textwrap.dedent(
     SET
         name = %s
     WHERE
-        name IN (%s) AND age > %s AND created_at >= %s
+        name IN (%s)
+        AND age > %s
+        AND created_at >= %s
     """,
 ).strip()
 
