@@ -1,17 +1,17 @@
 from typing_extensions import override
 
-from snowman.query.condition.to_condition import ConditionWithParams, ToCondition
+from snowman.query.condition.condition import Condition, ConditionWithParams
 
 
-class AndCondition(ToCondition):
-    def __init__(self, left: ToCondition, right: ToCondition):
+class AndCondition(Condition):
+    def __init__(self, left: Condition, right: Condition):
         self._left = left
         self._right = right
 
     @override
-    def to_condition(self) -> ConditionWithParams:
-        left = self._left.to_condition()
-        right = self._right.to_condition()
+    def to_sql(self) -> ConditionWithParams:
+        left = self._left.to_sql()
+        right = self._right.to_sql()
         return ConditionWithParams(
             f"{left.condition} AND {right.condition}",
             left.params + right.params,

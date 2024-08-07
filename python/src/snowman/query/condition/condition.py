@@ -11,16 +11,16 @@ class ConditionWithParams(NamedTuple):
     params: tuple[Any, ...]
 
 
-class ToCondition(ABC):
+class Condition(ABC):
     @abstractmethod
-    def to_condition(self) -> ConditionWithParams: ...
+    def to_sql(self) -> ConditionWithParams: ...
 
-    def and_(self, other: "ToCondition") -> "AndCondition":
+    def and_(self, other: "Condition") -> "AndCondition":
         from snowman.query.condition.and_condition import AndCondition
 
         return AndCondition(self, other)
 
-    def or_(self, other: "ToCondition") -> "OrCondition":
+    def or_(self, other: "Condition") -> "OrCondition":
         from snowman.query.condition.or_condition import OrCondition
 
         return OrCondition(self, other)

@@ -2,20 +2,20 @@ from typing import assert_type
 
 import pytest
 from snowman.query.column import Column
-from snowman.query.condition.eq_condition import EqCondition
+from snowman.query.condition.le_condition import LeCondition
 from snowman.typing import TypeMissMatch, UseIsInsteadOfEq
 
 
-class TestEqCondition:
-    def test_eq_condition(self, int_column: Column[int]):
-        condition: EqCondition = int_column == 1
+class TestLeCondition:
+    def test_le_condition(self, int_column: Column[int]):
+        condition: LeCondition = int_column <= 1
         sql = condition.to_sql()
-        assert sql.condition == "id = %s"
+        assert sql.condition == "id <= %s"
         assert sql.params == (1,)
 
-    def test_eq_condition_type_miss_match(self, int_column: Column[int]):
+    def test_le_condition_type_miss_match(self, int_column: Column[int]):
         assert_type(int_column == "1", TypeMissMatch[int, str])
 
     @pytest.mark.parametrize("value", [True, False, None])
-    def test_eq_condition_use_is(self, int_column: Column[int], value: bool | None):
+    def test_le_condition_use_is(self, int_column: Column[int], value: bool | None):
         assert_type(int_column == value, UseIsInsteadOfEq)

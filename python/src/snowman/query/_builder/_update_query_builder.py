@@ -7,7 +7,7 @@ from typing_extensions import override
 from snowman._features import UpdateTag
 from snowman.context.where_context import WhereContext
 from snowman.cursor import Cursor
-from snowman.query.condition.to_condition import ToCondition
+from snowman.query.condition.condition import Condition
 from snowman.relation import full_table_name
 from snowman.relation.table import (
     GenericColumnAccessor,
@@ -83,7 +83,7 @@ class UpdateSetQueryBuilder(
     @overload
     def where(
         self,
-        condition: Callable[[WhereContext[GenericColumnAccessor]], ToCondition],
+        condition: Callable[[WhereContext[GenericColumnAccessor]], Condition],
         /,
     ) -> "UpdateSetWhereQueryBuidler": ...
 
@@ -97,7 +97,7 @@ class UpdateSetQueryBuilder(
 
     def where(
         self,
-        condition: str | Callable[[WhereContext[GenericColumnAccessor]], ToCondition],
+        condition: str | Callable[[WhereContext[GenericColumnAccessor]], Condition],
         params: Sequence[Any] | None = None,
         /,
     ) -> "UpdateSetWhereQueryBuidler":
@@ -110,7 +110,7 @@ class UpdateSetQueryBuilder(
             `.where("id = %s AND name = %s", [1, "Alice"])`
         """
         if callable(condition):
-            condition, params = condition(WhereContext()).to_condition()
+            condition, params = condition(WhereContext()).to_sql()
 
         return UpdateSetWhereQueryBuidler(
             self._table,

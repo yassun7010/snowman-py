@@ -5,7 +5,7 @@ from typing_extensions import override
 from snowman._features import DeleteTag
 from snowman.context.where_context import WhereContext
 from snowman.cursor import Cursor
-from snowman.query.condition.to_condition import ToCondition
+from snowman.query.condition.condition import Condition
 from snowman.relation import full_table_name
 from snowman.relation.table import (
     GenericColumnAccessor,
@@ -48,7 +48,7 @@ class DeleteFromStatement(Generic[GenericColumnAccessor]):
     @overload
     def where(
         self,
-        condition: Callable[[WhereContext[GenericColumnAccessor]], ToCondition],
+        condition: Callable[[WhereContext[GenericColumnAccessor]], Condition],
         /,
     ) -> "DeleteFromWhereQueryBuilder": ...
 
@@ -62,7 +62,7 @@ class DeleteFromStatement(Generic[GenericColumnAccessor]):
 
     def where(
         self,
-        condition: str | Callable[[WhereContext[GenericColumnAccessor]], ToCondition],
+        condition: str | Callable[[WhereContext[GenericColumnAccessor]], Condition],
         params: Sequence[Any] | None = None,
         /,
     ) -> "DeleteFromWhereQueryBuilder":
@@ -75,7 +75,7 @@ class DeleteFromStatement(Generic[GenericColumnAccessor]):
             `.where("id = %s AND name = %s", [1, "Alice"])`
         """
         if callable(condition):
-            condition, params = condition(WhereContext()).to_condition()
+            condition, params = condition(WhereContext()).to_sql()
 
         return DeleteFromWhereQueryBuilder(self._table, condition, params or ())
 

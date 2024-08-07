@@ -7,12 +7,12 @@ if TYPE_CHECKING:
     from snowman.query.column import Column
 
 
-class NeCondition(Condition):
+class LeCondition(Condition):
     def __init__(self, base: "Column[PyType]", value: PyType):
         self._base = base
         self._value = value
 
     def to_sql(self) -> ConditionWithParams:
         return ConditionWithParams(
-            condition=f"{self._base} != %s", params=(self._value,)
+            condition=f"{self._base} <= %s", params=(self._value,)
         )
