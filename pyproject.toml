@@ -58,7 +58,7 @@ packages = ["src/snowman"]
 [tool.rye.scripts]
 format = "rye format"
 lint = "rye lint --fix"
-typecheck = "pyright python/src/** python/tests/**"
+typecheck = "pyright python/src/** python/tests/** docs/data/**"
 test = "rye test"
 ci = { chain = ["format", "lint", "typecheck", "test"] }
 generate-sample-model = "cargo run --bin generate_sample_model docs/data"
@@ -68,4 +68,4 @@ docs-publish = "mkdocs gh-deploy --force"
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:snowflake"]
 addopts = "--doctest-modules"
-norecursedirs = ["docs", "site", "examples"]
+norecursedirs = ["site", "examples"]

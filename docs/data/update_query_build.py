@@ -10,13 +10,13 @@ query, params = (
     .set(
         {"name": "Jane Doe"},
     )
-    .where("id = %s", [1])
+    .where(lambda c: c(User).id == 1)
 ).build()
 
 expected = textwrap.dedent(
     """
     UPDATE
-        database.schema.users
+        DATABASE.SCHEMA.USER
     SET
         name = %s
     WHERE

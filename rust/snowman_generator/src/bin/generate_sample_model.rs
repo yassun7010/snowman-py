@@ -4,7 +4,10 @@ use snowman_connector::{
     query::DatabaseSchema,
     schema::{Column, Table},
 };
-use snowman_generator::{formatter::run_ruff_format_if_exists, generate_schema_python_code};
+use snowman_generator::{
+    formatter::run_ruff_format_if_exists, generate_schema_python_code,
+    generate_schema_python_typehint,
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -54,7 +57,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // SQL Code.
     std::fs::write(
-        output_dir.join("model_schema.sql"),
+        output_dir.join("your/database/schema.sql"),
         tables
             .iter()
             .map(snowman_generator::generate_sql_definition)
@@ -64,7 +67,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Pydantic Model Code.
     std::fs::write(
-        output_dir.join("model_generate.py"),
+        output_dir.join("your/database/_schema.py"),
+        generate_schema_python_typehint(
+            &tables,
+            &Default::default(),
+            &Default::default(),
+            &Default::default(),
+        )
+        .await?,
+    )?;
+
+    std::fs::write(
+        output_dir.join("your/database/schema.py"),
         generate_schema_python_code(
             &tables,
             &database_schema,

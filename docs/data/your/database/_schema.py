@@ -5,9 +5,25 @@
 # please refer to https://github.com/yassun7010/snowman-py .
 #
 
+import dataclasses
 import typing
 
 import snowman
+
+
+@dataclasses.dataclass
+class _UserColumnAccessor:
+    id: snowman.Column[snowman.datatype.INTEGER]
+    """User ID"""
+
+    name: snowman.Column[snowman.datatype.TEXT]
+    """User Name"""
+
+    age: snowman.Column[snowman.datatype.INTEGER | None]
+    """User Age"""
+
+    created_at: snowman.Column[snowman.datatype.TIMESTAMP_TZ]
+    """Created At"""
 
 
 class _UserInsertTypedDict(typing.TypedDict):

@@ -118,6 +118,7 @@ async fn write_schema_py(
         .write_all(
             snowman_generator::generate_schema_python_typehint(
                 &tables,
+                &model_options.column_accessor_options,
                 &model_options.insert_typeddict_options,
                 &model_options.update_typeddict_options,
             )
