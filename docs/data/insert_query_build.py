@@ -1,7 +1,10 @@
+import datetime
 import textwrap
 
 from snowman.query import insert
 from your.database.schema import User
+
+now = datetime.datetime.now()
 
 query, params = (
     insert.into(
@@ -10,6 +13,7 @@ query, params = (
         User(
             id=1,
             name="John Doe",
+            created_at=now,
         ),
     )
 ).build()
@@ -17,12 +21,16 @@ query, params = (
 expected = textwrap.dedent(
     """
     INSERT INTO
-        database.schema.users
+        DATABASE.SCHEMA.USER
     (
         id,
-        name
+        name,
+        age,
+        created_at
     )
     VALUES (
+        %s,
+        %s,
         %s,
         %s
     )
@@ -30,4 +38,4 @@ expected = textwrap.dedent(
 ).strip()
 
 assert query == expected
-assert params == (1, "John Doe")
+assert params == (1, "John Doe", None, now)

@@ -32,7 +32,7 @@ class TestUpdateQuery:
             == textwrap.dedent(
                 """
                 UPDATE
-                    database.public.users
+                    database.schema.users
                 SET
                     name = %s
                 WHERE
@@ -41,6 +41,31 @@ class TestUpdateQuery:
             ).strip()
         )
         assert params == ("taro", 1)
+
+    def test_update_query_pydantic_build_using_condition(self, user: User):
+        query, params = (
+            snowman.query.update(User)
+            .set(user)
+            .where(lambda c: (c(User).id == 1).and_(c(User).name != "Alice"))
+            .build()
+        )
+
+        assert (
+            query
+            == textwrap.dedent(
+                """
+                UPDATE
+                    database.schema.users
+                SET
+                    id = %s,
+                    name = %s
+                WHERE
+                    id = %s
+                    AND name != %s
+                """
+            ).strip()
+        )
+        assert params == (1, "Alice", 1, "Alice")
 
     def test_update_query_pydantic_build(self, user: User):
         query, params = (
@@ -52,7 +77,7 @@ class TestUpdateQuery:
             == textwrap.dedent(
                 """
                 UPDATE
-                    database.public.users
+                    database.schema.users
                 SET
                     id = %s,
                     name = %s

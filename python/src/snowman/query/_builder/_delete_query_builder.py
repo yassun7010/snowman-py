@@ -1,32 +1,71 @@
-from typing import Any, Generic, Sequence, Type
+from typing import Any, Callable, Generic, Sequence, Type, overload
 
 from typing_extensions import override
 
 from snowman._features import DeleteTag
+from snowman.context.where_context import WhereContext
 from snowman.cursor import Cursor
+from snowman.query.condition.condition import Condition
 from snowman.relation import full_table_name
-from snowman.relation.table import GenericTable
+from snowman.relation.table import (
+    GenericColumnAccessor,
+    GenericInsertColumnTypedDict,
+    GenericUpdateColumnTypedDict,
+    Table,
+)
 
 from ._builder import QueryBuilder, QueryWithParams, execute_with_tag
 
 
 class DeleteQueryBuilder:
     def from_(
-        self, table: Type[GenericTable], /
-    ) -> "DeleteFromStatement[GenericTable]":
+        self,
+        table: Type[
+            Table[
+                GenericColumnAccessor,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+        ],
+        /,
+    ) -> "DeleteFromStatement[GenericColumnAccessor]":
         return DeleteFromStatement(table)
 
 
-class DeleteFromStatement(Generic[GenericTable]):
-    def __init__(self, table: Type[GenericTable]):
+class DeleteFromStatement(Generic[GenericColumnAccessor]):
+    def __init__(
+        self,
+        table: Type[
+            Table[
+                GenericColumnAccessor,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+        ],
+    ):
         self._table = table
 
+    @overload
+    def where(
+        self,
+        condition: Callable[[WhereContext[GenericColumnAccessor]], Condition],
+        /,
+    ) -> "DeleteFromWhereQueryBuilder": ...
+
+    @overload
     def where(
         self,
         condition: str,
         params: Sequence[Any] | None = None,
         /,
-    ) -> "UpdateFromWhereQueryBuilder[GenericTable]":
+    ) -> "DeleteFromWhereQueryBuilder": ...
+
+    def where(
+        self,
+        condition: str | Callable[[WhereContext[GenericColumnAccessor]], Condition],
+        params: Sequence[Any] | None = None,
+        /,
+    ) -> "DeleteFromWhereQueryBuilder":
         """
         Specify the condition of the where clause.
 
@@ -35,13 +74,22 @@ class DeleteFromStatement(Generic[GenericTable]):
         e.g)
             `.where("id = %s AND name = %s", [1, "Alice"])`
         """
-        return UpdateFromWhereQueryBuilder(self._table, condition, params or ())
+        if callable(condition):
+            condition, params = condition(WhereContext()).to_sql()
+
+        return DeleteFromWhereQueryBuilder(self._table, condition, params or ())
 
 
-class UpdateFromWhereQueryBuilder(Generic[GenericTable], QueryBuilder):
+class DeleteFromWhereQueryBuilder(QueryBuilder):
     def __init__(
         self,
-        table: Type[GenericTable],
+        table: Type[
+            Table[
+                GenericColumnAccessor,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+        ],
         where_condition: str,
         where_params: Sequence[Any],
     ):
@@ -51,11 +99,12 @@ class UpdateFromWhereQueryBuilder(Generic[GenericTable], QueryBuilder):
 
     @override
     def build(self) -> QueryWithParams:
+        where_condition = "\n    ".join(self._where_condition.split("\n"))
         query = f"""
 DELETE FROM
     {full_table_name(self._table)}
 WHERE
-    {self._where_condition}
+    {where_condition}
 """.strip()
 
         return QueryWithParams(query, tuple(self._where_params))

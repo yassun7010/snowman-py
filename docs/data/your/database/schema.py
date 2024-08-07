@@ -18,8 +18,11 @@ if typing.TYPE_CHECKING:
 # TABLE: DATABASE.SCHEMA.USER
 @snowman.table("DATABASE", "SCHEMA", "USER")
 class User(
-    pydantic.BaseModel,
-    snowman.Table["_schema._UserInsertTypedDict", "_schema._UserUpdateTypedDict"],
+    snowman.Table[
+        "_schema._UserColumnAccessor",
+        "_schema._UserInsertTypedDict",
+        "_schema._UserUpdateTypedDict",
+    ]
 ):
     """User Table"""
 

@@ -1,5 +1,5 @@
 use crate::traits::ToPythonModule;
-use crate::{InsertTypedDictOptions, UpdateTypedDictOptions};
+use crate::{ColumnAccessorOptions, InsertTypedDictOptions, UpdateTypedDictOptions};
 use convert_case::{Case, Casing};
 use snowman_connector::schema::{Column, Table};
 use snowman_connector::Parameters;
@@ -30,6 +30,7 @@ pub fn get_pydantic_modules() -> Vec<&'static str> {
 pub fn generate_pydantic_models(
     tables: &[Table],
     pydantic_options: &PydanticOptions,
+    column_accessor_options: &ColumnAccessorOptions,
     insert_typeddict_options: &InsertTypedDictOptions,
     update_typeddict_options: &UpdateTypedDictOptions,
     params: &Parameters,
@@ -40,6 +41,7 @@ pub fn generate_pydantic_models(
             generate_pydantic_model(
                 table,
                 pydantic_options,
+                column_accessor_options,
                 insert_typeddict_options,
                 update_typeddict_options,
                 params,
@@ -56,6 +58,7 @@ pub fn generate_pydantic_models(
 pub fn generate_pydantic_model(
     table: &Table,
     pydantic_options: &PydanticOptions,
+    column_accessor_options: &ColumnAccessorOptions,
     insert_typeddict_options: &InsertTypedDictOptions,
     update_typeddict_options: &UpdateTypedDictOptions,
     params: &Parameters,
@@ -71,8 +74,10 @@ pub fn generate_pydantic_model(
         table.database_name, table.schema_name, table.table_name,
     ));
     pydantic_schema.push_str(&format!(
-        "class {}(pydantic.BaseModel, snowman.Table[\"_{}.{}\",\"_{}.{}\",]):\n",
+        "class {}(snowman.Table[\"_{}.{}\",\"_{}.{}\",\"_{}.{}\",]):\n",
         pydantic_options.make_class_name(&table.table_name),
+        table.schema_module(),
+        column_accessor_options.make_class_name(&table.table_name),
         table.schema_module(),
         insert_typeddict_options.make_class_name(&table.table_name),
         table.schema_module(),

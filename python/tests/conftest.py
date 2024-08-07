@@ -1,11 +1,12 @@
+from dataclasses import dataclass
 from typing import TypedDict
 
 import pytest
 import snowflake.connector.cursor
 import snowman
-from pydantic import BaseModel
 from pytest_mock import MockFixture
 from snowman._features import USE_TURU
+from snowman.query.column import Column
 from snowman.relation.table import Table
 
 if USE_TURU:
@@ -32,6 +33,12 @@ def mock_turu_snowflake_connection(
         return mocker.MagicMock(spec=snowflake.connector.connection.SnowflakeConnection)
 
 
+@dataclass
+class _UserAccessColumns:
+    id: Column[int]
+    name: Column[str]
+
+
 class _UserInsertColumns(TypedDict):
     id: int
     name: str
@@ -42,8 +49,32 @@ class _UserUpdateColumns(TypedDict, total=False):
     name: str
 
 
-@snowman.table("database", "public", "users")
-class User(BaseModel, Table[_UserInsertColumns, _UserUpdateColumns]):
+@snowman.table("database", "schema", "users")
+class User(Table[_UserAccessColumns, _UserInsertColumns, _UserUpdateColumns]):
+    id: int
+    name: str
+
+
+@dataclass
+class _CompanyAccessColumns:
+    id: Column[int]
+    name: Column[str]
+
+
+class _CompanyInsertColumns(TypedDict):
+    id: int
+    name: str
+
+
+class _CompanyUpdateColumns(TypedDict, total=False):
+    id: int
+    name: str
+
+
+@snowman.table("database", "schema", "companies")
+class Company(
+    Table[_CompanyAccessColumns, _CompanyInsertColumns, _CompanyUpdateColumns]
+):
     id: int
     name: str
 
@@ -53,3 +84,32 @@ def user() -> User:
     user = User(id=1, name="Alice")
 
     return user
+
+
+@pytest.fixture
+def company() -> Company:
+    company = Company(id=1, name="Apple")
+
+    return company
+
+
+@pytest.fixture
+def int_column() -> Column[int]:
+    return Column(
+        int,
+        database_name=User.__database_name__,
+        schema_name=User.__schema_name__,
+        table_name=User.__table_name__,
+        column_name="id",
+    )
+
+
+@pytest.fixture
+def int_nullable_column() -> Column[int | None]:
+    return Column(
+        int | None,  # type: ignore[valid-type]
+        database_name=User.__database_name__,
+        schema_name=User.__schema_name__,
+        table_name=User.__table_name__,
+        column_name="id",
+    )

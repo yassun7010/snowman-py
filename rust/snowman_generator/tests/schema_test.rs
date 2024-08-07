@@ -48,6 +48,7 @@ async fn test_generate_schema_python_code() {
         &Default::default(),
         &Default::default(),
         &Default::default(),
+        &Default::default(),
     )
     .await
     .unwrap();
@@ -73,7 +74,7 @@ if typing.TYPE_CHECKING:
 
 # TABLE: DATABASE.SCHEMA.USER
 @snowman.table("DATABASE", "SCHEMA", "USER")
-class User(pydantic.BaseModel, snowman.Table["_schema._UserInsertTypedDict","_schema._UserUpdateTypedDict",]):
+class User(snowman.Table["_schema._UserColumnAccessor","_schema._UserInsertTypedDict","_schema._UserUpdateTypedDict",]):
     """User Table"""
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
@@ -112,6 +113,7 @@ async fn test_generate_schema_python_code_of_empty_columns_table() {
         &Default::default(),
         &Default::default(),
         &Default::default(),
+        &Default::default(),
     )
     .await
     .unwrap();
@@ -137,7 +139,7 @@ if typing.TYPE_CHECKING:
 
 # TABLE: DATABASE.SCHEMA.USER
 @snowman.table("DATABASE", "SCHEMA", "USER")
-class User(pydantic.BaseModel, snowman.Table["_schema._UserInsertTypedDict","_schema._UserUpdateTypedDict",]):
+class User(snowman.Table["_schema._UserColumnAccessor","_schema._UserInsertTypedDict","_schema._UserUpdateTypedDict",]):
     """User Table"""
     model_config = pydantic.ConfigDict(populate_by_name=True)
 "#

@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import turu.snowflake
 
-snowflake_conn = turu.snowflake.connect_from_env()
+snowflake_conn: turu.snowflake.MockConnection = MagicMock()

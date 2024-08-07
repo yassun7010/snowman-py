@@ -9,6 +9,7 @@ from snowman.query._builder._insert_query_builder import InsertQueryBuilder
 from snowman.query._builder._truncate_query_builder import TruncateQueryBuilder
 from snowman.query._builder._update_query_builder import UpdateStatement
 from snowman.relation.table import (
+    GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericUpdateColumnTypedDict,
     Table,
@@ -21,7 +22,13 @@ Insert query builder.
 
 
 def update(
-    table: Type[Table[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]],
+    table: Type[
+        Table[
+            GenericColumnAccessor,
+            GenericInsertColumnTypedDict,
+            GenericUpdateColumnTypedDict,
+        ]
+    ],
 ):
     """
     Update query builder.

@@ -7,15 +7,14 @@ query, params = (
     delete.from_(
         User,
     ).where(
-        "id = %s",
-        [1],
+        lambda c: c(User).id == 1,
     )
 ).build()
 
 expected = textwrap.dedent(
     """
     DELETE FROM
-        database.schema.users
+        DATABASE.SCHEMA.USER
     WHERE
         id = %s
     """,

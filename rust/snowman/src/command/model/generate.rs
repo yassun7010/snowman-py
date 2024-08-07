@@ -17,14 +17,22 @@ pub struct Args {
     pub output_dir: Option<std::path::PathBuf>,
 }
 
+#[derive(Default)]
+struct ModelOptions {
+    column_accessor_options: snowman_generator::ColumnAccessorOptions,
+    insert_typeddict_options: snowman_generator::InsertTypedDictOptions,
+    update_typeddict_options: snowman_generator::UpdateTypedDictOptions,
+    pydantic_options: snowman_generator::PydanticOptions,
+}
+
 pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     let config_source = snowman_config::find_path()?;
     let config = snowman_config::load_from_source(&config_source)?;
     let connection = get_snowflake_connection(&config)?;
-
-    let insert_typeddict_options = snowman_generator::InsertTypedDictOptions::default();
-    let update_typeddict_options = snowman_generator::UpdateTypedDictOptions::default();
-    let pydantic_options = get_pydantic_options(&config);
+    let model_options = ModelOptions {
+        pydantic_options: get_pydantic_options(&config),
+        ..Default::default()
+    };
 
     let output_dirpath = &config_source.as_ref().parent().unwrap().join(
         args.output_dir
@@ -77,9 +85,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             &connection,
             output_dirpath,
             schema,
-            &pydantic_options,
-            &insert_typeddict_options,
-            &update_typeddict_options,
+            &model_options,
             &parameters,
         )
         .await
@@ -97,9 +103,7 @@ async fn write_schema_py(
     connection: &snowman_connector::Connection,
     output_dirpath: &std::path::Path,
     database_schema: &DatabaseSchema,
-    pydantic_options: &snowman_generator::PydanticOptions,
-    insert_typeddict_options: &snowman_generator::InsertTypedDictOptions,
-    update_typeddict_options: &snowman_generator::UpdateTypedDictOptions,
+    model_options: &ModelOptions,
     params: &snowman_connector::Parameters,
 ) -> Result<(), anyhow::Error> {
     let tables = snowman_connector::query::get_schema_infomations(
@@ -114,8 +118,9 @@ async fn write_schema_py(
         .write_all(
             snowman_generator::generate_schema_python_typehint(
                 &tables,
-                insert_typeddict_options,
-                update_typeddict_options,
+                &model_options.column_accessor_options,
+                &model_options.insert_typeddict_options,
+                &model_options.update_typeddict_options,
             )
             .await?
             .as_bytes(),
@@ -128,9 +133,10 @@ async fn write_schema_py(
             snowman_generator::generate_schema_python_code(
                 &tables,
                 database_schema,
-                pydantic_options,
-                insert_typeddict_options,
-                update_typeddict_options,
+                &model_options.pydantic_options,
+                &model_options.column_accessor_options,
+                &model_options.insert_typeddict_options,
+                &model_options.update_typeddict_options,
                 params,
             )
             .await?

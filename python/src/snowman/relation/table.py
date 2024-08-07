@@ -1,4 +1,18 @@
-from typing import Callable, ClassVar, Generic, LiteralString, Type, TypedDict, TypeVar
+from typing import (
+    Callable,
+    ClassVar,
+    Generic,
+    LiteralString,
+    Type,
+    TypedDict,
+    TypeVar,
+)
+
+from pydantic import BaseModel
+
+
+class AccessColumnTypedDict(TypedDict):
+    pass
 
 
 class InsertColumnTypedDict(TypedDict):
@@ -8,6 +22,10 @@ class InsertColumnTypedDict(TypedDict):
 class UpdateColumnTypedDict(TypedDict, total=False):
     pass
 
+
+GenericColumnAccessor = TypeVar(
+    "GenericColumnAccessor",
+)
 
 GenericInsertColumnTypedDict = TypeVar(
     "GenericInsertColumnTypedDict",
@@ -20,10 +38,26 @@ GenericUpdateColumnTypedDict = TypeVar(
 )
 
 
-class Table(Generic[GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]):
-    __databas_name__: ClassVar[str]
+class Table(
+    BaseModel,
+    Generic[
+        GenericColumnAccessor,
+        GenericInsertColumnTypedDict,
+        GenericUpdateColumnTypedDict,
+    ],
+):
+    """
+    Base class for table definition.
+    """
+
+    # NOTE: Meta information to specify the table name accurately.
+    #       It is used when creating a query.
+    __database_name__: ClassVar[str]
     __schema_name__: ClassVar[str]
     __table_name__: ClassVar[str]
+
+    # NOTE: This field exists only for type definition and is not accessed at runtime.
+    __access_columns__: Type[GenericColumnAccessor] | None = None
     __insert_columns__: Type[GenericInsertColumnTypedDict] | None = None
     __update_columns__: Type[GenericUpdateColumnTypedDict] | None = None
 
@@ -38,7 +72,7 @@ def table(
     /,
 ) -> "Callable[[Type[GenericTable]], Type[GenericTable]]":
     def decorate(cls: "Type[GenericTable]") -> "Type[GenericTable]":
-        cls.__databas_name__ = database_name
+        cls.__database_name__ = database_name
         cls.__schema_name__ = schema_name
         cls.__table_name__ = table_name
 
