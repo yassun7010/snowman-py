@@ -5,6 +5,7 @@ from snowman.query.condition.eq_condition import EqCondition
 from snowman.query.condition.is_condition import IsCondition
 from snowman.query.condition.is_not_condition import IsNotCondition
 from snowman.query.condition.le_condition import LeCondition
+from snowman.query.condition.lt_condition import LtCondition
 from snowman.query.condition.ne_condition import NeCondition
 from snowman.relation.table import (
     GenericColumnAccessor,
@@ -71,6 +72,13 @@ class Column(Generic[PyType]):
     def __le__(self, value: "U") -> "TypeMissMatch[PyType, U]": ...
     def __le__(self, value: PyType) -> LeCondition:  # type: ignore
         return LeCondition(self, value)
+
+    @overload
+    def __lt__(self, value: PyType) -> LtCondition: ...  # type: ignore
+    @overload
+    def __lt__(self, value: "U") -> "TypeMissMatch[PyType, U]": ...
+    def __lt__(self, value: PyType) -> LtCondition:  # type: ignore
+        return LtCondition(self, value)
 
     def __str__(self) -> str:
         return self._column_name
