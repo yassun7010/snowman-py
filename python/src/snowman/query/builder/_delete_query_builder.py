@@ -113,12 +113,11 @@ class DeleteFromWhereQueryBuilder(QueryBuilder):
 
     @override
     def build(self) -> QueryWithParams:
-        where_condition = "\n    ".join(self._where_condition.split("\n"))
         query = f"""
 DELETE FROM
     {full_table_name(self._table)}
 WHERE
-    {where_condition}
+    {self._where_condition}
 """.strip()
 
         return QueryWithParams(query, tuple(self._where_params))

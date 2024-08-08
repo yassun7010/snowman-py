@@ -13,6 +13,6 @@ class AndCondition(Condition):
         left = self._left.to_sql()
         right = self._right.to_sql()
         return ConditionWithParams(
-            f"{left.condition}\nAND {right.condition}",
+            f"{left.condition} AND {right.condition}",
             left.params + right.params,
         )
