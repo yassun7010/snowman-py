@@ -10,5 +10,5 @@ with snowflake_conn.cursor() as cursor:
     ).where(
         lambda c: (c(User).name.in_(["Jane", "Doe"]))
         .and_(c(User).age > 18)
-        .and_(c(User).created_at >= datetime.datetime(2001, 1, 1))
+        .and_(c(User).created_at >= datetime.datetime(2001, 1, 1)),
     ).execute(cursor)
