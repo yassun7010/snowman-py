@@ -116,8 +116,8 @@ class UpdateSetQueryBuilder(
         Query parameters only support positional placeholders, so specify them with `%s`.
 
         e.g)
-            - `.where((snowman.column(User).id == 1).and_(snowman.column(User).name == "Alice"))`
             - `.where(lambda c: (c(User).id == 1).and_(c(User).name == "Alice"))`
+            - `.where((column(User).id == 1).and_(column(User).name == "Alice"))`
             - `.where("id = %s AND name = %s", [1, "Alice"])`
         """
         if callable(condition):
