@@ -11,7 +11,6 @@ from . import datatype as datatype
 from . import pydantic as pydantic
 from . import query as query
 from .query.column import Column as Column
-from .query.column import column as column
 from .relation.table import Table as Table
 from .relation.table import table as table
 

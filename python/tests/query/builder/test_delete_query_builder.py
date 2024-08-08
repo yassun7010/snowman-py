@@ -3,7 +3,7 @@ import textwrap
 import snowman
 from conftest import UpperCaseTable, User
 from snowflake.connector.cursor import SnowflakeCursor
-from snowman import column as c
+from snowman.query.expression import column as c
 
 
 class TestDeleteQuery:

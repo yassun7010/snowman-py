@@ -145,26 +145,6 @@ class _InternalColumnAccessor:
         )
 
 
-def column(
-    table: Type[
-        Table[
-            GenericColumnAccessor,
-            GenericInsertColumnTypedDict,
-            GenericUpdateColumnTypedDict,
-        ]
-    ],
-) -> GenericColumnAccessor:
-    """
-    Extract column information from the table.
-
-    #### Usage:
-        ```python
-        repr(column(User).id) == "database.schema.users.id"
-        ```
-    """
-    return cast(GenericColumnAccessor, _InternalColumnAccessor(table))
-
-
 class ColumnIs(Generic[PyType]):
     """
     A class for using the IS operator
