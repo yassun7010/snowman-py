@@ -17,6 +17,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     let tables = vec![Table {
+        table_type: "BASE TABLE".to_string(),
         database_name: database_schema.database_name.clone(),
         schema_name: database_schema.schema_name.clone(),
         table_name: "USER".to_string(),

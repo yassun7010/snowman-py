@@ -48,7 +48,6 @@ pub async fn get_infomation_schema(
     let mut tables = vec![];
     let mut views = vec![];
     let mut table: Option<Table> = None;
-    let mut table_type: Option<String> = None;
 
     for row in rows {
         match table {
@@ -73,8 +72,8 @@ pub async fn get_infomation_schema(
                         _ => {}
                     }
                 }
-                table_type = row.get("table_type").ok();
                 table = Some(Table {
+                    table_type: row.get("table_type").unwrap(),
                     database_name: row.get("table_catalog").unwrap(),
                     schema_name: row.get("table_schema").unwrap(),
                     table_name: row.get("table_name").unwrap(),
@@ -92,11 +91,11 @@ pub async fn get_infomation_schema(
     }
 
     if let Some(t) = table {
-        match table_type.as_deref() {
-            Some("BASE TABLE") => {
+        match t.table_type.as_ref() {
+            "BASE TABLE" => {
                 tables.push(t);
             }
-            Some("VIEW") => {
+            "VIEW" => {
                 views.push(t);
             }
             _ => {}

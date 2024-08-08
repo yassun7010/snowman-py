@@ -12,6 +12,7 @@ async fn test_generate_schema_python_code() {
         schema_name: "SCHEMA".to_string(),
     };
     let tables = vec![Table {
+        table_type: "BASE TABLE".to_string(),
         database_name: database_schema.database_name.clone(),
         schema_name: database_schema.schema_name.clone(),
         table_name: "USER".to_string(),
@@ -97,6 +98,7 @@ async fn test_generate_schema_python_code_of_empty_columns_table() {
         schema_name: "SCHEMA".to_string(),
     };
     let tables = vec![Table {
+        table_type: "BASE TABLE".to_string(),
         database_name: database_schema.database_name.clone(),
         schema_name: database_schema.schema_name.clone(),
         table_name: "USER".to_string(),
