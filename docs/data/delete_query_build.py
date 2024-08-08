@@ -1,6 +1,5 @@
 import textwrap
 
-from snowman import column as c
 from snowman.query import delete
 from your.database.schema import User
 
@@ -8,7 +7,7 @@ query, params = (
     delete.from_(
         User,
     ).where(
-        c(User).id == 1,
+        lambda c: c(User).id == 1,
     )
 ).build()
 
