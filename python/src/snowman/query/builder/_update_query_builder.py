@@ -160,9 +160,12 @@ class UpdateSetWhereQueryBuidler(
         self._table = table
         self._columns = cast(
             dict,
-            columns.model_dump(exclude_unset=True)
+            columns.model_dump(exclude_unset=True, by_alias=True)
             if isinstance(columns, BaseModel)
-            else columns,
+            else {
+                (table.model_fields[k].alias if table.model_fields[k].alias else k): v
+                for k, v in columns.items()
+            },
         )
         self._where_condition = where_condition
         self._where_params = where_params

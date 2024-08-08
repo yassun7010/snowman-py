@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, Any, Generic, Sequence, Type, cast, overload
 
+from pydantic.fields import FieldInfo
+
 from snowman._generic import PyType
 from snowman.query.builder.condition.eq_condition import EqCondition
 from snowman.query.builder.condition.ge_condition import GeCondition
@@ -133,12 +135,13 @@ class _InternalColumnAccessor:
         self._table = table
 
     def __getattr__(self, key: str) -> Column[Any]:
+        field: FieldInfo = self._table.model_fields[key]
         return Column(
-            cast(type, self._table.model_fields[key].annotation),
+            cast(type, field.annotation),
             database_name=self._table.__database_name__,
             schema_name=self._table.__schema_name__,
             table_name=self._table.__table_name__,
-            column_name=key,
+            column_name=field.alias if field.alias else key,
         )
 
 

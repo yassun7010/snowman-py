@@ -11,7 +11,7 @@ import typing
 import snowman
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(init=False, frozen=True, eq=False, order=False)
 class _UserColumnAccessor:
     id: snowman.Column[snowman.datatype.INTEGER]
     """User ID"""

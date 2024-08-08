@@ -45,7 +45,7 @@ pub fn generate_column_accessor(table: &Table, options: &ColumnAccessorOptions) 
     let mut text = String::new();
 
     text.push_str(&format!(
-        "@dataclasses.dataclass\nclass {}:",
+        "@dataclasses.dataclass(init=False, frozen=True, eq=False, order=False)\nclass {}:",
         options.make_class_name(&table.table_name)
     ));
 
