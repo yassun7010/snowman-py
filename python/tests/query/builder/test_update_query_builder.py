@@ -59,8 +59,7 @@ class TestUpdateQuery:
                     id = %s,
                     name = %s
                 WHERE
-                    id = %s
-                    AND name != %s
+                    id = %s AND name != %s
                 """
             ).strip()
         )
@@ -84,8 +83,7 @@ class TestUpdateQuery:
                     id = %s,
                     name = %s
                 WHERE
-                    id = %s
-                    AND name != %s
+                    id = %s AND name != %s
                 """
             ).strip()
         )
@@ -174,8 +172,7 @@ class TestUpdateQueryUpperCaseTable:
                     ID = %s,
                     NAME = %s
                 WHERE
-                    ID = %s
-                    AND NAME != %s
+                    ID = %s AND NAME != %s
                 """
             ).strip()
         )
@@ -201,8 +198,7 @@ class TestUpdateQueryUpperCaseTable:
                     ID = %s,
                     NAME = %s
                 WHERE
-                    ID = %s
-                    AND NAME != %s
+                    ID = %s AND NAME != %s
                 """
             ).strip()
         )

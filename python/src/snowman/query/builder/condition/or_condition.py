@@ -13,6 +13,6 @@ class OrCondition(Condition):
         left = self._left.to_sql()
         right = self._right.to_sql()
         return ConditionWithParams(
-            f"{left.condition}\nOR {right.condition}",
+            f"{left.condition} OR {right.condition}",
             left.params + right.params,
         )

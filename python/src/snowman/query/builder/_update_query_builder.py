@@ -174,14 +174,13 @@ class UpdateSetWhereQueryBuidler(
     def build(self) -> QueryWithParams:
         values = ",\n    ".join([f"{key} = %s" for key in self._columns.keys()])
 
-        where_condition = "\n    ".join(self._where_condition.split("\n"))
         query = f"""
 UPDATE
     {full_table_name(self._table)}
 SET
     {values}
 WHERE
-    {where_condition}
+    {self._where_condition}
 """.strip()
 
         return QueryWithParams(

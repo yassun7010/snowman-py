@@ -26,8 +26,7 @@ class TestDeleteQuery:
                 DELETE FROM
                     database.schema.users
                 WHERE
-                    id = %s
-                    AND name = %s
+                    id = %s AND name = %s
                 """
             ).strip()
         )
@@ -50,8 +49,7 @@ class TestDeleteQuery:
                 DELETE FROM
                     database.schema.users
                 WHERE
-                    id = %s
-                    AND name = %s
+                    id = %s AND name = %s
                 """
             ).strip()
         )
@@ -100,8 +98,7 @@ class TestDeleteQueryUpperCaseTable:
                 DELETE FROM
                     DATABASE.SCHEMA.UPPERCASE_TABLE
                 WHERE
-                    ID = %s
-                    AND NAME = %s
+                    ID = %s AND NAME = %s
                 """
             ).strip()
         )
@@ -124,8 +121,7 @@ class TestDeleteQueryUpperCaseTable:
                 DELETE FROM
                     DATABASE.SCHEMA.UPPERCASE_TABLE
                 WHERE
-                    ID = %s
-                    AND NAME = %s
+                    ID = %s AND NAME = %s
                 """
             ).strip()
         )
