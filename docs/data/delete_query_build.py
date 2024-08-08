@@ -16,7 +16,7 @@ expected = textwrap.dedent(
     DELETE FROM
         DATABASE.SCHEMA.USER
     WHERE
-        id = %s
+        ID = %s
     """,
 ).strip()
 

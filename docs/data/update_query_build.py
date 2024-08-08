@@ -23,11 +23,11 @@ expected = textwrap.dedent(
     UPDATE
         DATABASE.SCHEMA.USER
     SET
-        name = %s
+        NAME = %s
     WHERE
-        name IN (%s)
-        AND age > %s
-        AND created_at >= %s
+        NAME IN (%s)
+        AND AGE > %s
+        AND CREATED_AT >= %s
     """,
 ).strip()
 

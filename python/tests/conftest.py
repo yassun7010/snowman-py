@@ -1,9 +1,11 @@
 from dataclasses import dataclass
-from typing import TypedDict
+from typing import Annotated, TypedDict
 
+import pydantic
 import pytest
 import snowflake.connector.cursor
 import snowman
+from pydantic import Field
 from pytest_mock import MockFixture
 from snowman._features import USE_TURU
 from snowman.query.column import Column
@@ -55,6 +57,14 @@ class User(Table[_UserAccessColumns, _UserInsertColumns, _UserUpdateColumns]):
     name: str
 
 
+@snowman.table("DATABASE", "SCHEMA", "UPPERCASE_TABLE")
+class UpperCaseTable(Table[_UserAccessColumns, _UserInsertColumns, _UserUpdateColumns]):
+    model_config = pydantic.ConfigDict(populate_by_name=True)
+
+    id: Annotated[int, Field(alias="ID")]
+    name: Annotated[str, Field(alias="NAME")]
+
+
 @dataclass
 class _CompanyAccessColumns:
     id: Column[int]
@@ -84,6 +94,11 @@ def user() -> User:
     user = User(id=1, name="Alice")
 
     return user
+
+
+@pytest.fixture
+def uppercase_table() -> UpperCaseTable:
+    return UpperCaseTable(id=1, name="Alice")
 
 
 @pytest.fixture
