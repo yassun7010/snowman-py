@@ -51,14 +51,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
 
     let sources =
         futures::future::try_join_all(database_schemas.iter().map(|database_schema| async {
-            let tables = snowman_connector::query::get_tables_from_infomation_schema(
-                &connection,
-                &database_schema.database_name,
-                &database_schema.schema_name,
-            )
-            .await?;
-
-            let views = snowman_connector::query::get_views_from_infomation_schema(
+            let infomation_schema = snowman_connector::query::get_infomation_schema(
                 &connection,
                 &database_schema.database_name,
                 &database_schema.schema_name,
@@ -66,8 +59,8 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             .await?;
 
             match snowman_generator::generate_schema_python_code(
-                &tables,
-                &views,
+                &infomation_schema.tables,
+                &infomation_schema.views,
                 database_schema,
                 &model_options,
                 &parameters,

@@ -98,17 +98,10 @@ async fn write_schema_py(
     model_options: &ModelOptions,
     params: &snowman_connector::Parameters,
 ) -> Result<(), anyhow::Error> {
-    let tables = snowman_connector::query::get_tables_from_infomation_schema(
+    let infomation_schema = snowman_connector::query::get_infomation_schema(
         connection,
         &database_schema.database_name,
         &database_schema.schema_name,
-    )
-    .await?;
-
-    let views = snowman_connector::query::get_views_from_infomation_schema(
-        connection,
-        database_schema.database_name.as_str(),
-        database_schema.schema_name.as_str(),
     )
     .await?;
 
@@ -116,8 +109,8 @@ async fn write_schema_py(
         .await?
         .write_all(
             snowman_generator::generate_schema_python_typehint(
-                &tables,
-                &views,
+                &infomation_schema.tables,
+                &infomation_schema.views,
                 &model_options.column_accessor_options,
                 &model_options.insert_typeddict_options,
                 &model_options.update_typeddict_options,
@@ -131,8 +124,8 @@ async fn write_schema_py(
         .await?
         .write_all(
             snowman_generator::generate_schema_python_code(
-                &tables,
-                &views,
+                &infomation_schema.tables,
+                &infomation_schema.views,
                 database_schema,
                 model_options,
                 params,

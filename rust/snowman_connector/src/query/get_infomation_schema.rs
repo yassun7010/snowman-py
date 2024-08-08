@@ -3,40 +3,21 @@ use crate::{
     Connection,
 };
 
-#[derive(Debug, Clone)]
-pub struct SchemaInfomation {
-    pub table_name: String,
-    pub column_name: String,
-    pub data_type: String,
-    pub is_nullable: String,
+pub struct InformationSchema {
+    pub tables: Vec<Table>,
+    pub views: Vec<View>,
 }
 
-pub async fn get_tables_from_infomation_schema(
+pub async fn get_infomation_schema(
     connection: &Connection,
     database_name: &str,
     schema_name: &str,
-) -> Result<Vec<Table>, crate::Error> {
-    get_infomation_schema_tables(connection, database_name, schema_name, "BASE TABLE").await
-}
-
-pub async fn get_views_from_infomation_schema(
-    connection: &Connection,
-    database_name: &str,
-    schema_name: &str,
-) -> Result<Vec<View>, crate::Error> {
-    get_infomation_schema_tables(connection, database_name, schema_name, "BASE TABLE").await
-}
-
-async fn get_infomation_schema_tables(
-    connection: &Connection,
-    database_name: &str,
-    schema_name: &str,
-    table_type: &str,
-) -> Result<Vec<Table>, crate::Error> {
+) -> Result<InformationSchema, crate::Error> {
     let rows = connection
         .execute(&format!(
             "
             SELECT
+                t.table_type,
                 t.table_catalog,
                 t.table_schema,
                 t.table_name,
@@ -51,10 +32,11 @@ async fn get_infomation_schema_tables(
             JOIN
                 information_schema.columns c USING (table_schema, table_name)
             WHERE
-                t.table_type = '{table_type}'
+                t.table_type in ('BASE TABLE', 'VIEW')
                 AND t.table_catalog = '{database_name}'
                 AND t.table_schema = '{schema_name}'
             ORDER BY
+                t.table_type,
                 t.table_catalog,
                 t.table_schema,
                 t.table_name,
@@ -62,8 +44,12 @@ async fn get_infomation_schema_tables(
             "
         ))
         .await?;
+
     let mut tables = vec![];
+    let mut views = vec![];
     let mut table: Option<Table> = None;
+    let mut table_type: Option<String> = None;
+
     for row in rows {
         match table {
             Some(ref mut t) if t.table_name == row.get::<String>("table_name").unwrap() => {
@@ -77,8 +63,17 @@ async fn get_infomation_schema_tables(
             }
             _ => {
                 if let Some(t) = table {
-                    tables.push(t);
+                    match row.get::<String>("table_type").ok().as_deref() {
+                        Some("BASE TABLE") => {
+                            tables.push(t);
+                        }
+                        Some("VIEW") => {
+                            views.push(t);
+                        }
+                        _ => {}
+                    }
                 }
+                table_type = row.get("table_type").ok();
                 table = Some(Table {
                     database_name: row.get("table_catalog").unwrap(),
                     schema_name: row.get("table_schema").unwrap(),
@@ -97,8 +92,16 @@ async fn get_infomation_schema_tables(
     }
 
     if let Some(t) = table {
-        tables.push(t);
+        match table_type.as_deref() {
+            Some("BASE TABLE") => {
+                tables.push(t);
+            }
+            Some("VIEW") => {
+                views.push(t);
+            }
+            _ => {}
+        }
     }
 
-    Ok(tables)
+    Ok(InformationSchema { tables, views })
 }
