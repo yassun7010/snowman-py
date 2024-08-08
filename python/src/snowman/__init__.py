@@ -13,5 +13,7 @@ from . import query as query
 from .query.column import Column as Column
 from .relation.table import Table as Table
 from .relation.table import table as table
+from .relation.view import View as View
+from .relation.view import view as view
 
 __version__ = importlib.metadata.version("snowman-py")

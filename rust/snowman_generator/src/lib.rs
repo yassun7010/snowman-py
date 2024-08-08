@@ -14,9 +14,9 @@ pub use model::insert_typeddict::{
     generate_insert_typeddict, generate_insert_typeddicts, get_insert_typeddict_modules,
     InsertTypedDictOptions,
 };
-pub use model::pydantic::{
-    generate_pydantic_model, generate_pydantic_models, get_pydantic_modules, PydanticOptions,
-};
+pub use model::pydantic::{get_pydantic_modules, PydanticOptions};
+pub use model::pydantic_table::{generate_pydantic_table, generate_pydantic_tables};
+pub use model::pydantic_view::{generate_pydantic_view, generate_pydantic_views};
 pub use model::update_typeddict::{
     generate_update_typeddict, generate_update_typeddicts, get_update_typeddict_modules,
     UpdateTypedDictOptions,
@@ -129,7 +129,7 @@ pub async fn generate_schema_python_code(
                 &generate_type_checking(&format!(
                     "from . import _{schema_module_name} as _{schema_module_name}\n"
                 )),
-                &generate_pydantic_models(
+                &generate_pydantic_tables(
                     tables,
                     pydantic_options,
                     column_accessor_options,

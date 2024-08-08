@@ -1,6 +1,9 @@
 use convert_case::{Case, Casing};
 
-use snowman_connector::{query::DatabaseSchema, schema::Table};
+use snowman_connector::{
+    query::DatabaseSchema,
+    schema::{Table, View},
+};
 
 pub trait ToPythonModule {
     fn database_module(&self) -> String;
@@ -18,6 +21,16 @@ impl ToPythonModule for DatabaseSchema {
 }
 
 impl ToPythonModule for Table {
+    fn database_module(&self) -> String {
+        self.database_name.to_case(Case::Snake)
+    }
+
+    fn schema_module(&self) -> String {
+        self.schema_name.to_case(Case::Snake)
+    }
+}
+
+impl ToPythonModule for View {
     fn database_module(&self) -> String {
         self.database_name.to_case(Case::Snake)
     }
