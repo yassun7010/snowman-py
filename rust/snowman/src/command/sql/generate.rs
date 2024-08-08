@@ -53,7 +53,7 @@ async fn write_sql_tables(
     output_dirpath: &std::path::Path,
     database_schema: &DatabaseSchema,
 ) -> Result<(), anyhow::Error> {
-    let tables = snowman_connector::query::get_infomation_schema_tables(
+    let tables = snowman_connector::query::get_tables_from_infomation_schema(
         connection,
         database_schema.database_name.as_str(),
         database_schema.schema_name.as_str(),

@@ -106,7 +106,7 @@ async fn write_schema_py(
     model_options: &ModelOptions,
     params: &snowman_connector::Parameters,
 ) -> Result<(), anyhow::Error> {
-    let tables = snowman_connector::query::get_infomation_schema_tables(
+    let tables = snowman_connector::query::get_tables_from_infomation_schema(
         connection,
         &database_schema.database_name,
         &database_schema.schema_name,

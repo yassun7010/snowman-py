@@ -11,10 +11,19 @@ pub struct SchemaInfomation {
     pub is_nullable: String,
 }
 
-pub async fn get_infomation_schema_tables(
+pub async fn get_tables_from_infomation_schema(
     connection: &Connection,
     database_name: &str,
     schema_name: &str,
+) -> Result<Vec<Table>, crate::Error> {
+    get_infomation_schema_tables(connection, database_name, schema_name, "BASE TABLE").await
+}
+
+async fn get_infomation_schema_tables(
+    connection: &Connection,
+    database_name: &str,
+    schema_name: &str,
+    table_type: &str,
 ) -> Result<Vec<Table>, crate::Error> {
     let rows = connection
         .execute(&format!(
@@ -34,7 +43,7 @@ pub async fn get_infomation_schema_tables(
             JOIN
                 information_schema.columns c USING (table_schema, table_name)
             WHERE
-                t.table_type = 'BASE TABLE'
+                t.table_type = '{table_type}'
                 AND t.table_catalog = '{database_name}'
                 AND t.table_schema = '{schema_name}'
             ORDER BY
