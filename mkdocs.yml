@@ -91,4 +91,6 @@ nav:
       - CLI Tool:
           - Usage: guide/cli_tool/index.md
           - Configuration: guide/cli_tool/configuration.md
-      - Query Builder: guide/query_builder.md
+      - Query Builder:
+          - Usage: guide/query_builder/index.md
+          - Data Type: guide/query_builder/data_type.md

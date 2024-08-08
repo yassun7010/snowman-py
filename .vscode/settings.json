@@ -39,5 +39,11 @@
             "comments": false,
             "strings": true
         }
-    }
+    },
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false,
+    },
+    "[emd]": {
+        "files.trimTrailingWhitespace": false,
+    },
 }

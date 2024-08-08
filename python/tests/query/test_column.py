@@ -1,5 +1,5 @@
 from conftest import User
-from snowman import column as c
+from snowman.query.expression import column as c
 
 
 def test_column_repr(user: User):

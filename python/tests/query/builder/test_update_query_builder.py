@@ -5,8 +5,8 @@ import pytest
 import snowman
 from conftest import UpperCaseTable, User
 from snowflake.connector.cursor import SnowflakeCursor
-from snowman import column as c
 from snowman._features import USE_TURU
+from snowman.query.expression import column as c
 
 if TYPE_CHECKING:
     import turu.snowflake

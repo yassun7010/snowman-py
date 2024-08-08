@@ -19,7 +19,8 @@ it does not currently support complex query syntax like `SELECT`.
 
     In other words, it uses `%s` to embed parameters, not `%(name)s`.
 
-## Insert Query
+## Builder Examples
+### Insert Query
 
 === "Execute"
     !!! example
@@ -39,7 +40,7 @@ it does not currently support complex query syntax like `SELECT`.
         --8<-- "docs/data/insert_query_executemany.py"
         ```
 
-## Update Query
+### Update Query
 
 === "Execute"
     !!! example
@@ -53,7 +54,7 @@ it does not currently support complex query syntax like `SELECT`.
         --8<-- "docs/data/update_query_build.py"
         ```
 
-## Delete Query
+### Delete Query
 
 === "Execute"
     !!! example
@@ -67,7 +68,7 @@ it does not currently support complex query syntax like `SELECT`.
         --8<-- "docs/data/delete_query_build.py"
         ```
 
-## Truncate Query
+### Truncate Query
 
 === "Execute"
     !!! example
@@ -79,4 +80,36 @@ it does not currently support complex query syntax like `SELECT`.
     !!! example
         ```python
         --8<-- "docs/data/truncate_query_build.py"
+        ```
+
+## Where Clause
+
+There are several ways to generate the `WHERE` clause.
+For simple conditions, you can complete everything in Python, and benefit from static analysis.
+
+=== "Function"
+    The method of generating the `WHERE` clause using `function` like `lambda` is the easiest way to write **type safe** queries without importing other modules.
+
+    !!! example
+        ```python
+        --8<-- "docs/data/where_clause_lambda_function.py"
+        ```
+
+=== "Condition"
+    The method using lambda expressions is easy to write expressions,
+    but if you write complex conditions, errors may be difficult to read.  
+    By using `Condition`, you can write conditions more strictly and make it easier to track errors.
+
+    !!! example
+        ```python
+        --8<-- "docs/data/where_clause_condition.py"
+        ```
+
+=== "String"
+    If you want to write a more complex condition, you can use string and params.  
+    This method is useful when you want to write a condition that is difficult to write with `Condition`.
+
+    !!! example
+        ```python
+        --8<-- "docs/data/where_clause_string.py"
         ```
