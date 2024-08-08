@@ -3,7 +3,7 @@ from typing import Generic, Sequence, Type
 from typing_extensions import override
 
 import snowman._features
-from snowman.cursor import Cursor, _get_snowflake_connection
+from snowman._cursor import Cursor, _get_snowflake_connection
 from snowman.exception import snowmanNotDataFrameAvailableError
 from snowman.relation import full_table_name, table_column_names, table_columns_dict
 from snowman.relation.table import (

@@ -2,8 +2,8 @@ from typing import Generic, Type
 
 from typing_extensions import override
 
+from snowman._cursor import Cursor
 from snowman._features import TruncateTag
-from snowman.cursor import Cursor
 from snowman.relation import full_table_name
 from snowman.relation.table import GenericTable
 
