@@ -3,7 +3,7 @@ import textwrap
 import pytest
 import snowman
 import snowman.exception
-from conftest import User
+from conftest import UpperCaseTable, User
 from snowflake.connector.cursor import SnowflakeCursor
 from snowman._features import USE_PANDAS, USE_TURU
 
@@ -182,3 +182,82 @@ class TestInsertQuery:
                     }
                 )
             ).execute(cursor)
+
+
+class TestInsertQueryUpperCaseTable:
+    def test_insert_into_query_execute_build(self, uppercase_table: UpperCaseTable):
+        query, params = (
+            snowman.query.insert.into(UpperCaseTable).values(uppercase_table).build()
+        )
+
+        assert (
+            query
+            == textwrap.dedent(
+                """
+                INSERT INTO
+                    DATABASE.SCHEMA.UPPERCASE_TABLE
+                (
+                    ID,
+                    NAME
+                )
+                VALUES (
+                    %s,
+                    %s
+                )
+                """
+            ).strip()
+        )
+        assert params == (1, "Alice")
+
+    def test_insert_into_query_execute_many_build(
+        self, uppercase_table: UpperCaseTable
+    ):
+        values = [uppercase_table, uppercase_table]
+        query, params = snowman.query.insert.into(UpperCaseTable).values(values).build()
+
+        assert (
+            query
+            == textwrap.dedent(
+                """
+                INSERT INTO
+                    DATABASE.SCHEMA.UPPERCASE_TABLE
+                (
+                    ID,
+                    NAME
+                )
+                VALUES (
+                    %s,
+                    %s
+                )
+                """
+            ).strip()
+        )
+        assert params == ((1, "Alice"), (1, "Alice"))
+
+    def test_insert_into_query_overwrite_execute_build(
+        self, uppercase_table: UpperCaseTable
+    ):
+        query, params = (
+            snowman.query.insert.overwrite.into(UpperCaseTable)
+            .values(uppercase_table)
+            .build()
+        )
+
+        assert (
+            query
+            == textwrap.dedent(
+                """
+                INSERT OVERWRITE INTO
+                    DATABASE.SCHEMA.UPPERCASE_TABLE
+                (
+                    ID,
+                    NAME
+                )
+                VALUES (
+                    %s,
+                    %s
+                )
+                """
+            ).strip()
+        )
+        assert params == (1, "Alice")

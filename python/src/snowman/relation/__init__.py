@@ -16,7 +16,10 @@ def full_table_name(table: Type[Table]) -> str:
 
 def table_column_names(table: Type[Table]) -> list[str]:
     if issubclass(table, BaseModel):
-        return [column_name for column_name in table.model_fields.keys()]
+        return [
+            field.alias if field.alias else name
+            for name, field in table.model_fields.items()
+        ]
 
     else:
         raise ValueError(f"Table {table} is not a Pydantic model")
