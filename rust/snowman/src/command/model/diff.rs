@@ -51,7 +51,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
 
     let sources =
         futures::future::try_join_all(database_schemas.iter().map(|database_schema| async {
-            let tables = snowman_connector::query::get_schema_infomations(
+            let tables = snowman_connector::query::get_infomation_schema_tables(
                 &connection,
                 &database_schema.database_name,
                 &database_schema.schema_name,

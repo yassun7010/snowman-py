@@ -11,7 +11,7 @@ pub struct SchemaInfomation {
     pub is_nullable: String,
 }
 
-pub async fn get_schema_infomations(
+pub async fn get_infomation_schema_tables(
     connection: &Connection,
     database_name: &str,
     schema_name: &str,
