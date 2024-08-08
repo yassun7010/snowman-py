@@ -1,5 +1,5 @@
 use crate::{
-    schema::{Column, Table},
+    schema::{Column, Table, View},
     Connection,
 };
 
@@ -16,6 +16,14 @@ pub async fn get_tables_from_infomation_schema(
     database_name: &str,
     schema_name: &str,
 ) -> Result<Vec<Table>, crate::Error> {
+    get_infomation_schema_tables(connection, database_name, schema_name, "BASE TABLE").await
+}
+
+pub async fn get_views_from_infomation_schema(
+    connection: &Connection,
+    database_name: &str,
+    schema_name: &str,
+) -> Result<Vec<View>, crate::Error> {
     get_infomation_schema_tables(connection, database_name, schema_name, "BASE TABLE").await
 }
 

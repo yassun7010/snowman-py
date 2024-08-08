@@ -6,8 +6,8 @@ use crate::{
 use anyhow::anyhow;
 use itertools::Itertools;
 use snowman_connector::query::{get_parameters, DatabaseSchema};
-use snowman_generator::ToPythonModule;
 use snowman_generator::{formatter::run_ruff_format_if_exists, ToPython};
+use snowman_generator::{ModelOptions, ToPythonModule};
 use tokio::io::AsyncWriteExt;
 
 #[derive(clap::Args)]
@@ -15,14 +15,6 @@ pub struct Args {
     /// Output directory for generated models
     #[arg(long)]
     pub output_dir: Option<std::path::PathBuf>,
-}
-
-#[derive(Default)]
-struct ModelOptions {
-    column_accessor_options: snowman_generator::ColumnAccessorOptions,
-    insert_typeddict_options: snowman_generator::InsertTypedDictOptions,
-    update_typeddict_options: snowman_generator::UpdateTypedDictOptions,
-    pydantic_options: snowman_generator::PydanticOptions,
 }
 
 pub async fn run(args: Args) -> Result<(), anyhow::Error> {
@@ -113,11 +105,19 @@ async fn write_schema_py(
     )
     .await?;
 
+    let views = snowman_connector::query::get_views_from_infomation_schema(
+        connection,
+        database_schema.database_name.as_str(),
+        database_schema.schema_name.as_str(),
+    )
+    .await?;
+
     tokio::fs::File::create(database_schema.schema_python_typehint_fullpath(output_dirpath))
         .await?
         .write_all(
             snowman_generator::generate_schema_python_typehint(
                 &tables,
+                &views,
                 &model_options.column_accessor_options,
                 &model_options.insert_typeddict_options,
                 &model_options.update_typeddict_options,
@@ -132,11 +132,9 @@ async fn write_schema_py(
         .write_all(
             snowman_generator::generate_schema_python_code(
                 &tables,
+                &views,
                 database_schema,
-                &model_options.pydantic_options,
-                &model_options.column_accessor_options,
-                &model_options.insert_typeddict_options,
-                &model_options.update_typeddict_options,
+                model_options,
                 params,
             )
             .await?

@@ -43,10 +43,8 @@ async fn test_generate_schema_python_code() {
 
     let code = generate_schema_python_code(
         &tables,
+        &[],
         &database_schema,
-        &Default::default(),
-        &Default::default(),
-        &Default::default(),
         &Default::default(),
         &Default::default(),
     )
@@ -108,10 +106,8 @@ async fn test_generate_schema_python_code_of_empty_columns_table() {
 
     let code = generate_schema_python_code(
         &tables,
+        &[],
         &database_schema,
-        &Default::default(),
-        &Default::default(),
-        &Default::default(),
         &Default::default(),
         &Default::default(),
     )
