@@ -23,10 +23,10 @@ expected = textwrap.dedent(
     INSERT INTO
         DATABASE.SCHEMA.USER
     (
-        id,
-        name,
-        age,
-        created_at
+        ID,
+        NAME,
+        AGE,
+        CREATED_AT
     )
     VALUES (
         %s,
