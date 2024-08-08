@@ -112,7 +112,14 @@ class Column(Generic[PyType]):
         return f"{self._database_name}.{self._schema_name}.{self._table_name}.{self._column_name}"
 
 
-class ColumnAccessor:
+class _InternalColumnAccessor:
+    """
+    An internal implementation class for accessing column information.
+
+    On the editor, this class behaves as GenericColumnAccessor,
+    but this class is called when accessing properties.
+    """
+
     def __init__(
         self,
         table: Type[
@@ -152,7 +159,7 @@ def column(
         repr(column(User).id) == "database.schema.users.id"
         ```
     """
-    return cast(GenericColumnAccessor, ColumnAccessor(table))
+    return cast(GenericColumnAccessor, _InternalColumnAccessor(table))
 
 
 class ColumnIs(Generic[PyType]):
