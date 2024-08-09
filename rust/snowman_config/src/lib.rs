@@ -80,6 +80,10 @@ impl Default for ConnectionConfig {
 #[derive(Debug, Clone, Serialize, Deserialize, Default, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct ModelConfig {
+    /// # The table types to include in the Python Model.
+    #[serde(default = "default_table_types")]
+    pub table_types: Vec<TableType>,
+
     /// # The output directory of the generated model.
     #[serde(default = "get_pwd")]
     pub output_dir: std::path::PathBuf,
@@ -138,6 +142,39 @@ impl ModelConfig {
 pub struct DatabaseConfig {
     #[serde(flatten, default)]
     pub schema_pattern: Option<DatabaseSchemaPattern>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
+#[serde(rename_all = "UPPERCASE")]
+pub enum TableType {
+    #[serde(rename = "BASE TABLE")]
+    BaseTable,
+    View,
+}
+
+impl TryFrom<&str> for TableType {
+    type Error = crate::Error;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "BASE TABLE" => Ok(TableType::BaseTable),
+            "VIEW" => Ok(TableType::View),
+            _ => Err(crate::Error::InvalidTableType(value.into())),
+        }
+    }
+}
+
+impl std::fmt::Display for TableType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TableType::BaseTable => write!(f, "BASE TABLE"),
+            TableType::View => write!(f, "VIEW"),
+        }
+    }
+}
+
+fn default_table_types() -> Vec<TableType> {
+    vec![TableType::BaseTable, TableType::View]
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
@@ -426,5 +463,48 @@ mod test {
         };
 
         assert!(database_config.include_schema("SCHEMA"));
+    }
+
+    #[test]
+    fn test_table_type_to_string() {
+        let table_type = TableType::BaseTable;
+        assert_eq!(table_type.to_string(), "BASE TABLE");
+
+        let table_type = TableType::View;
+        assert_eq!(table_type.to_string(), "VIEW");
+    }
+
+    #[test]
+    fn test_table_type_from_string() {
+        assert_eq!(
+            TableType::try_from("BASE TABLE").ok(),
+            Some(TableType::BaseTable)
+        );
+        assert_eq!(TableType::try_from("VIEW").ok(), Some(TableType::View));
+    }
+
+    #[test]
+    fn test_table_type_serialize() {
+        let table_type = TableType::BaseTable;
+        assert_eq!(
+            serde_json::to_string(&table_type).unwrap(),
+            r#""BASE TABLE""#
+        );
+
+        let table_type = TableType::View;
+        assert_eq!(serde_json::to_string(&table_type).unwrap(), r#""VIEW""#);
+    }
+
+    #[test]
+    fn test_table_type_deserialize() {
+        assert_eq!(
+            serde_json::from_str::<TableType>(r#""BASE TABLE""#).unwrap(),
+            TableType::BaseTable
+        );
+
+        assert_eq!(
+            serde_json::from_str::<TableType>(r#""VIEW""#).unwrap(),
+            TableType::View
+        );
     }
 }

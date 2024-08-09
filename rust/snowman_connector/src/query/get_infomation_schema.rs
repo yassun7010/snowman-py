@@ -8,11 +8,17 @@ pub struct InformationSchema {
     pub views: Vec<View>,
 }
 
-pub async fn get_infomation_schema(
+pub async fn get_infomation_schema<T: ToString>(
     connection: &Connection,
     database_name: &str,
     schema_name: &str,
+    table_types: &[T],
 ) -> Result<InformationSchema, crate::Error> {
+    let table_types_str = table_types
+        .iter()
+        .map(|s| format!("'{}'", s.to_string()))
+        .collect::<Vec<String>>()
+        .join(", ");
     let rows = connection
         .execute(&format!(
             "
@@ -32,7 +38,7 @@ pub async fn get_infomation_schema(
             JOIN
                 information_schema.columns c USING (table_schema, table_name)
             WHERE
-                t.table_type in ('BASE TABLE', 'VIEW')
+                t.table_type in ({table_types_str})
                 AND t.table_catalog = '{database_name}'
                 AND t.table_schema = '{schema_name}'
             ORDER BY

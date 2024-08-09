@@ -20,6 +20,9 @@ pub enum Error {
 
     #[error("env var not found: {0}")]
     EnvVarNotFound(String),
+
+    #[error("invalid table type: {0}")]
+    InvalidTableType(String),
 }
 
 impl Error {

@@ -18,15 +18,13 @@
         "role": {
           "env": "SNOWFLAKE_ROLE"
         },
+        "warehouse": {
+          "env": "SNOWFLAKE_WAREHOUSE"
+        },
         "database": {
           "env": "SNOWFLAKE_DATABASE"
         },
-        "schema": {
-          "env": "SNOWFLAKE_SCHEMA"
-        },
-        "warehouse": {
-          "env": "SNOWFLAKE_WAREHOUSE"
-        }
+        "schema": null
       },
       "allOf": [
         {
@@ -38,6 +36,7 @@
       "title": "The Python model configuration.",
       "description": "It is mainly used for the Snowman model generate command.",
       "default": {
+        "table_types": [],
         "output_dir": "",
         "database": {}
       },
@@ -112,12 +111,14 @@
         },
         "schema": {
           "title": "The Snowflake schema.",
-          "default": {
-            "env": "SNOWFLAKE_SCHEMA"
-          },
-          "allOf": [
+          "description": "This is optional. Schema is not required for this tool, but it can be set for consistency.",
+          "default": null,
+          "anyOf": [
             {
               "$ref": "#/definitions/StringOrEnv"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -167,7 +168,6 @@
         },
         {
           "title": "Specifies the schema name to exclude from the Python Model.",
-          "description": "The default value is `[\"INFORMATION_SCHEMA\"]`.",
           "type": "object",
           "required": [
             "exclude_schemas"
@@ -245,6 +245,17 @@
           "title": "The output directory of the generated model.",
           "default": ".",
           "type": "string"
+        },
+        "table_types": {
+          "title": "The table types to include in the Python Model.",
+          "default": [
+            "BASE TABLE",
+            "VIEW"
+          ],
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TableType"
+          }
         }
       },
       "additionalProperties": false
@@ -278,6 +289,13 @@
         {
           "$ref": "#/definitions/Env"
         }
+      ]
+    },
+    "TableType": {
+      "type": "string",
+      "enum": [
+        "BASE TABLE",
+        "VIEW"
       ]
     }
   }
