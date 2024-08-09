@@ -7,8 +7,8 @@ use crate::{
 use console::{style, Style};
 use similar::{ChangeTag, TextDiff};
 use snowman_connector::query::get_parameters;
-use snowman_generator::formatter::run_ruff_format_if_exists;
 use snowman_generator::ToPython;
+use snowman_generator::{formatter::run_ruff_format_if_exists, ModelOptions};
 
 struct Line(Option<usize>);
 
@@ -36,10 +36,10 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
     let config = snowman_config::load_from_source(&config_source)?;
     let connection = get_snowflake_connection(&config)?;
 
-    let column_accessor_options = snowman_generator::ColumnAccessorOptions::default();
-    let insert_typeddict_options = snowman_generator::InsertTypedDictOptions::default();
-    let update_typeddict_options = snowman_generator::UpdateTypedDictOptions::default();
-    let pydantic_options = get_pydantic_options(&config);
+    let model_options = ModelOptions {
+        pydantic_options: get_pydantic_options(&config),
+        ..Default::default()
+    };
 
     let output_dirpath = &config_source.as_ref().parent().unwrap().join(
         args.output_dir
@@ -51,19 +51,18 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
 
     let sources =
         futures::future::try_join_all(database_schemas.iter().map(|database_schema| async {
-            let tables = snowman_connector::query::get_schema_infomations(
+            let infomation_schema = snowman_connector::query::get_infomation_schema(
                 &connection,
                 &database_schema.database_name,
                 &database_schema.schema_name,
             )
             .await?;
+
             match snowman_generator::generate_schema_python_code(
-                &tables,
+                &infomation_schema.tables,
+                &infomation_schema.views,
                 database_schema,
-                &pydantic_options,
-                &column_accessor_options,
-                &insert_typeddict_options,
-                &update_typeddict_options,
+                &model_options,
                 &parameters,
             )
             .await

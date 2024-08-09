@@ -19,6 +19,7 @@ from snowman.relation.table import (
     GenericUpdateColumnTypedDict,
     Table,
 )
+from snowman.relation.view import View
 
 if TYPE_CHECKING:
     from snowman.typing import (
@@ -130,6 +131,7 @@ class _InternalColumnAccessor:
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
+            | View[GenericColumnAccessor]
         ],
     ):
         self._table = table

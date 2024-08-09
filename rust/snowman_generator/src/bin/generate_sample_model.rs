@@ -15,7 +15,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         database_name: "DATABASE".to_string(),
         schema_name: "SCHEMA".to_string(),
     };
+
     let tables = vec![Table {
+        table_type: "BASE TABLE".to_string(),
         database_name: database_schema.database_name.clone(),
         schema_name: database_schema.schema_name.clone(),
         table_name: "USER".to_string(),
@@ -70,6 +72,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         output_dir.join("your/database/_schema.py"),
         generate_schema_python_typehint(
             &tables,
+            &[],
             &Default::default(),
             &Default::default(),
             &Default::default(),
@@ -81,10 +84,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         output_dir.join("your/database/schema.py"),
         generate_schema_python_code(
             &tables,
+            &[],
             &database_schema,
-            &Default::default(),
-            &Default::default(),
-            &Default::default(),
             &Default::default(),
             &Default::default(),
         )

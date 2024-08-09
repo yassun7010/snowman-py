@@ -12,6 +12,7 @@ async fn test_generate_schema_python_code() {
         schema_name: "SCHEMA".to_string(),
     };
     let tables = vec![Table {
+        table_type: "BASE TABLE".to_string(),
         database_name: database_schema.database_name.clone(),
         schema_name: database_schema.schema_name.clone(),
         table_name: "USER".to_string(),
@@ -43,10 +44,8 @@ async fn test_generate_schema_python_code() {
 
     let code = generate_schema_python_code(
         &tables,
+        &[],
         &database_schema,
-        &Default::default(),
-        &Default::default(),
-        &Default::default(),
         &Default::default(),
         &Default::default(),
     )
@@ -74,7 +73,7 @@ if typing.TYPE_CHECKING:
 
 # TABLE: DATABASE.SCHEMA.USER
 @snowman.table("DATABASE", "SCHEMA", "USER")
-class User(snowman.Table["_schema._UserColumnAccessor","_schema._UserInsertTypedDict","_schema._UserUpdateTypedDict",]):
+class User(snowman.Table["_schema._UserColumnAccessor", "_schema._UserInsertTypedDict", "_schema._UserUpdateTypedDict"]):
     """User Table"""
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
@@ -86,6 +85,7 @@ class User(snowman.Table["_schema._UserColumnAccessor","_schema._UserInsertTyped
 
     created_at: typing.Annotated[snowman.datatype.TIMESTAMP, pydantic.Field(title="Created At", alias="CREATED_AT"),] = snowman.pydantic.DefaultFactory(lambda: datetime.datetime.now(datetime.UTC))
     """Created At"""
+
 "#
         .strip_prefix('\n')
         .unwrap()
@@ -99,6 +99,7 @@ async fn test_generate_schema_python_code_of_empty_columns_table() {
         schema_name: "SCHEMA".to_string(),
     };
     let tables = vec![Table {
+        table_type: "BASE TABLE".to_string(),
         database_name: database_schema.database_name.clone(),
         schema_name: database_schema.schema_name.clone(),
         table_name: "USER".to_string(),
@@ -108,10 +109,8 @@ async fn test_generate_schema_python_code_of_empty_columns_table() {
 
     let code = generate_schema_python_code(
         &tables,
+        &[],
         &database_schema,
-        &Default::default(),
-        &Default::default(),
-        &Default::default(),
         &Default::default(),
         &Default::default(),
     )
@@ -139,9 +138,10 @@ if typing.TYPE_CHECKING:
 
 # TABLE: DATABASE.SCHEMA.USER
 @snowman.table("DATABASE", "SCHEMA", "USER")
-class User(snowman.Table["_schema._UserColumnAccessor","_schema._UserInsertTypedDict","_schema._UserUpdateTypedDict",]):
+class User(snowman.Table["_schema._UserColumnAccessor", "_schema._UserInsertTypedDict", "_schema._UserUpdateTypedDict"]):
     """User Table"""
     model_config = pydantic.ConfigDict(populate_by_name=True)
+
 "#
         .strip_prefix('\n')
         .unwrap()

@@ -1,25 +1,23 @@
 use crate::{
-    schema::{Column, Table},
+    schema::{Column, Table, View},
     Connection,
 };
 
-#[derive(Debug, Clone)]
-pub struct SchemaInfomation {
-    pub table_name: String,
-    pub column_name: String,
-    pub data_type: String,
-    pub is_nullable: String,
+pub struct InformationSchema {
+    pub tables: Vec<Table>,
+    pub views: Vec<View>,
 }
 
-pub async fn get_schema_infomations(
+pub async fn get_infomation_schema(
     connection: &Connection,
     database_name: &str,
     schema_name: &str,
-) -> Result<Vec<Table>, crate::Error> {
+) -> Result<InformationSchema, crate::Error> {
     let rows = connection
         .execute(&format!(
             "
             SELECT
+                t.table_type,
                 t.table_catalog,
                 t.table_schema,
                 t.table_name,
@@ -34,10 +32,11 @@ pub async fn get_schema_infomations(
             JOIN
                 information_schema.columns c USING (table_schema, table_name)
             WHERE
-                t.table_type = 'BASE TABLE'
+                t.table_type in ('BASE TABLE', 'VIEW')
                 AND t.table_catalog = '{database_name}'
                 AND t.table_schema = '{schema_name}'
             ORDER BY
+                t.table_type,
                 t.table_catalog,
                 t.table_schema,
                 t.table_name,
@@ -45,8 +44,11 @@ pub async fn get_schema_infomations(
             "
         ))
         .await?;
+
     let mut tables = vec![];
+    let mut views = vec![];
     let mut table: Option<Table> = None;
+
     for row in rows {
         match table {
             Some(ref mut t) if t.table_name == row.get::<String>("table_name").unwrap() => {
@@ -60,9 +62,18 @@ pub async fn get_schema_infomations(
             }
             _ => {
                 if let Some(t) = table {
-                    tables.push(t);
+                    match row.get::<String>("table_type").ok().as_deref() {
+                        Some("BASE TABLE") => {
+                            tables.push(t);
+                        }
+                        Some("VIEW") => {
+                            views.push(t);
+                        }
+                        _ => {}
+                    }
                 }
                 table = Some(Table {
+                    table_type: row.get("table_type").unwrap(),
                     database_name: row.get("table_catalog").unwrap(),
                     schema_name: row.get("table_schema").unwrap(),
                     table_name: row.get("table_name").unwrap(),
@@ -80,8 +91,16 @@ pub async fn get_schema_infomations(
     }
 
     if let Some(t) = table {
-        tables.push(t);
+        match t.table_type.as_ref() {
+            "BASE TABLE" => {
+                tables.push(t);
+            }
+            "VIEW" => {
+                views.push(t);
+            }
+            _ => {}
+        }
     }
 
-    Ok(tables)
+    Ok(InformationSchema { tables, views })
 }

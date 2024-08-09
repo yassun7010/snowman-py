@@ -53,14 +53,15 @@ async fn write_sql_tables(
     output_dirpath: &std::path::Path,
     database_schema: &DatabaseSchema,
 ) -> Result<(), anyhow::Error> {
-    let tables = snowman_connector::query::get_schema_infomations(
+    let information_schema = snowman_connector::query::get_infomation_schema(
         connection,
         database_schema.database_name.as_str(),
         database_schema.schema_name.as_str(),
     )
     .await?;
 
-    let src = tables
+    let src = information_schema
+        .tables
         .iter()
         .map(snowman_generator::generate_sql_definition)
         .join("\n");

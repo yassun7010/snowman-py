@@ -14,17 +14,25 @@ pub use model::insert_typeddict::{
     generate_insert_typeddict, generate_insert_typeddicts, get_insert_typeddict_modules,
     InsertTypedDictOptions,
 };
-pub use model::pydantic::{
-    generate_pydantic_model, generate_pydantic_models, get_pydantic_modules, PydanticOptions,
-};
+pub use model::pydantic::{get_pydantic_modules, PydanticOptions};
+pub use model::pydantic_table::{generate_pydantic_table, generate_pydantic_tables};
+pub use model::pydantic_view::{generate_pydantic_view, generate_pydantic_views};
 pub use model::update_typeddict::{
     generate_update_typeddict, generate_update_typeddicts, get_update_typeddict_modules,
     UpdateTypedDictOptions,
 };
 use snowman_connector::query::DatabaseSchema;
-use snowman_connector::schema::Table;
+use snowman_connector::schema::{Table, View};
 pub use sql::generate_sql_definition;
 pub use traits::{ToPython, ToPythonModule, ToSQL};
+
+#[derive(Default)]
+pub struct ModelOptions {
+    pub column_accessor_options: ColumnAccessorOptions,
+    pub insert_typeddict_options: InsertTypedDictOptions,
+    pub update_typeddict_options: UpdateTypedDictOptions,
+    pub pydantic_options: PydanticOptions,
+}
 
 pub fn generate_modlue_init_py(database_names: &[&str]) -> String {
     database_names
@@ -69,11 +77,12 @@ pub fn generate_type_checking(inner_code: &str) -> String {
 
 pub async fn generate_schema_python_typehint(
     tables: &[Table],
+    views: &[View],
     column_accessor_options: &ColumnAccessorOptions,
     insert_typeddict_options: &InsertTypedDictOptions,
     update_typeddict_options: &UpdateTypedDictOptions,
 ) -> Result<String, crate::Error> {
-    let src = if tables.is_empty() {
+    let src = if tables.is_empty() && views.is_empty() {
         generate_module_docs().to_string()
     } else {
         itertools::join(
@@ -90,6 +99,7 @@ pub async fn generate_schema_python_typehint(
                     .collect::<Vec<&str>>(),
                 ),
                 &generate_column_accessors(tables, column_accessor_options),
+                &generate_column_accessors(views, column_accessor_options),
                 &generate_insert_typeddicts(tables, insert_typeddict_options),
                 &generate_update_typeddicts(tables, update_typeddict_options),
             ],
@@ -102,11 +112,9 @@ pub async fn generate_schema_python_typehint(
 
 pub async fn generate_schema_python_code(
     tables: &[Table],
+    views: &[View],
     database_schema: &DatabaseSchema,
-    pydantic_options: &PydanticOptions,
-    column_accessor_options: &ColumnAccessorOptions,
-    insert_typeddict_options: &InsertTypedDictOptions,
-    update_typeddict_options: &UpdateTypedDictOptions,
+    model_options: &ModelOptions,
     params: &snowman_connector::Parameters,
 ) -> Result<String, crate::Error> {
     let schema_module_name = database_schema.schema_module();
@@ -129,12 +137,18 @@ pub async fn generate_schema_python_code(
                 &generate_type_checking(&format!(
                     "from . import _{schema_module_name} as _{schema_module_name}\n"
                 )),
-                &generate_pydantic_models(
+                &generate_pydantic_tables(
                     tables,
-                    pydantic_options,
-                    column_accessor_options,
-                    insert_typeddict_options,
-                    update_typeddict_options,
+                    &model_options.pydantic_options,
+                    &model_options.column_accessor_options,
+                    &model_options.insert_typeddict_options,
+                    &model_options.update_typeddict_options,
+                    params,
+                ),
+                &generate_pydantic_views(
+                    views,
+                    &model_options.pydantic_options,
+                    &model_options.column_accessor_options,
                     params,
                 ),
             ],

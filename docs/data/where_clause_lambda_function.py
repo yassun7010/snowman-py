@@ -13,8 +13,8 @@ with snowflake_conn.cursor() as cursor:
             c.group(
                 (c(User).age.is_.not_.null)
                 .and_(c(User).age >= 18)
-                .and_(c(User).age <= 100)
-            )
+                .and_(c(User).age <= 100),
+            ),
         )
-        .and_(c(User).created_at >= datetime.datetime(2001, 1, 1))
+        .and_(c(User).created_at >= datetime.datetime(2001, 1, 1)),
     ).execute(cursor)
