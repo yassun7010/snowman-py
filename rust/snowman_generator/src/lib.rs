@@ -118,7 +118,7 @@ pub async fn generate_schema_python_code(
     params: &snowman_connector::Parameters,
 ) -> Result<String, crate::Error> {
     let schema_module_name = database_schema.schema_module();
-    let src = if tables.is_empty() {
+    let src = if tables.is_empty() && views.is_empty() {
         generate_module_docs().to_string()
     } else {
         itertools::join(

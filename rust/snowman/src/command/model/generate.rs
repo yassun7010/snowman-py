@@ -5,6 +5,7 @@ use crate::{
 
 use anyhow::anyhow;
 use itertools::Itertools;
+use snowman_config::TableType;
 use snowman_connector::query::{get_parameters, DatabaseSchema};
 use snowman_generator::{formatter::run_ruff_format_if_exists, ToPython};
 use snowman_generator::{ModelOptions, ToPythonModule};
@@ -77,6 +78,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             &connection,
             output_dirpath,
             schema,
+            &config.model.table_types,
             &model_options,
             &parameters,
         )
@@ -95,6 +97,7 @@ async fn write_schema_py(
     connection: &snowman_connector::Connection,
     output_dirpath: &std::path::Path,
     database_schema: &DatabaseSchema,
+    table_types: &[TableType],
     model_options: &ModelOptions,
     params: &snowman_connector::Parameters,
 ) -> Result<(), anyhow::Error> {
@@ -102,6 +105,10 @@ async fn write_schema_py(
         connection,
         &database_schema.database_name,
         &database_schema.schema_name,
+        &table_types
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<_>>(),
     )
     .await?;
 

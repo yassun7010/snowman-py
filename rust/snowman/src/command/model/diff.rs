@@ -55,6 +55,7 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
                 &connection,
                 &database_schema.database_name,
                 &database_schema.schema_name,
+                &config.model.table_types,
             )
             .await?;
 

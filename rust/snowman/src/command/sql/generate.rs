@@ -2,6 +2,7 @@ use crate::{config::get_snowflake_connection, database::fetch_database_schemas};
 
 use anyhow::anyhow;
 use itertools::Itertools;
+use snowman_config::TableType;
 use snowman_connector::{query::DatabaseSchema, Connection};
 use snowman_generator::ToSQL;
 use tokio::io::AsyncWriteExt;
@@ -39,7 +40,13 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
 
     // generate models
     futures::future::try_join_all(database_schemas.iter().map(|database_schema| async {
-        write_sql_tables(&connection, output_dirpath, database_schema).await
+        write_sql_tables(
+            &connection,
+            output_dirpath,
+            database_schema,
+            &config.model.table_types,
+        )
+        .await
     }))
     .await?;
 
@@ -52,11 +59,13 @@ async fn write_sql_tables(
     connection: &Connection,
     output_dirpath: &std::path::Path,
     database_schema: &DatabaseSchema,
+    table_types: &[TableType],
 ) -> Result<(), anyhow::Error> {
     let information_schema = snowman_connector::query::get_infomation_schema(
         connection,
         database_schema.database_name.as_str(),
         database_schema.schema_name.as_str(),
+        table_types,
     )
     .await?;
 

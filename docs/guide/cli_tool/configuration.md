@@ -84,7 +84,7 @@ Specify the prefix of the Pydantic model name.
 
     The following conversion is performed:
 
-    `database.schema.User` -> `database.schema.ModelUser`
+    `database.schema.user` -> `database.schema.ModelUser`
 
 ### `model_name_suffix`
 Specify the suffix of the Pydantic model name.
@@ -97,4 +97,4 @@ Specify the suffix of the Pydantic model name.
 
     The following conversion is performed:
 
-    `database.schema.User` -> `database.schema.UserModel`
+    `database.schema.user` -> `database.schema.UserModel`
