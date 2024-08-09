@@ -182,7 +182,27 @@
           },
           "additionalProperties": false
         }
-      ]
+      ],
+      "properties": {
+        "schema": {
+          "title": "The database configuration.",
+          "default": {},
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/SchemaConfig"
+          }
+        },
+        "table_types": {
+          "title": "The table types of database to include in the Python Model.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/TableType"
+          }
+        }
+      }
     },
     "Env": {
       "type": "object",
@@ -279,6 +299,21 @@
         }
       },
       "additionalProperties": false
+    },
+    "SchemaConfig": {
+      "type": "object",
+      "properties": {
+        "table_types": {
+          "title": "The table types of schema to include in the Python Model.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/TableType"
+          }
+        }
+      }
     },
     "StringOrEnv": {
       "title": "Represents a string or an environment variable.",

@@ -90,7 +90,7 @@ pub struct ModelConfig {
 
     /// # The database configuration.
     #[serde(default)]
-    pub databases: indexmap::IndexMap<String, DatabaseConfig>,
+    pub database: indexmap::IndexMap<String, DatabaseConfig>,
 
     /// # The database names to exclude from the Python Model.
     #[serde(flatten, default)]
@@ -130,7 +130,7 @@ impl ModelConfig {
     }
 
     pub fn include_database_schema(&self, database_name: &str, schema_name: &str) -> bool {
-        if let Some(database_config) = self.databases.get(database_name) {
+        if let Some(database_config) = self.database.get(database_name) {
             database_config.include_schema(schema_name)
         } else {
             DatabaseConfig::default().include_schema(schema_name)
@@ -138,8 +138,8 @@ impl ModelConfig {
     }
 
     pub fn get_schema_table_types(&self, database_name: &str, schema_name: &str) -> &[TableType] {
-        if let Some(database) = self.databases.get(database_name) {
-            if let Some(schema) = database.schemas.get(schema_name) {
+        if let Some(database) = self.database.get(database_name) {
+            if let Some(schema) = database.schema.get(schema_name) {
                 if let Some(table_types) = &schema.table_types {
                     return table_types;
                 }
@@ -159,7 +159,7 @@ pub struct DatabaseConfig {
 
     /// # The database configuration.
     #[serde(default)]
-    pub schemas: indexmap::IndexMap<String, SchemaConfig>,
+    pub schema: indexmap::IndexMap<String, SchemaConfig>,
 
     #[serde(flatten, default)]
     pub schema_pattern: Option<DatabaseSchemaPattern>,
