@@ -32,22 +32,22 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             .unwrap_or_else(|| get_model_output_dirpath(&config)),
     );
 
-    let schemas = fetch_database_schemas(&connection, &config).await?;
+    let database_schemas = fetch_database_schemas(&connection, &config).await?;
     let parameters = get_parameters(&connection).await?;
 
-    if schemas.is_empty() {
+    if database_schemas.is_empty() {
         Err(anyhow!("No database schema found to generate models."))?;
     }
 
-    for schema in &schemas {
+    for database_schema in &database_schemas {
         println!(
             "Generating models for {}.{}",
-            schema.database_name, schema.schema_name
+            database_schema.database_name, database_schema.schema_name
         );
     }
 
     // remove existing files
-    schemas.iter().try_for_each(|database_schema| {
+    database_schemas.iter().try_for_each(|database_schema| {
         for filepath in [
             database_schema.schema_python_code_fullpath(output_dirpath),
             database_schema.schema_python_typehint_fullpath(output_dirpath),
@@ -62,25 +62,26 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
 
     // Generate __init__.py for each database module
     futures::future::try_join_all(
-        schemas
+        database_schemas
             .iter()
             .into_group_map_by(|x| x.database_module())
             .into_iter()
-            .map(|(database_module, schemas)| async move {
-                write_database_init_py(output_dirpath, &database_module, &schemas).await
+            .map(|(database_module, database_schemas)| async move {
+                write_database_init_py(output_dirpath, &database_module, &database_schemas).await
             }),
     )
     .await?;
 
     // Generate models
-    futures::future::try_join_all(schemas.iter().map(|schema| async {
+    futures::future::try_join_all(database_schemas.iter().map(|database_schema| async {
         write_schema_py(
             &connection,
             output_dirpath,
-            schema,
-            config
-                .model
-                .get_schema_table_types(&schema.database_name, &schema.schema_name),
+            database_schema,
+            config.model.get_schema_table_types(
+                &database_schema.database_name,
+                &database_schema.schema_name,
+            ),
             &model_options,
             &parameters,
         )
