@@ -47,7 +47,7 @@ The default value is `["BASE TABLE", "VIEW"]`
     table_types = ["BASE TABLE"]
 
     # Schema Level
-    [model.database.MY_DB.schemas.MY_SCHEMA]
+    [model.database.MY_DB.schema.MY_SCHEMA]
     table_types = ["BASE TABLE"]
     ```
 
