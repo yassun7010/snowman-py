@@ -43,11 +43,11 @@ The default value is `["BASE TABLE", "VIEW"]`
     table_types = ["BASE TABLE"]
     
     # Database Level
-    [model.databases.MY_DB]
+    [model.database.MY_DB]
     table_types = ["BASE TABLE"]
 
     # Schema Level
-    [model.databases.MY_DB.schemas.MY_SCHEMA]
+    [model.database.MY_DB.schemas.MY_SCHEMA]
     table_types = ["BASE TABLE"]
     ```
 
@@ -71,20 +71,20 @@ Specify the database names that are not the target of model generation. It canno
     ```
 
 ### `include_schemas`
-Specify the schema names that are the target of model generation. It cannot be used in conjunction with `[model.databases.*.exclude_schemas]`.
+Specify the schema names that are the target of model generation. It cannot be used in conjunction with `[model.database.*.exclude_schemas]`.
 
 !!! example
     ```toml
-    [model.databases.MY_DB]
+    [model.database.MY_DB]
     include_schemas = ["PUBLIC"]
     ```
 
 ### `exclude_schemas`
-Specify the schema names that are not the target of model generation. It cannot be used in conjunction with `[model.databases.*.include_schemas]`.
+Specify the schema names that are not the target of model generation. It cannot be used in conjunction with `[model.database.*.include_schemas]`.
 
 !!! example
     ```toml
-    [model.databases.MY_DB]
+    [model.database.MY_DB]
     exclude_schemas = ["SANDBOX"]
     ```
 
