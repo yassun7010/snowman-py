@@ -85,6 +85,7 @@ class User(snowman.Table["_schema._UserColumnAccessor", "_schema._UserInsertType
 
     created_at: typing.Annotated[snowman.datatype.TIMESTAMP, pydantic.Field(title="Created At", alias="CREATED_AT"),] = snowman.pydantic.DefaultFactory(lambda: datetime.datetime.now(datetime.UTC))
     """Created At"""
+
 "#
         .strip_prefix('\n')
         .unwrap()
@@ -140,6 +141,7 @@ if typing.TYPE_CHECKING:
 class User(snowman.Table["_schema._UserColumnAccessor", "_schema._UserInsertTypedDict", "_schema._UserUpdateTypedDict"]):
     """User Table"""
     model_config = pydantic.ConfigDict(populate_by_name=True)
+
 "#
         .strip_prefix('\n')
         .unwrap()
