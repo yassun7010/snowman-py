@@ -6,6 +6,7 @@ from snowman.relation.table import (
     GenericUpdateColumnTypedDict,
     Table,
 )
+from snowman.relation.view import View
 
 from .builder.condition.condition import Condition
 from .builder.condition.group_condition import GroupCondition
@@ -23,6 +24,7 @@ def column(
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,
         ]
+        | View[GenericColumnAccessor]
     ],
 ) -> GenericColumnAccessor:
     """
