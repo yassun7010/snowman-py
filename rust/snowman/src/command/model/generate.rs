@@ -78,7 +78,9 @@ pub async fn run(args: Args) -> Result<(), anyhow::Error> {
             &connection,
             output_dirpath,
             schema,
-            &config.model.table_types,
+            config
+                .model
+                .get_schema_table_types(&schema.database_name, &schema.schema_name),
             &model_options,
             &parameters,
         )

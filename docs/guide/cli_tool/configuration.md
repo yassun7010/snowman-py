@@ -63,20 +63,20 @@ Specify the database names that are not the target of model generation. It canno
 
 
 ### `include_schemas`
-Specify the schema names that are the target of model generation. It cannot be used in conjunction with `[model.database.*.exclude_schemas]`.
+Specify the schema names that are the target of model generation. It cannot be used in conjunction with `[model.databases.*.exclude_schemas]`.
 
 !!! example
     ```toml
-    [model.database.MY_DB]
+    [model.databases.MY_DB]
     include_schemas = ["PUBLIC"]
     ```
 
 ### `exclude_schemas`
-Specify the schema names that are not the target of model generation. It cannot be used in conjunction with `[model.database.*.include_schemas]`.
+Specify the schema names that are not the target of model generation. It cannot be used in conjunction with `[model.databases.*.include_schemas]`.
 
 !!! example
     ```toml
-    [model.database.MY_DB]
+    [model.databases.MY_DB]
     exclude_schemas = ["SANDBOX"]
     ```
 
