@@ -90,7 +90,7 @@ pub struct ModelConfig {
 
     /// # The database configuration.
     #[serde(default)]
-    pub database: indexmap::IndexMap<String, DatabaseConfig>,
+    pub databases: indexmap::IndexMap<String, DatabaseConfig>,
 
     /// # The database names to exclude from the Python Model.
     #[serde(flatten, default)]
@@ -130,18 +130,45 @@ impl ModelConfig {
     }
 
     pub fn include_database_schema(&self, database_name: &str, schema_name: &str) -> bool {
-        if let Some(database_config) = self.database.get(database_name) {
+        if let Some(database_config) = self.databases.get(database_name) {
             database_config.include_schema(schema_name)
         } else {
             DatabaseConfig::default().include_schema(schema_name)
         }
     }
+
+    pub fn get_schema_table_types(&self, database_name: &str, schema_name: &str) -> &[TableType] {
+        if let Some(database) = self.databases.get(database_name) {
+            if let Some(schema) = database.schemas.get(schema_name) {
+                if let Some(table_types) = &schema.table_types {
+                    return table_types;
+                }
+            }
+            if let Some(table_types) = &database.table_types {
+                return table_types;
+            }
+        }
+        &self.table_types
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, schemars::JsonSchema)]
 pub struct DatabaseConfig {
+    /// # The table types of database to include in the Python Model.
+    pub table_types: Option<Vec<TableType>>,
+
+    /// # The database configuration.
+    #[serde(default)]
+    pub schemas: indexmap::IndexMap<String, SchemaConfig>,
+
     #[serde(flatten, default)]
     pub schema_pattern: Option<DatabaseSchemaPattern>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default, schemars::JsonSchema)]
+pub struct SchemaConfig {
+    /// # The table types of schema to include in the Python Model.
+    pub table_types: Option<Vec<TableType>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, schemars::JsonSchema)]
@@ -450,6 +477,7 @@ mod test {
             schema_pattern: Some(DatabaseSchemaPattern::ExcludeSchemas(vec![
                 "INFORMATION_SCHEMA".to_string()
             ])),
+            ..Default::default()
         }
         .include_schema("INFORMATION_SCHEMA"));
     }
@@ -460,6 +488,7 @@ mod test {
             schema_pattern: Some(DatabaseSchemaPattern::ExcludeSchemas(vec![
                 "INFORMATION_SCHEMA".to_string(),
             ])),
+            ..Default::default()
         };
 
         assert!(database_config.include_schema("SCHEMA"));

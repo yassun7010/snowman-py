@@ -34,14 +34,23 @@ Specify the output directory of the Pydantic models generated from the Snowflake
 
 ### `table_types`
 Specify the table types that are the target of model generation.  
-
 The default value is `["BASE TABLE", "VIEW"]`
 
 !!! example
     ```toml
+    # Top Level
     [model]
     table_types = ["BASE TABLE"]
+    
+    # Database Level
+    [model.databases.MY_DB]
+    table_types = ["BASE TABLE"]
+
+    # Schema Level
+    [model.databases.MY_DB.schemas.MY_SCHEMA]
+    table_types = ["BASE TABLE"]
     ```
+
 
 ### `include_databases`
 Specify the database names that are the target of model generation. It cannot be used in conjunction with `[model.exclude_databases]`.
@@ -60,7 +69,6 @@ Specify the database names that are not the target of model generation. It canno
     [model]
     exclude_databases = ["INFORMATION_SCHEMA", "MIGRATION"]
     ```
-
 
 ### `include_schemas`
 Specify the schema names that are the target of model generation. It cannot be used in conjunction with `[model.databases.*.exclude_schemas]`.
