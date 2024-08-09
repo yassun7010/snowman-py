@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, NamedTuple
 
+from snowman._cursor import Cursor
 from snowman._features import USE_TURU, TuruSnowflakeCursor
-from snowman.cursor import Cursor
 
 
 class QueryWithParams(NamedTuple):
