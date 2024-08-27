@@ -10,7 +10,7 @@ with snowflake_conn.cursor() as cursor:
     ).where(
         lambda c: (c(User).name.in_(["Jane", "Doe"]))
         .and_(
-            # `c.self.age` is shorthand for `c(User).age`.
+            # `c.self` is shorthand for `c(User)`.
             c.group(
                 (c.self.age.is_.not_.null)
                 .and_(c.self.age >= 18)
