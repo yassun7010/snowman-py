@@ -10,11 +10,9 @@ if TYPE_CHECKING:
 
 
 class IsNotCondition(Condition):
-    def __init__(self, base: "Column[PyType]", value: bool | None):
+    def __init__(self, base: "Column[PyType]"):
         self._base = base
-        self._value = value
 
     @override
     def to_sql(self) -> ConditionWithParams:
-        value = "NULL" if self._value is None else str(self._value).upper()
-        return ConditionWithParams(condition=f"{self._base} IS NOT {value}", params=())
+        return ConditionWithParams(condition=f"{self._base} IS NOT NULL", params=())
