@@ -89,11 +89,22 @@ For simple conditions, you can complete everything in Python, and benefit from s
 
 === "Function"
     The method of generating the `WHERE` clause using `function` like `lambda` is the easiest way to write **type safe** queries without importing other modules.
+    The argument name of the lambda function is recommended to use `c` (the first letter of `Context`).
 
     !!! example
         ```python
         --8<-- "docs/data/where_clause_lambda_function.py"
         ```
+
+    !!! tip
+        `c(User)` can also be written as `c.self` as an abbreviation.
+
+        This is useful when writing repeatedly, and can be easily written with dot chain.
+
+        ```python
+        --8<-- "docs/data/where_clause_lambda_function_self.py"
+        ```
+
 
 === "Condition"
     The method using lambda expressions is easy to write expressions,
