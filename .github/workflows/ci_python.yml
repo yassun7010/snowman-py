@@ -10,7 +10,7 @@ on:
     branches:
       - main
     paths:
-      - rust/**
+      - python/**
   workflow_dispatch:
 
 jobs:
