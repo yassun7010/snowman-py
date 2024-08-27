@@ -36,7 +36,7 @@ def mock_turu_snowflake_connection(
 
 
 @dataclass
-class _UserAccessColumns:
+class _UserColumnsAccessor:
     id: Column[int]
     name: Column[str]
 
@@ -52,13 +52,15 @@ class _UserUpdateColumns(TypedDict, total=False):
 
 
 @snowman.table("database", "schema", "users")
-class User(Table[_UserAccessColumns, _UserInsertColumns, _UserUpdateColumns]):
+class User(Table[_UserColumnsAccessor, _UserInsertColumns, _UserUpdateColumns]):
     id: int
     name: str
 
 
 @snowman.table("DATABASE", "SCHEMA", "UPPERCASE_TABLE")
-class UpperCaseTable(Table[_UserAccessColumns, _UserInsertColumns, _UserUpdateColumns]):
+class UpperCaseTable(
+    Table[_UserColumnsAccessor, _UserInsertColumns, _UserUpdateColumns]
+):
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
     id: Annotated[int, Field(alias="ID")]
