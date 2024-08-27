@@ -45,7 +45,7 @@ class TestUpdateQuery:
         query, params = (
             snowman.query.update(User)
             .set(user)
-            .where(lambda c: (c(User).id == 1).and_(c(User).name != "Alice"))
+            .where(lambda c: (c.self.id == 1).and_(c.self.name != "Alice"))
             .build()
         )
 

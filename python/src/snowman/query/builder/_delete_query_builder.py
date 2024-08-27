@@ -86,7 +86,7 @@ class DeleteFromStatement(Generic[GenericColumnAccessor]):
             - `.where("id = %s AND name = %s", [1, "Alice"])`
         """
         if callable(condition):
-            condition, params = condition(WhereContext()).to_sql()
+            condition, params = condition(WhereContext(self._table)).to_sql()
 
         elif isinstance(condition, Condition):
             condition, params = condition.to_sql()

@@ -12,6 +12,18 @@ from snowman.relation.table import (
 
 
 class WhereContext(Generic[GenericColumnAccessor]):
+    def __init__(
+        self,
+        table: Type[
+            Table[
+                GenericColumnAccessor,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+        ],
+    ) -> None:
+        self._table = table
+
     def __call__(
         self,
         table: Type[
@@ -26,3 +38,7 @@ class WhereContext(Generic[GenericColumnAccessor]):
 
     def group(self, condition: Condition, /) -> GroupCondition:
         return group(condition)
+
+    @property
+    def self(self) -> GenericColumnAccessor:
+        return column(self._table)

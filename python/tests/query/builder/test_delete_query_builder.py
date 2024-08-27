@@ -14,7 +14,7 @@ class TestDeleteQuery:
         query, params = (
             snowman.query.delete.from_(User)
             .where(
-                lambda c: (c(User).id == 1).and_(c(User).name == "Alice"),
+                lambda c: (c.self.id == 1).and_(c.self.name == "Alice"),
             )
             .build()
         )
