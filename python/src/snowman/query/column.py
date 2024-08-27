@@ -163,24 +163,13 @@ class ColumnIs(Generic[PyType]):
     def __init__(self, column: Column[PyType]):
         self._column = column
 
-    def __call__(self, value: bool | None) -> IsCondition:
-        return IsCondition(self._column, value)
-
     @property
     def not_(self) -> "ColumnIsNot":
         return ColumnIsNot(self._column)
 
     @property
     def null(self) -> IsCondition:
-        return IsCondition(self._column, None)
-
-    @property
-    def true(self) -> IsCondition:
-        return IsCondition(self._column, True)
-
-    @property
-    def false(self) -> IsCondition:
-        return IsCondition(self._column, False)
+        return IsCondition(self._column)
 
 
 class ColumnIsNot(Generic[PyType]):
@@ -199,20 +188,9 @@ class ColumnIsNot(Generic[PyType]):
     def __init__(self, column: Column[PyType]):
         self._column = column
 
-    def __call__(self, value: bool | None) -> IsNotCondition:
-        return IsNotCondition(self._column, value)
-
     @property
     def null(self) -> "IsNotCondition":
-        return IsNotCondition(self._column, None)
-
-    @property
-    def true(self) -> "IsNotCondition":
-        return IsNotCondition(self._column, True)
-
-    @property
-    def false(self) -> "IsNotCondition":
-        return IsNotCondition(self._column, False)
+        return IsNotCondition(self._column)
 
 
 class ColumnNot(Generic[PyType]):
