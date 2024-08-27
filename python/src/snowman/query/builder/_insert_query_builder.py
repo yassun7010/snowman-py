@@ -39,13 +39,13 @@ class InsertQueryBuilder:
     ...     id: int
     ...     name: str
     ...
-    >>> class _UserAccessColumns(TypedDict):
+    >>> class _UserColumnsAccessor(TypedDict):
     ...     id: Column[int]
     ...     name: Column[str]
     ...
     >>> @snowman.table("database", "schema", "users")
     ... class User(
-    ...     snowman.Table["_UserAccessColumns", "_UserInsertColumns", "_UserUpdateColumns"]
+    ...     snowman.Table["_UserColumnsAccessor", "_UserInsertColumns", "_UserUpdateColumns"]
     ... ):
     ...     id: int
     ...     name: str
