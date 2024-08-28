@@ -7,7 +7,7 @@ query, params = (
     delete.from_(
         User,
     ).where(
-        lambda c: c(User).id == 1,
+        lambda c: c.self.id == 1,
     )
 ).build()
 
