@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 pub use error::Error;
 
 const CONFIG_FILENAME: &str = "snowman.toml";
+const PYPROJECT_FILENAME: &str = "pyproject.toml";
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
@@ -300,14 +301,18 @@ pub fn find_path() -> Result<ConfigSource, crate::Error> {
     loop {
         let config_path = current_dir.join(CONFIG_FILENAME);
         if config_path.exists() {
-            log::debug!("\"snowq.toml\" found: {:?}", config_path);
+            log::debug!("\"{}\" found: {:?}", CONFIG_FILENAME, config_path);
 
             return Ok(ConfigSource::SnowmanToml(config_path));
         }
 
-        let pyproject_toml_path = current_dir.join("pyproject.toml");
+        let pyproject_toml_path = current_dir.join(PYPROJECT_FILENAME);
         if pyproject_toml_path.exists() {
-            log::debug!("\"pyproject.toml\" found: {:?}", pyproject_toml_path);
+            log::debug!(
+                "\"{}\" found: {:?}",
+                PYPROJECT_FILENAME,
+                pyproject_toml_path
+            );
 
             return Ok(ConfigSource::PyProjectToml(pyproject_toml_path));
         }
