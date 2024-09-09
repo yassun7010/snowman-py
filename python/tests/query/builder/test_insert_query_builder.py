@@ -5,10 +5,12 @@ import snowman
 import snowman.exception
 from conftest import (
     PANDAS_NOT_INSTALLED,
+    REAL_TEST_IS_DESABLED,
     TURU_NOT_INSTALLED,
     UpperCaseTable,
     User,
 )
+from snowflake.connector.connection import SnowflakeConnection
 from snowflake.connector.cursor import SnowflakeCursor
 from snowman._features import USE_TURU
 
@@ -188,6 +190,17 @@ class TestInsertQuery:
                     }
                 )
             ).execute(cursor)
+
+    @pytest.mark.skipif(**REAL_TEST_IS_DESABLED)
+    def test_real_insert_execute(
+        self,
+        real_user: User,
+        snowflake_connection: SnowflakeConnection,
+    ):
+        from conftest import RealUser
+
+        with snowflake_connection.cursor() as cursor:
+            snowman.query.insert.into(RealUser).values(real_user).execute(cursor)
 
 
 class TestInsertQueryUpperCaseTable:
