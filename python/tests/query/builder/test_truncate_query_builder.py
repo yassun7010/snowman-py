@@ -2,9 +2,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 import snowman
-from conftest import User
+from conftest import TURU_NOT_INSTALLED, User
 from snowflake.connector.cursor import SnowflakeCursor
-from snowman._features import USE_TURU
 
 if TYPE_CHECKING:
     import turu.snowflake
@@ -38,7 +37,7 @@ class TestTruncateQuery:
         assert query == "TRUNCATE TABLE IF EXISTS database.schema.users"
         assert params == ()
 
-    @pytest.mark.skipif(not USE_TURU, reason="Not installed turu")
+    @pytest.mark.skipif(**TURU_NOT_INSTALLED)
     def test_insert_execute_by_turu(
         self,
         user: User,
