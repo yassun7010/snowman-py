@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Annotated, TypedDict
+from typing import Annotated, Final, TypedDict
 
 import pydantic
 import pytest
@@ -10,9 +10,31 @@ from pytest_mock import MockFixture
 from snowman._features import USE_TURU
 from snowman.query.column import Column
 from snowman.relation.table import Table
+from turu.snowflake.features import USE_PANDAS, USE_PYARROW
 
 if USE_TURU:
     import turu.snowflake  # type: ignore[import]
+
+
+class SkipCondition(TypedDict):
+    condition: bool
+    reason: str
+
+
+TURU_NOT_INSTALLED: Final[SkipCondition] = {
+    "condition": not USE_TURU,
+    "reason": "Not installed turu",
+}
+
+PANDAS_NOT_INSTALLED: Final[SkipCondition] = {
+    "condition": not USE_PANDAS,
+    "reason": "Not installed pandas",
+}
+
+PYARROW_NOT_INSTALLED: Final[SkipCondition] = {
+    "condition": not USE_PYARROW,
+    "reason": "Not installed pyarrow",
+}
 
 
 @pytest.fixture

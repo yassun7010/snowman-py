@@ -3,9 +3,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 import snowman
-from conftest import UpperCaseTable, User
+from conftest import TURU_NOT_INSTALLED, UpperCaseTable, User
 from snowflake.connector.cursor import SnowflakeCursor
-from snowman._features import USE_TURU
 from snowman.query.expression import column as c
 
 if TYPE_CHECKING:
@@ -110,7 +109,7 @@ class TestUpdateQuery:
         )
         assert params == (1, "Alice", 1)
 
-    @pytest.mark.skipif(not USE_TURU, reason="Not installed turu")
+    @pytest.mark.skipif(**TURU_NOT_INSTALLED)
     def test_insert_execute_by_turu(
         self,
         user: User,

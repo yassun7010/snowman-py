@@ -3,9 +3,14 @@ import textwrap
 import pytest
 import snowman
 import snowman.exception
-from conftest import UpperCaseTable, User
+from conftest import (
+    PANDAS_NOT_INSTALLED,
+    TURU_NOT_INSTALLED,
+    UpperCaseTable,
+    User,
+)
 from snowflake.connector.cursor import SnowflakeCursor
-from snowman._features import USE_PANDAS, USE_TURU
+from snowman._features import USE_TURU
 
 if USE_TURU:
     import turu.snowflake  # type: ignore[import]
@@ -45,7 +50,7 @@ class TestInsertQuery:
         builder.execute(mock_snowflake_cursor)
         assert builder._use_execute_many is True
 
-    @pytest.mark.skipif(not USE_TURU, reason="Not installed turu")
+    @pytest.mark.skipif(**TURU_NOT_INSTALLED)
     def test_insert_execute_by_turu(
         self,
         user: User,
@@ -60,7 +65,7 @@ class TestInsertQuery:
 
             assert builder._use_execute_many is False
 
-    @pytest.mark.skipif(not USE_TURU, reason="Not installed turu")
+    @pytest.mark.skipif(**TURU_NOT_INSTALLED)
     def test_insert_executemany_by_turu(
         self,
         user: User,
@@ -142,14 +147,14 @@ class TestInsertQuery:
         )
         assert params == (1, "Alice")
 
-    @pytest.mark.skipif(not USE_PANDAS, reason="Not installed pandas")
+    @pytest.mark.skipif(**PANDAS_NOT_INSTALLED)
     def test_insert_into_query_build_use_dataframe(self):
         import pandas as pd
 
         with pytest.raises(snowman.exception.snowmanNotDataFrameAvailableError):
             snowman.query.insert.into(User).values(pd.DataFrame()).build()
 
-    @pytest.mark.skipif(not USE_PANDAS, reason="Not installed pandas")
+    @pytest.mark.skipif(**PANDAS_NOT_INSTALLED)
     def test_insert_into_query_execute_use_dataframe(
         self, mock_snowflake_cursor: SnowflakeCursor
     ):
@@ -164,7 +169,8 @@ class TestInsertQuery:
             )
         ).execute(mock_snowflake_cursor)
 
-    @pytest.mark.skipif(not USE_PANDAS or not USE_TURU, reason="Not installed pandas")
+    @pytest.mark.skipif(**TURU_NOT_INSTALLED)
+    @pytest.mark.skipif(**PANDAS_NOT_INSTALLED)
     @pytest.mark.xfail(reason="turu.snowflake.MockCursor does not have connection.")
     def test_insert_into_query_execute_use_dataframe_and_turu(
         self, mock_turu_snowflake_connection: "turu.snowflake.MockConnection"
