@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 import snowman
-from conftest import TURU_NOT_INSTALLED, UpperCaseTable, User
+from conftest import REAL_TEST_IS_DESABLED, TURU_NOT_INSTALLED, UpperCaseTable, User
+from snowflake.connector.connection import SnowflakeConnection
 from snowflake.connector.cursor import SnowflakeCursor
 from snowman.query.expression import column as c
 
@@ -121,6 +122,20 @@ class TestUpdateQuery:
         with mock_turu_snowflake_connection.cursor() as cursor:
             builder = snowman.query.update(User).set(user).where("id = %s", [1])
             builder.execute(cursor)
+
+    @pytest.mark.skipif(**REAL_TEST_IS_DESABLED)
+    def test_real_update_execute(
+        self,
+        real_user: User,
+        snowflake_connection: SnowflakeConnection,
+    ):
+        from conftest import RealUser
+
+        with snowflake_connection.cursor() as cursor:
+            snowman.query.insert.into(RealUser).values(real_user).execute(cursor)
+            snowman.query.update(RealUser).set({"name": "taro"}).where(
+                lambda c: c.self.id == real_user.id
+            ).execute(cursor)
 
 
 class TestUpdateQueryUpperCaseTable:

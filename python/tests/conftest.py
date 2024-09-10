@@ -1,5 +1,6 @@
+import os
 from dataclasses import dataclass
-from typing import Annotated, Final, TypedDict
+from typing import Annotated, Final, LiteralString, TypedDict, cast
 
 import pydantic
 import pytest
@@ -14,6 +15,13 @@ from turu.snowflake.features import USE_PANDAS, USE_PYARROW
 
 if USE_TURU:
     import turu.snowflake  # type: ignore[import]
+
+REAL_TEST_ENABLED = (
+    os.getenv("REAL_TEST_ENABLED") == "true"
+    and os.getenv("REAL_TEST_USER_DATABASE_NAME")
+    and os.getenv("REAL_TEST_USER_SCHEMA_NAME")
+    and os.getenv("REAL_TEST_USER_TABLE_NAME")
+)
 
 
 class SkipCondition(TypedDict):
@@ -36,12 +44,28 @@ PYARROW_NOT_INSTALLED: Final[SkipCondition] = {
     "reason": "Not installed pyarrow",
 }
 
+REAL_TEST_IS_DESABLED: Final[SkipCondition] = {
+    "condition": not REAL_TEST_ENABLED,
+    "reason": "Real test is disabled",
+}
+
 
 @pytest.fixture
 def mock_snowflake_cursor(
     mocker: MockFixture,
 ) -> snowflake.connector.cursor.SnowflakeCursor:
     return mocker.MagicMock(spec=snowflake.connector.cursor.SnowflakeCursor)
+
+
+@pytest.fixture
+def snowflake_connection() -> snowflake.connector.connection.SnowflakeConnection:
+    return snowflake.connector.connect(
+        user=os.getenv("SNOWFLAKE_USER"),
+        password=os.getenv("SNOWFLAKE_PASSWORD"),
+        account=os.getenv("SNOWFLAKE_ACCOUNT"),
+        warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
+        database=os.getenv("SNOWFLAKE_DATABASE"),
+    )
 
 
 @pytest.fixture
@@ -79,6 +103,13 @@ class User(Table[_UserColumnsAccessor, _UserInsertColumns, _UserUpdateColumns]):
     name: str
 
 
+@pytest.fixture
+def user() -> User:
+    user = User(id=1, name="Alice")
+
+    return user
+
+
 @snowman.table("DATABASE", "SCHEMA", "UPPERCASE_TABLE")
 class UpperCaseTable(
     Table[_UserColumnsAccessor, _UserInsertColumns, _UserUpdateColumns]
@@ -87,6 +118,26 @@ class UpperCaseTable(
 
     id: Annotated[int, Field(alias="ID")]
     name: Annotated[str, Field(alias="NAME")]
+
+
+@pytest.fixture
+def uppercase_table() -> UpperCaseTable:
+    return UpperCaseTable(id=1, name="Alice")
+
+
+if REAL_TEST_ENABLED:
+
+    @snowman.table(
+        cast(LiteralString, os.environ["REAL_TEST_USER_DATABASE_NAME"]),
+        cast(LiteralString, os.environ["REAL_TEST_USER_SCHEMA_NAME"]),
+        cast(LiteralString, os.environ["REAL_TEST_USER_TABLE_NAME"]),
+    )
+    class RealUser(User):
+        pass
+
+    @pytest.fixture
+    def real_user() -> User:
+        return RealUser(id=1, name="Alice")
 
 
 @dataclass
@@ -111,18 +162,6 @@ class Company(
 ):
     id: int
     name: str
-
-
-@pytest.fixture
-def user() -> User:
-    user = User(id=1, name="Alice")
-
-    return user
-
-
-@pytest.fixture
-def uppercase_table() -> UpperCaseTable:
-    return UpperCaseTable(id=1, name="Alice")
 
 
 @pytest.fixture

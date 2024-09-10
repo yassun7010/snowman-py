@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 import snowman
-from conftest import TURU_NOT_INSTALLED, User
+from conftest import REAL_TEST_IS_DESABLED, TURU_NOT_INSTALLED, User
+from snowflake.connector.connection import SnowflakeConnection
 from snowflake.connector.cursor import SnowflakeCursor
 
 if TYPE_CHECKING:
@@ -49,3 +50,13 @@ class TestTruncateQuery:
         with mock_turu_snowflake_connection.cursor() as cursor:
             builder = snowman.query.truncate(User)
             builder.execute(cursor)
+
+    @pytest.mark.skipif(**REAL_TEST_IS_DESABLED)
+    def test_real_truncate_execute(
+        self,
+        snowflake_connection: SnowflakeConnection,
+    ):
+        from conftest import RealUser
+
+        with snowflake_connection.cursor() as cursor:
+            snowman.query.truncate(RealUser).execute(cursor)
