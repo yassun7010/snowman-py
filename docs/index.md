@@ -6,7 +6,7 @@ hide:
 
 <div style="text-align: center">
     <img alt="logo" src="https://raw.githubusercontent.com/yassun7010/snowman-py/main/docs/images/logo.svg" width="300" />
-    <h1><strong>Snowman:</strong> Python Model and Query Builder for
+    <h1><strong>Snowman:</strong> Pydantic Model Generator and Query Builder for
     <a href="https://www.snowflake.com/">Snowflake</a></h1>
 </div>
 
