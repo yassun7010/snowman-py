@@ -13,7 +13,7 @@
 </p>
 <!-- --8<-- [end:badges] -->
 
-**Snowman**: Python Model and Query Builder for [Snowflake](https://www.snowflake.com/).
+**Snowman**: Pydantic Model Generator and Query Builder for [Snowflake](https://www.snowflake.com/).
 
 ---
 

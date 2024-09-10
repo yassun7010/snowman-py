@@ -1,7 +1,9 @@
 import textwrap
 
+import pytest
 import snowman
-from conftest import UpperCaseTable, User
+from conftest import REAL_TEST_IS_DESABLED, UpperCaseTable, User
+from snowflake.connector.connection import SnowflakeConnection
 from snowflake.connector.cursor import SnowflakeCursor
 from snowman.query.expression import column as c
 
@@ -146,3 +148,17 @@ class TestDeleteQueryUpperCaseTable:
         )
 
         assert params == (1,)
+
+    @pytest.mark.skipif(**REAL_TEST_IS_DESABLED)
+    def test_real_delete_execute(
+        self,
+        real_user: User,
+        snowflake_connection: SnowflakeConnection,
+    ):
+        from conftest import RealUser
+
+        with snowflake_connection.cursor() as cursor:
+            snowman.query.insert.into(RealUser).values(real_user).execute(cursor)
+            snowman.query.delete.from_(RealUser).where(
+                lambda c: c.self.id == real_user.id
+            ).execute(cursor)

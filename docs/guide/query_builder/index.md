@@ -93,16 +93,18 @@ For simple conditions, you can complete everything in Python, and benefit from s
 
     !!! example
         ```python
-        --8<-- "docs/data/where_clause_lambda_function.py"
+        --8<-- "docs/data/where_clause_lambda_function_self.py"
         ```
 
     !!! tip
-        `c(User)` can also be written as `c.self` as an abbreviation.
+        `c.self` is an abbreviation for `c(User)`.
 
         This is useful when writing repeatedly, and can be easily written with dot chain.
 
+        If you explicitly state that it is a column of `User`, it will be as follows.
+
         ```python
-        --8<-- "docs/data/where_clause_lambda_function_self.py"
+        --8<-- "docs/data/where_clause_lambda_function.py"
         ```
 
 
