@@ -167,3 +167,19 @@ class TestSelectQueryBuilderExecute:
             )
 
             assert user == real_user
+
+    def test_select_all_execute_iter(
+        self,
+        real_user: User,
+        snowflake_connection: SnowflakeConnection,
+    ):
+        from conftest import RealUser
+
+        with snowflake_connection.cursor() as cursor:
+            snowman.query.truncate(RealUser).execute(cursor)
+            snowman.query.insert.into(RealUser).values(
+                [real_user for _ in range(10)]
+            ).execute(cursor)
+
+            for user in select().from_(RealUser).execute(cursor):
+                assert user == real_user

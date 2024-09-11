@@ -394,6 +394,20 @@ class SelectCursor(
             _map_row(self._table, row),
         )
 
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> GenericTable:
+        row = self._cursor.fetchone()
+
+        if row is None:
+            raise StopIteration
+
+        return cast(
+            GenericTable,
+            _map_row(self._table, row),
+        )
+
 
 def _map_row(row_type: Type[GenericTable], row: Any) -> GenericTable:
     return cast(
