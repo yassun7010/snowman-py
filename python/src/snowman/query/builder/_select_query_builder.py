@@ -149,13 +149,13 @@ class SelectFromWhereOrderByQueryBuilder(
         )
 
 
-class SelectFromWhereQueryBuilder(
-    SelectFromWhereOrderByQueryBuilder[
+class SelectFromWhereOrderQueryBuilder(
+    Generic[
         GenericTable,
         GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
-    ],
+    ]
 ):
     def __init__(
         self,
@@ -170,14 +170,12 @@ class SelectFromWhereQueryBuilder(
         where_condition: str | None = None,
         where_params: Sequence[Any] | None = None,
     ):
-        super().__init__(
-            table,
-            where_condition=where_condition,
-            where_params=where_params,
-        )
+        self._table = table
+        self._where_condition = where_condition
+        self._where_params = tuple(where_params) if where_params else ()
 
     @overload
-    def order_by(
+    def by(
         self,
         condition: Callable[
             [
@@ -194,21 +192,21 @@ class SelectFromWhereQueryBuilder(
     ) -> "SelectFromWhereOrderByQueryBuilder[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
 
     @overload
-    def order_by(
+    def by(
         self,
         condition: Sequence[Column[Any]] | Column[Any],
         /,
     ) -> "SelectFromWhereOrderByQueryBuilder[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
 
     @overload
-    def order_by(
+    def by(
         self,
         condition: str,
         params: Sequence[Any] | None = None,
         /,
     ) -> "SelectFromWhereOrderByQueryBuilder[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
 
-    def order_by(
+    def by(
         self,
         condition: Callable[
             [
@@ -242,6 +240,44 @@ class SelectFromWhereQueryBuilder(
             where_params=self._where_params,
             order_by_condition=condition,
             order_by_params=params or (),
+        )
+
+
+class SelectFromWhereQueryBuilder(
+    SelectFromWhereOrderByQueryBuilder[
+        GenericTable,
+        GenericColumnAccessor,
+        GenericInsertColumnTypedDict,
+        GenericUpdateColumnTypedDict,
+    ],
+):
+    def __init__(
+        self,
+        table: Type[
+            Table[
+                GenericTable,
+                GenericColumnAccessor,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+        ],
+        where_condition: str | None = None,
+        where_params: Sequence[Any] | None = None,
+    ):
+        super().__init__(
+            table,
+            where_condition=where_condition,
+            where_params=where_params,
+        )
+
+    @property
+    def order(
+        self,
+    ) -> "SelectFromWhereOrderQueryBuilder[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+        return SelectFromWhereOrderQueryBuilder(
+            self._table,
+            where_condition=self._where_condition,
+            where_params=self._where_params,
         )
 
 
