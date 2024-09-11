@@ -55,5 +55,7 @@ Truncate query builder.
 
 select = SelectQueryBuilder
 """
-Select query builder. This is a draft. Please use it carefully.
+Select query builder.
+
+🚧 🚧 🚧 **This is a draft.** Please use it carefully. 🚧 🚧 🚧
 """
