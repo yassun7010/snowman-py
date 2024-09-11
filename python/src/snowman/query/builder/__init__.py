@@ -57,5 +57,5 @@ select = SelectQueryBuilder
 """
 Select query builder.
 
-🚧 🚧 🚧 **This is a draft.** Please use it carefully. 🚧 🚧 🚧
+🚧 🚧 🚧 **This is a draft.** This interface is subject to disruptive changes. 🚧 🚧 🚧
 """
