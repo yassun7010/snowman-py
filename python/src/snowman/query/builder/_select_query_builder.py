@@ -190,6 +190,40 @@ class SelectCursor(
         ],
     ):
         self._cursor = cursor
+        self._table = table
 
-    def fetchall(self) -> list[GenericColumnAccessor]:
-        return cast(list[GenericColumnAccessor], self._cursor.fetchall())
+    @property
+    def rowcount(self) -> int | None:
+        return self._cursor.rowcount
+
+    def fetchall(self) -> list[GenericTable]:
+        return [
+            cast(GenericTable, _map_row(self._table, row))
+            for row in self._cursor.fetchall()
+        ]
+
+    def fetchmany(self, size: int | None = None) -> list[GenericTable]:
+        return [
+            cast(GenericTable, _map_row(self._table, row))
+            for row in self._cursor.fetchmany(size)
+        ]
+
+    def fetchone(self) -> GenericTable | None:
+        row = self._cursor.fetchone()
+
+        if row is None:
+            return None
+
+        return cast(
+            GenericTable,
+            _map_row(self._table, row),
+        )
+
+
+def _map_row(row_type: Type[GenericTable], row: Any) -> GenericTable:
+    return cast(
+        GenericTable,
+        row_type.model_validate(
+            {key: data for key, data in zip(row_type.model_fields.keys(), row)}
+        ),
+    )

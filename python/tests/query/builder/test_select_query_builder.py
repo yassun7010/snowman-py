@@ -23,7 +23,7 @@ class TestSelectQueryBuilder:
         assert params == ()
 
     @pytest.mark.skipif(**REAL_TEST_IS_DESABLED)
-    def test_select_all_execute(
+    def test_select_all_execute_fetchall(
         self,
         real_user: User,
         snowflake_connection: SnowflakeConnection,
@@ -35,7 +35,51 @@ class TestSelectQueryBuilder:
             snowman.query.insert.into(RealUser).values(real_user).execute(cursor)
             users = snowman.query.select().from_(RealUser).execute(cursor).fetchall()
 
-            assert users
+            assert users == [real_user]
+
+    @pytest.mark.skipif(**REAL_TEST_IS_DESABLED)
+    def test_select_all_execute_fetchmany(
+        self,
+        real_user: User,
+        snowflake_connection: SnowflakeConnection,
+    ):
+        from conftest import RealUser
+
+        with snowflake_connection.cursor() as cursor:
+            snowman.query.truncate(RealUser).execute(cursor)
+            snowman.query.insert.into(RealUser).values(real_user).execute(cursor)
+            users = snowman.query.select().from_(RealUser).execute(cursor).fetchmany()
+
+            assert users == [real_user]
+
+    @pytest.mark.skipif(**REAL_TEST_IS_DESABLED)
+    def test_select_all_execute_fetchone(
+        self,
+        real_user: User,
+        snowflake_connection: SnowflakeConnection,
+    ):
+        from conftest import RealUser
+
+        with snowflake_connection.cursor() as cursor:
+            snowman.query.truncate(RealUser).execute(cursor)
+            snowman.query.insert.into(RealUser).values(real_user).execute(cursor)
+            user = snowman.query.select().from_(RealUser).execute(cursor).fetchone()
+
+            assert user == real_user
+
+    @pytest.mark.skipif(**REAL_TEST_IS_DESABLED)
+    def test_select_all_execute_fetchone_when_none(
+        self,
+        real_user: User,
+        snowflake_connection: SnowflakeConnection,
+    ):
+        from conftest import RealUser
+
+        with snowflake_connection.cursor() as cursor:
+            snowman.query.truncate(RealUser).execute(cursor)
+            user = snowman.query.select().from_(RealUser).execute(cursor).fetchone()
+
+            assert user is None
 
 
 # def test_select_specific_columns():
