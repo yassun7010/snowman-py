@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
+    GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
 )
@@ -27,6 +28,7 @@ def table_column_names(table: Type[Table]) -> list[str]:
 
 def table_columns_dict(
     table: Table[
+        GenericTable,
         GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,

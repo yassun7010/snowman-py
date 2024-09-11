@@ -23,6 +23,8 @@ class UpdateColumnTypedDict(TypedDict, total=False):
     pass
 
 
+_GenericTable = TypeVar("_GenericTable")
+
 GenericColumnAccessor = TypeVar(
     "GenericColumnAccessor",
 )
@@ -41,6 +43,7 @@ GenericUpdateColumnTypedDict = TypeVar(
 class Table(
     BaseModel,
     Generic[
+        _GenericTable,
         GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,

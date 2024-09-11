@@ -45,7 +45,7 @@ class InsertQueryBuilder:
     ...
     >>> @snowman.table("database", "schema", "users")
     ... class User(
-    ...     snowman.Table["_UserColumnsAccessor", "_UserInsertColumns", "_UserUpdateColumns"]
+    ...     snowman.Table["User", "_UserColumnsAccessor", "_UserInsertColumns", "_UserUpdateColumns"]
     ... ):
     ...     id: int
     ...     name: str
@@ -70,6 +70,7 @@ class InsertQueryBuilder:
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
@@ -88,6 +89,7 @@ class InsertOverwriteQueryBuilder:
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
@@ -139,7 +141,7 @@ class InsertIntoQueryBuilder(Generic[GenericTable, GenericInsertColumnTypedDict]
 
 
 class InsertIntoValuesQueryBuilder(
-    Generic[GenericTable, GenericInsertColumnTypedDict], QueryBuilder
+    QueryBuilder[None], Generic[GenericTable, GenericInsertColumnTypedDict]
 ):
     def __init__(
         self,

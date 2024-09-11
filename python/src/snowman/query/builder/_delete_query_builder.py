@@ -5,11 +5,12 @@ from typing_extensions import override
 from snowman._cursor import Cursor
 from snowman._features import DeleteTag
 from snowman.query.builder.condition.condition import Condition
-from snowman.query.builder.context import WhereContext
+from snowman.query.builder.context.where_context import WhereContext
 from snowman.relation import full_table_name
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
+    GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
 )
@@ -22,6 +23,7 @@ class DeleteQueryBuilder:
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
@@ -37,6 +39,7 @@ class DeleteFromStatement(Generic[GenericColumnAccessor]):
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
@@ -94,11 +97,12 @@ class DeleteFromStatement(Generic[GenericColumnAccessor]):
         return DeleteFromWhereQueryBuilder(self._table, condition, params or ())
 
 
-class DeleteFromWhereQueryBuilder(QueryBuilder):
+class DeleteFromWhereQueryBuilder(QueryBuilder[None]):
     def __init__(
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,

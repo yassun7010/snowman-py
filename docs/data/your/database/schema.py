@@ -19,6 +19,7 @@ if typing.TYPE_CHECKING:
 @snowman.table("DATABASE", "SCHEMA", "USER")
 class User(
     snowman.Table[
+        "User",
         "_schema._UserColumnAccessor",
         "_schema._UserInsertTypedDict",
         "_schema._UserUpdateTypedDict",

@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Any, NamedTuple
+from typing import Any, Generic, NamedTuple, TypeVar
 
 from snowman._cursor import Cursor
 from snowman._features import USE_TURU, TuruSnowflakeCursor
+
+GenericExecuteResult = TypeVar("GenericExecuteResult")
 
 
 class QueryWithParams(NamedTuple):
@@ -10,12 +12,18 @@ class QueryWithParams(NamedTuple):
     params: tuple[Any, ...]
 
 
-class QueryBuilder(ABC):
+class QueryBuilder(Generic[GenericExecuteResult], ABC):
     @abstractmethod
     def build(self) -> QueryWithParams: ...
 
     @abstractmethod
-    def execute(self, cursor: Cursor, /) -> None: ...
+    def execute(self, cursor: Cursor, /) -> GenericExecuteResult: ...
+
+
+def execute(cursor: Cursor, query: str, params: tuple[Any, ...]):
+    cursor.execute(query, params)
+
+    return cursor
 
 
 def execute_with_tag(

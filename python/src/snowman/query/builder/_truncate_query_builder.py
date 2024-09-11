@@ -43,7 +43,7 @@ class TruncateTableIfStatement:
         return TruncateTableQueryBuilder(table, if_exists=True)
 
 
-class TruncateTableQueryBuilder(Generic[GenericTable], QueryBuilder):
+class TruncateTableQueryBuilder(QueryBuilder[None], Generic[GenericTable]):
     def __init__(self, table: Type[GenericTable], /, *, if_exists: bool):
         self._table = table
         self._if_exists = if_exists

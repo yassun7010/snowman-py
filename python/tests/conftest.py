@@ -98,7 +98,7 @@ class _UserUpdateColumns(TypedDict, total=False):
 
 
 @snowman.table("database", "schema", "users")
-class User(Table[_UserColumnsAccessor, _UserInsertColumns, _UserUpdateColumns]):
+class User(Table["User", _UserColumnsAccessor, _UserInsertColumns, _UserUpdateColumns]):
     id: int
     name: str
 
@@ -112,7 +112,9 @@ def user() -> User:
 
 @snowman.table("DATABASE", "SCHEMA", "UPPERCASE_TABLE")
 class UpperCaseTable(
-    Table[_UserColumnsAccessor, _UserInsertColumns, _UserUpdateColumns]
+    Table[
+        "UpperCaseTable", _UserColumnsAccessor, _UserInsertColumns, _UserUpdateColumns
+    ]
 ):
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
@@ -158,7 +160,9 @@ class _CompanyUpdateColumns(TypedDict, total=False):
 
 @snowman.table("database", "schema", "companies")
 class Company(
-    Table[_CompanyAccessColumns, _CompanyInsertColumns, _CompanyUpdateColumns]
+    Table[
+        "Company", _CompanyAccessColumns, _CompanyInsertColumns, _CompanyUpdateColumns
+    ]
 ):
     id: int
     name: str

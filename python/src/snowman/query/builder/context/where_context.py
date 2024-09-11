@@ -6,6 +6,7 @@ from snowman.query.expression import column, group
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
+    GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
 )
@@ -16,6 +17,7 @@ class WhereContext(Generic[GenericColumnAccessor]):
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
@@ -28,6 +30,7 @@ class WhereContext(Generic[GenericColumnAccessor]):
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,

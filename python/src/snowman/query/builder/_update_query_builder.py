@@ -7,7 +7,7 @@ from typing_extensions import override
 from snowman._cursor import Cursor
 from snowman._features import UpdateTag
 from snowman.query.builder.condition.condition import Condition
-from snowman.query.builder.context import WhereContext
+from snowman.query.builder.context.where_context import WhereContext
 from snowman.relation import full_table_name
 from snowman.relation.table import (
     GenericColumnAccessor,
@@ -22,6 +22,7 @@ from ._builder import QueryBuilder, QueryWithParams, execute_with_tag
 
 class UpdateStatement(
     Generic[
+        GenericTable,
         GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
@@ -31,6 +32,7 @@ class UpdateStatement(
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
@@ -45,17 +47,19 @@ class UpdateStatement(
     def set(
         self,
         fields: Table[
+            GenericTable,
             GenericColumnAccessor,
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,
         ]
         | GenericUpdateColumnTypedDict,
-    ) -> "UpdateSetQueryBuilder[GenericColumnAccessor,GenericInsertColumnTypedDict,GenericUpdateColumnTypedDict]":
+    ) -> "UpdateSetQueryBuilder[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         return UpdateSetQueryBuilder(self._table, fields)
 
 
 class UpdateSetQueryBuilder(
     Generic[
+        GenericTable,
         GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
@@ -63,14 +67,16 @@ class UpdateSetQueryBuilder(
 ):
     def __init__(
         self,
-        table: Type[
+        table: type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
         ],
         columns: Table[
+            GenericTable,
             GenericColumnAccessor,
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,
@@ -135,18 +141,19 @@ class UpdateSetQueryBuilder(
 
 
 class UpdateSetWhereQueryBuidler(
+    QueryBuilder[None],
     Generic[
         GenericTable,
         GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
     ],
-    QueryBuilder,
 ):
     def __init__(
         self,
         table: type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
