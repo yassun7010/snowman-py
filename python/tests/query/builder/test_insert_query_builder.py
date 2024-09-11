@@ -1,5 +1,3 @@
-import textwrap
-
 import pytest
 import snowman
 import snowman.exception
@@ -13,6 +11,7 @@ from conftest import (
 from snowflake.connector.connection import SnowflakeConnection
 from snowflake.connector.cursor import SnowflakeCursor
 from snowman._features import USE_TURU
+from snowman.query.minify import minify
 
 if USE_TURU:
     import turu.snowflake  # type: ignore[import]
@@ -85,22 +84,19 @@ class TestInsertQuery:
     def test_insert_into_query_execute_build(self, user: User):
         query, params = snowman.query.insert.into(User).values(user).build()
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                INSERT INTO
-                    database.schema.users
-                (
-                    id,
-                    name
-                )
-                VALUES (
-                    %s,
-                    %s
-                )
-                """
-            ).strip()
+        assert query == minify(
+            """
+            INSERT INTO
+                database.schema.users
+            (
+                id,
+                name
+            )
+            VALUES (
+                %s,
+                %s
+            )
+            """
         )
         assert params == (1, "Alice")
 
@@ -108,44 +104,38 @@ class TestInsertQuery:
         values = [user, user]
         query, params = snowman.query.insert.into(User).values(values).build()
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                INSERT INTO
-                    database.schema.users
-                (
-                    id,
-                    name
-                )
-                VALUES (
-                    %s,
-                    %s
-                )
-                """
-            ).strip()
+        assert query == minify(
+            """
+            INSERT INTO
+                database.schema.users
+            (
+                id,
+                name
+            )
+            VALUES (
+                %s,
+                %s
+            )
+            """
         )
         assert params == ((1, "Alice"), (1, "Alice"))
 
     def test_insert_into_query_overwrite_execute_build(self, user: User):
         query, params = snowman.query.insert.overwrite.into(User).values(user).build()
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                INSERT OVERWRITE INTO
-                    database.schema.users
-                (
-                    id,
-                    name
-                )
-                VALUES (
-                    %s,
-                    %s
-                )
-                """
-            ).strip()
+        assert query == minify(
+            """
+            INSERT OVERWRITE INTO
+                database.schema.users
+            (
+                id,
+                name
+            )
+            VALUES (
+                %s,
+                %s
+            )
+            """
         )
         assert params == (1, "Alice")
 
@@ -209,22 +199,19 @@ class TestInsertQueryUpperCaseTable:
             snowman.query.insert.into(UpperCaseTable).values(uppercase_table).build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                INSERT INTO
-                    DATABASE.SCHEMA.UPPERCASE_TABLE
-                (
-                    ID,
-                    NAME
-                )
-                VALUES (
-                    %s,
-                    %s
-                )
-                """
-            ).strip()
+        assert query == minify(
+            """
+            INSERT INTO
+                DATABASE.SCHEMA.UPPERCASE_TABLE
+            (
+                ID,
+                NAME
+            )
+            VALUES (
+                %s,
+                %s
+            )
+            """
         )
         assert params == (1, "Alice")
 
@@ -234,22 +221,19 @@ class TestInsertQueryUpperCaseTable:
         values = [uppercase_table, uppercase_table]
         query, params = snowman.query.insert.into(UpperCaseTable).values(values).build()
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                INSERT INTO
-                    DATABASE.SCHEMA.UPPERCASE_TABLE
-                (
-                    ID,
-                    NAME
-                )
-                VALUES (
-                    %s,
-                    %s
-                )
-                """
-            ).strip()
+        assert query == minify(
+            """
+            INSERT INTO
+                DATABASE.SCHEMA.UPPERCASE_TABLE
+            (
+                ID,
+                NAME
+            )
+            VALUES (
+                %s,
+                %s
+            )
+            """
         )
         assert params == ((1, "Alice"), (1, "Alice"))
 
@@ -262,21 +246,18 @@ class TestInsertQueryUpperCaseTable:
             .build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                INSERT OVERWRITE INTO
-                    DATABASE.SCHEMA.UPPERCASE_TABLE
-                (
-                    ID,
-                    NAME
-                )
-                VALUES (
-                    %s,
-                    %s
-                )
-                """
-            ).strip()
+        assert query == minify(
+            """
+            INSERT OVERWRITE INTO
+                DATABASE.SCHEMA.UPPERCASE_TABLE
+            (
+                ID,
+                NAME
+            )
+            VALUES (
+                %s,
+                %s
+            )
+            """
         )
         assert params == (1, "Alice")

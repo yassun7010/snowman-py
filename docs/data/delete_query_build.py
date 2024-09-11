@@ -1,6 +1,5 @@
-import textwrap
-
 from snowman.query import delete
+from snowman.query.minify import minify
 from your.database.schema import User
 
 query, params = (
@@ -11,14 +10,14 @@ query, params = (
     )
 ).build()
 
-expected = textwrap.dedent(
+expected = minify(
     """
     DELETE FROM
         DATABASE.SCHEMA.USER
     WHERE
         ID = %s
     """,
-).strip()
+)
 
 assert query == expected
 assert params == (1,)
