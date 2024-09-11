@@ -7,7 +7,7 @@ from snowman.query.column import Column
 
 class TestNotInCondition:
     def test_not_in_condition(self, int_column: Column[int]):
-        condition = int_column.not_.in_([1, 2])
+        condition = int_column.not_in([1, 2])
         sql = condition.to_sql()
 
         assert_type(condition, NotInCondition)
@@ -19,4 +19,4 @@ class TestNotInCondition:
         self, int_nullable_column: Column[int | None], value: int | None
     ):
         # NOTE: Consider whether null safety can be supported
-        assert_type(int_nullable_column.not_.in_([value]), NotInCondition)
+        assert_type(int_nullable_column.not_in([value]), NotInCondition)

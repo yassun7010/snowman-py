@@ -7,8 +7,8 @@ from snowman.query.builder.condition.eq_condition import EqCondition
 from snowman.query.builder.condition.ge_condition import GeCondition
 from snowman.query.builder.condition.gt_condition import GtCondition
 from snowman.query.builder.condition.in_condition import InCondition
-from snowman.query.builder.condition.is_condition import IsCondition
-from snowman.query.builder.condition.is_not_condition import IsNotCondition
+from snowman.query.builder.condition.is_condition import IsNullCondition
+from snowman.query.builder.condition.is_not_condition import IsNotNullCondition
 from snowman.query.builder.condition.le_condition import LeCondition
 from snowman.query.builder.condition.lt_condition import LtCondition
 from snowman.query.builder.condition.ne_condition import NeCondition
@@ -49,15 +49,18 @@ class Column(Generic[PyType]):
         self._column_name = column_name
 
     @property
-    def is_(self) -> "ColumnIs[PyType]":
-        return ColumnIs(self)
+    def is_null(self) -> "IsNullCondition":
+        return IsNullCondition(self)
+
+    @property
+    def is_not_null(self) -> "IsNotNullCondition":
+        return IsNotNullCondition(self)
 
     def in_(self, values: Sequence[PyType], /) -> InCondition:
         return InCondition(self, values)
 
-    @property
-    def not_(self) -> "ColumnNot[PyType]":
-        return ColumnNot(self)
+    def not_in(self, values: Sequence[PyType]) -> NotInCondition:
+        return NotInCondition(self, values)
 
     @overload
     def __eq__(self, value: bool) -> "UseIsInsteadOfEq": ...  # type: ignore
@@ -147,66 +150,3 @@ class _InternalColumnAccessor:
             table_name=self._table.__table_name__,
             column_name=field.alias if field.alias else key,
         )
-
-
-class ColumnIs(Generic[PyType]):
-    """
-    A class for using the IS operator
-
-    #### Usage:
-        ```python
-        User.id.is_.true
-        User.id.is_.false
-        User.id.is_.null
-        User.id.is_(True)
-        ```
-    """
-
-    def __init__(self, column: Column[PyType]):
-        self._column = column
-
-    @property
-    def not_(self) -> "ColumnIsNot":
-        return ColumnIsNot(self._column)
-
-    @property
-    def null(self) -> IsCondition:
-        return IsCondition(self._column)
-
-
-class ColumnIsNot(Generic[PyType]):
-    """
-    A class for using the IS NOT operator
-
-    #### Usage:
-        ```python
-        User.id.is_.not_.true
-        User.id.is_.not_.false
-        User.id.is_.not_.null
-        User.id.is_.not_(True)
-        ```
-    """
-
-    def __init__(self, column: Column[PyType]):
-        self._column = column
-
-    @property
-    def null(self) -> "IsNotCondition":
-        return IsNotCondition(self._column)
-
-
-class ColumnNot(Generic[PyType]):
-    """
-    A class for using the NOT operator
-
-    #### Usage:
-        ```python
-        User.id.not_.in_([1, 2, 3])
-        ```
-    """
-
-    def __init__(self, column: Column[PyType]):
-        self._column = column
-
-    def in_(self, values: Sequence[PyType], /) -> NotInCondition:
-        return NotInCondition(self._column, values)

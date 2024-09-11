@@ -15,7 +15,7 @@ with snowflake_conn.cursor() as cursor:
         (c(User).name.in_(["Jane", "Doe"]))
         .and_(
             group(
-                (c(User).age.is_.not_.null)
+                (c(User).age.is_not_null)
                 .and_(c(User).age >= 18)
                 .and_(c(User).age <= 100),
             ),

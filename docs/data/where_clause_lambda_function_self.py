@@ -13,9 +13,7 @@ with snowflake_conn.cursor() as cursor:
         lambda c: (c.self.name.in_(["Jane", "Doe"]))
         .and_(
             c.group(
-                (c.self.age.is_.not_.null)
-                .and_(c.self.age >= 18)
-                .and_(c.self.age <= 100),
+                (c.self.age.is_not_null).and_(c.self.age >= 18).and_(c.self.age <= 100),
             ),
         )
         .and_(c.self.created_at >= datetime.datetime(2001, 1, 1)),
