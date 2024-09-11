@@ -59,16 +59,7 @@ class InsertQueryBuilder:
     ... ).build()
     >>>
     >>> print(query)
-    INSERT INTO
-        database.schema.users
-    (
-        id,
-        name
-    )
-    VALUES (
-        %s,
-        %s
-    )
+    INSERT INTO database.schema.users ( id, name ) VALUES ( %s, %s )
     """
 
     @property
@@ -174,19 +165,10 @@ class InsertIntoValuesQueryBuilder(
 
         overwrite = "OVERWRITE " if self._overwrite else ""
         names = table_column_names(self._table)
-        keys = ",\n    ".join(names)
-        values = ",\n    ".join("%s" for _ in names)
+        keys = ", ".join(names)
+        values = ", ".join("%s" for _ in names)
 
-        query = f"""
-INSERT {overwrite}INTO
-    {full_table_name(self._table)}
-(
-    {keys}
-)
-VALUES (
-    {values}
-)
-""".strip()
+        query = f"INSERT {overwrite}INTO {full_table_name(self._table)} ( {keys} ) VALUES ( {values} )"
 
         return QueryWithParams(
             query,

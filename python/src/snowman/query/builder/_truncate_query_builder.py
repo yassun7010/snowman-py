@@ -50,7 +50,8 @@ class TruncateTableQueryBuilder(QueryBuilder[None], Generic[GenericTable]):
 
     @override
     def build(self) -> QueryWithParams:
-        query = f"TRUNCATE TABLE{ ' IF EXISTS' if self._if_exists else ''} {full_table_name(self._table)}"
+        if_exists = " IF EXISTS" if self._if_exists else ""
+        query = f"TRUNCATE TABLE{if_exists} {full_table_name(self._table)}"
 
         return QueryWithParams(query, ())
 

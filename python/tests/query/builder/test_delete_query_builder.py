@@ -1,11 +1,10 @@
-import textwrap
-
 import pytest
 import snowman
 from conftest import REAL_TEST_IS_DESABLED, UpperCaseTable, User
 from snowflake.connector.connection import SnowflakeConnection
 from snowflake.connector.cursor import SnowflakeCursor
 from snowman.query.expression import column as c
+from snowman.query.minify import minify
 
 
 class TestDeleteQuery:
@@ -21,16 +20,13 @@ class TestDeleteQuery:
             .build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                DELETE FROM
-                    database.schema.users
-                WHERE
-                    id = %s AND name = %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            DELETE FROM
+                database.schema.users
+            WHERE
+                id = %s AND name = %s
+            """
         )
 
         assert params == (1, "Alice")
@@ -44,16 +40,13 @@ class TestDeleteQuery:
             .build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                DELETE FROM
-                    database.schema.users
-                WHERE
-                    id = %s AND name = %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            DELETE FROM
+                database.schema.users
+            WHERE
+                id = %s AND name = %s
+            """
         )
 
         assert params == (1, "Alice")
@@ -61,16 +54,13 @@ class TestDeleteQuery:
     def test_delete_query_build(self, user: User):
         query, params = snowman.query.delete.from_(User).where("id = %s", [1]).build()
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                DELETE FROM
-                    database.schema.users
-                WHERE
-                    id = %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            DELETE FROM
+                database.schema.users
+            WHERE
+                id = %s
+            """
         )
 
         assert params == (1,)
@@ -93,16 +83,13 @@ class TestDeleteQueryUpperCaseTable:
             .build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                DELETE FROM
-                    DATABASE.SCHEMA.UPPERCASE_TABLE
-                WHERE
-                    ID = %s AND NAME = %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            DELETE FROM
+                DATABASE.SCHEMA.UPPERCASE_TABLE
+            WHERE
+                ID = %s AND NAME = %s
+            """
         )
 
         assert params == (1, "Alice")
@@ -116,16 +103,13 @@ class TestDeleteQueryUpperCaseTable:
             .build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                DELETE FROM
-                    DATABASE.SCHEMA.UPPERCASE_TABLE
-                WHERE
-                    ID = %s AND NAME = %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            DELETE FROM
+                DATABASE.SCHEMA.UPPERCASE_TABLE
+            WHERE
+                ID = %s AND NAME = %s
+            """
         )
 
         assert params == (1, "Alice")
@@ -135,16 +119,13 @@ class TestDeleteQueryUpperCaseTable:
             snowman.query.delete.from_(UpperCaseTable).where("ID = %s", [1]).build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                DELETE FROM
-                    DATABASE.SCHEMA.UPPERCASE_TABLE
-                WHERE
-                    ID = %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            DELETE FROM
+                DATABASE.SCHEMA.UPPERCASE_TABLE
+            WHERE
+                ID = %s
+            """
         )
 
         assert params == (1,)
