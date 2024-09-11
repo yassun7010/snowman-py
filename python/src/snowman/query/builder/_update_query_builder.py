@@ -7,7 +7,7 @@ from typing_extensions import override
 from snowman._cursor import Cursor
 from snowman._features import UpdateTag
 from snowman.query.builder.condition.condition import Condition
-from snowman.query.builder.context import WhereContext
+from snowman.query.builder.context.where_context import WhereContext
 from snowman.relation import full_table_name
 from snowman.relation.table import (
     GenericColumnAccessor,
