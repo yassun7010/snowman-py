@@ -3,6 +3,7 @@ from typing import Type, cast
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
+    GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
 )
@@ -20,6 +21,7 @@ def group(condition: Condition) -> GroupCondition:
 def column(
     table: Type[
         Table[
+            GenericTable,
             GenericColumnAccessor,
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,

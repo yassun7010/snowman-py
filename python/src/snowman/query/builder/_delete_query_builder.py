@@ -10,6 +10,7 @@ from snowman.relation import full_table_name
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
+    GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
 )
@@ -22,6 +23,7 @@ class DeleteQueryBuilder:
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
@@ -37,6 +39,7 @@ class DeleteFromStatement(Generic[GenericColumnAccessor]):
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
@@ -99,6 +102,7 @@ class DeleteFromWhereQueryBuilder(QueryBuilder[None]):
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,

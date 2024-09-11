@@ -9,6 +9,7 @@ from snowman.relation import full_table_name
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
+    GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
 )
@@ -24,21 +25,23 @@ class SelectQueryBuilder:
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
         ],
         /,
-    ) -> "SelectFromStatement[GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+    ) -> "SelectFromStatement[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         return SelectFromStatement(table)
 
 
 class SelectFromStatement(
     QueryBuilder[
-        "SelectCursor[GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]"
+        "SelectCursor[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]"
     ],
     Generic[
+        GenericTable,
         GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
@@ -48,6 +51,7 @@ class SelectFromStatement(
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
@@ -108,7 +112,7 @@ FROM
     @override
     def execute(
         self, cursor: Cursor
-    ) -> "SelectCursor[GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+    ) -> "SelectCursor[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         query, params = self.build()
         print(query)
 
@@ -117,9 +121,10 @@ FROM
 
 class SelectWhereQueryBuilder(
     QueryBuilder[
-        "SelectCursor[GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]"
+        "SelectCursor[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]"
     ],
     Generic[
+        GenericTable,
         GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
@@ -129,6 +134,7 @@ class SelectWhereQueryBuilder(
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
@@ -157,7 +163,7 @@ WHERE
     @override
     def execute(
         self, cursor: Cursor
-    ) -> "SelectCursor[GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+    ) -> "SelectCursor[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         query, params = self.build()
 
         return SelectCursor(execute(cursor, query, params), self._table)
@@ -165,6 +171,7 @@ WHERE
 
 class SelectCursor(
     Generic[
+        GenericTable,
         GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
@@ -175,6 +182,7 @@ class SelectCursor(
         cursor: Cursor,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,

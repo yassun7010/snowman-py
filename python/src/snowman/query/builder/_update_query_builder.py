@@ -22,6 +22,7 @@ from ._builder import QueryBuilder, QueryWithParams, execute_with_tag
 
 class UpdateStatement(
     Generic[
+        GenericTable,
         GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
@@ -31,6 +32,7 @@ class UpdateStatement(
         self,
         table: Type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
@@ -45,17 +47,19 @@ class UpdateStatement(
     def set(
         self,
         fields: Table[
+            GenericTable,
             GenericColumnAccessor,
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,
         ]
         | GenericUpdateColumnTypedDict,
-    ) -> "UpdateSetQueryBuilder[GenericColumnAccessor,GenericInsertColumnTypedDict,GenericUpdateColumnTypedDict]":
+    ) -> "UpdateSetQueryBuilder[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         return UpdateSetQueryBuilder(self._table, fields)
 
 
 class UpdateSetQueryBuilder(
     Generic[
+        GenericTable,
         GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
@@ -63,14 +67,16 @@ class UpdateSetQueryBuilder(
 ):
     def __init__(
         self,
-        table: Type[
+        table: type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
         ],
         columns: Table[
+            GenericTable,
             GenericColumnAccessor,
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,
@@ -147,6 +153,7 @@ class UpdateSetWhereQueryBuidler(
         self,
         table: type[
             Table[
+                GenericTable,
                 GenericColumnAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
