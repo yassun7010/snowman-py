@@ -41,7 +41,7 @@ class TestSelectQueryBuilderBuild:
         assert params == (18,)
 
     def test_select_with_order_by(self):
-        query, params = select().from_(User).order_by(lambda c: [c.self.name]).build()
+        query, params = select().from_(User).order.by(lambda c: [c.self.name]).build()
 
         assert query == minify(
             """
@@ -66,7 +66,7 @@ class TestSelectQueryBuilderBuild:
             select()
             .from_(User)
             .where(lambda c: c.self.id > 18)
-            .order_by(lambda c: c.self.name)
+            .order.by(lambda c: c.self.name)
             .limit(5)
             .build()
         )
@@ -160,6 +160,7 @@ class TestSelectQueryBuilderExecute:
                 select()
                 .from_(RealUser)
                 .where(lambda c: c.self.id == 1)
+                .order.by(lambda c: c.self.id)
                 .limit(1)
                 .execute(cursor)
                 .fetchone()
