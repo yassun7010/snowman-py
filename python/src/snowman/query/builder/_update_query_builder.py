@@ -135,13 +135,13 @@ class UpdateSetQueryBuilder(
 
 
 class UpdateSetWhereQueryBuidler(
+    QueryBuilder[None],
     Generic[
         GenericTable,
         GenericColumnAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
     ],
-    QueryBuilder,
 ):
     def __init__(
         self,

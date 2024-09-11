@@ -148,7 +148,7 @@ class InsertIntoQueryBuilder(Generic[GenericTable, GenericInsertColumnTypedDict]
 
 
 class InsertIntoValuesQueryBuilder(
-    Generic[GenericTable, GenericInsertColumnTypedDict], QueryBuilder
+    QueryBuilder[None], Generic[GenericTable, GenericInsertColumnTypedDict]
 ):
     def __init__(
         self,

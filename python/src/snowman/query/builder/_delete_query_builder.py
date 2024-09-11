@@ -94,7 +94,7 @@ class DeleteFromStatement(Generic[GenericColumnAccessor]):
         return DeleteFromWhereQueryBuilder(self._table, condition, params or ())
 
 
-class DeleteFromWhereQueryBuilder(QueryBuilder):
+class DeleteFromWhereQueryBuilder(QueryBuilder[None]):
     def __init__(
         self,
         table: Type[
