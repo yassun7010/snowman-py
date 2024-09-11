@@ -1,25 +1,21 @@
-import textwrap
-
 import pytest
 import snowman.query
 from conftest import REAL_TEST_IS_DESABLED, User
 from snowflake.connector.connection import SnowflakeConnection
 from snowman.query import select
+from snowman.query.minify import minify
 
 
 class TestSelectQueryBuilder:
     def test_select_all_build(self):
         query, params = select().from_(User).build()
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                SELECT
-                    *
-                FROM
-                    database.schema.users
-                """
-            ).strip()
+        assert query == minify(
+            """
+            SELECT
+                *
+            FROM
+                database.schema.users
+            """
         )
         assert params == ()
 
@@ -29,18 +25,15 @@ class TestSelectQueryBuilder:
 
     def test_select_with_where_clause_build(self):
         query, params = select().from_(User).where(lambda c: c.self.id > 18).build()
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                SELECT
-                    *
-                FROM
-                    database.schema.users
-                WHERE
-                    id > %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            SELECT
+                *
+            FROM
+                database.schema.users
+            WHERE
+                id > %s
+            """
         )
         assert params == (18,)
 

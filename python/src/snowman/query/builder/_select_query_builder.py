@@ -65,14 +65,14 @@ class SelectFromStatement(
         self,
         condition: Callable[[WhereContext[GenericColumnAccessor]], Condition],
         /,
-    ) -> "SelectWhereQueryBuilder": ...
+    ) -> "SelectFinalQueryBuilder": ...
 
     @overload
     def where(
         self,
         condition: Condition,
         /,
-    ) -> "SelectWhereQueryBuilder": ...
+    ) -> "SelectFinalQueryBuilder": ...
 
     @overload
     def where(
@@ -80,7 +80,7 @@ class SelectFromStatement(
         condition: str,
         params: Sequence[Any] | None = None,
         /,
-    ) -> "SelectWhereQueryBuilder": ...
+    ) -> "SelectFinalQueryBuilder": ...
 
     def where(
         self,
@@ -89,37 +89,30 @@ class SelectFromStatement(
         | str,
         params: Sequence[Any] | None = None,
         /,
-    ) -> "SelectWhereQueryBuilder":
+    ) -> "SelectFinalQueryBuilder":
         if callable(condition):
             condition, params = condition(WhereContext(self._table)).to_sql()
         elif isinstance(condition, Condition):
             condition, params = condition.to_sql()
 
-        return SelectWhereQueryBuilder(self._table, condition, params or ())
+        return SelectFinalQueryBuilder(self._table, condition, params or ())
 
     @override
     def build(self) -> QueryWithParams:
-        return QueryWithParams(
-            f"""
-SELECT
-    *
-FROM
-    {full_table_name(self._table)}
-""".strip(),
-            (),
-        )
+        return SelectFinalQueryBuilder(
+            self._table,
+        ).build()
 
     @override
     def execute(
         self, cursor: Cursor
     ) -> "SelectCursor[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         query, params = self.build()
-        print(query)
 
         return SelectCursor(execute(cursor, query, params), self._table)
 
 
-class SelectWhereQueryBuilder(
+class SelectFinalQueryBuilder(
     QueryBuilder[
         "SelectCursor[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]"
     ],
@@ -140,25 +133,43 @@ class SelectWhereQueryBuilder(
                 GenericUpdateColumnTypedDict,
             ]
         ],
-        where_condition: str,
-        where_params: Sequence[Any],
+        where_condition: str | None = None,
+        where_params: Sequence[Any] | None = None,
+        order_by_condition: list[str] | None = None,
+        order_by_params: Sequence[Any] | None = None,
+        limit: int | None = None,
     ):
         self._table = table
         self._where_condition = where_condition
-        self._where_params = where_params
+        self._where_params = tuple(where_params) if where_params else ()
+        self._order_by_condition = order_by_condition
+        self._order_by_params = tuple(order_by_params) if order_by_params else ()
+        self._limit = limit
+        self._limit_params = (limit,) if limit is not None else ()
 
     @override
     def build(self) -> QueryWithParams:
-        query = f"""
-SELECT
-    *
-FROM
-    {full_table_name(self._table)}
-WHERE
-    {self._where_condition}
-""".strip()
+        where_clause = (
+            f" WHERE {self._where_condition}" if self._where_condition else ""
+        )
+        order_by_clause = (
+            f" ORDER BY {', '.join(self._order_by_params)}"
+            if self._order_by_params
+            else ""
+        )
+        limit_clause = f" LIMIT {self._limit}" if self._limit else ""
 
-        return QueryWithParams(query, tuple(self._where_params))
+        query = (
+            f"SELECT * FROM {full_table_name(self._table)}"
+            + where_clause
+            + order_by_clause
+            + limit_clause
+        )
+
+        return QueryWithParams(
+            query,
+            self._where_params + self._order_by_params + self._limit_params,
+        )
 
     @override
     def execute(
