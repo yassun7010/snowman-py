@@ -1,4 +1,3 @@
-import textwrap
 from typing import TYPE_CHECKING
 
 import pytest
@@ -7,6 +6,7 @@ from conftest import REAL_TEST_IS_DESABLED, TURU_NOT_INSTALLED, UpperCaseTable, 
 from snowflake.connector.connection import SnowflakeConnection
 from snowflake.connector.cursor import SnowflakeCursor
 from snowman.query.expression import column as c
+from snowman.query.minify import minify
 
 if TYPE_CHECKING:
     import turu.snowflake
@@ -26,18 +26,15 @@ class TestUpdateQuery:
             .build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                UPDATE
-                    database.schema.users
-                SET
-                    name = %s
-                WHERE
-                    id = %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            UPDATE
+                database.schema.users
+            SET
+                name = %s
+            WHERE
+                id = %s
+            """
         )
         assert params == ("taro", 1)
 
@@ -49,19 +46,16 @@ class TestUpdateQuery:
             .build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                UPDATE
-                    database.schema.users
-                SET
-                    id = %s,
-                    name = %s
-                WHERE
-                    id = %s AND name != %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            UPDATE
+                database.schema.users
+            SET
+                id = %s,
+                name = %s
+            WHERE
+                id = %s AND name != %s
+            """
         )
         assert params == (1, "Alice", 1, "Alice")
 
@@ -73,19 +67,16 @@ class TestUpdateQuery:
             .build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                UPDATE
-                    database.schema.users
-                SET
-                    id = %s,
-                    name = %s
-                WHERE
-                    id = %s AND name != %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            UPDATE
+                database.schema.users
+            SET
+                id = %s,
+                name = %s
+            WHERE
+                id = %s AND name != %s
+            """
         )
         assert params == (1, "Alice", 1, "Alice")
 
@@ -94,19 +85,16 @@ class TestUpdateQuery:
             snowman.query.update(User).set(user).where("id = %s", [1]).build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                UPDATE
-                    database.schema.users
-                SET
-                    id = %s,
-                    name = %s
-                WHERE
-                    id = %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            UPDATE
+                database.schema.users
+            SET
+                id = %s,
+                name = %s
+            WHERE
+                id = %s
+            """
         )
         assert params == (1, "Alice", 1)
 
@@ -147,18 +135,15 @@ class TestUpdateQueryUpperCaseTable:
             .build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                UPDATE
-                    DATABASE.SCHEMA.UPPERCASE_TABLE
-                SET
-                    NAME = %s
-                WHERE
-                    ID = %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            UPDATE
+                DATABASE.SCHEMA.UPPERCASE_TABLE
+            SET
+                NAME = %s
+            WHERE
+                ID = %s
+            """
         )
         assert params == ("taro", 1)
 
@@ -176,19 +161,16 @@ class TestUpdateQueryUpperCaseTable:
             .build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                UPDATE
-                    DATABASE.SCHEMA.UPPERCASE_TABLE
-                SET
-                    ID = %s,
-                    NAME = %s
-                WHERE
-                    ID = %s AND NAME != %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            UPDATE
+                DATABASE.SCHEMA.UPPERCASE_TABLE
+            SET
+                ID = %s,
+                NAME = %s
+            WHERE
+                ID = %s AND NAME != %s
+            """
         )
         assert params == (1, "Alice", 1, "Alice")
 
@@ -202,19 +184,16 @@ class TestUpdateQueryUpperCaseTable:
             .build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                UPDATE
-                    DATABASE.SCHEMA.UPPERCASE_TABLE
-                SET
-                    ID = %s,
-                    NAME = %s
-                WHERE
-                    ID = %s AND NAME != %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            UPDATE
+                DATABASE.SCHEMA.UPPERCASE_TABLE
+            SET
+                ID = %s,
+                NAME = %s
+            WHERE
+                ID = %s AND NAME != %s
+            """
         )
         assert params == (1, "Alice", 1, "Alice")
 
@@ -226,18 +205,15 @@ class TestUpdateQueryUpperCaseTable:
             .build()
         )
 
-        assert (
-            query
-            == textwrap.dedent(
-                """
-                UPDATE
-                    DATABASE.SCHEMA.UPPERCASE_TABLE
-                SET
-                    ID = %s,
-                    NAME = %s
-                WHERE
-                    ID = %s
-                """
-            ).strip()
+        assert query == minify(
+            """
+            UPDATE
+                DATABASE.SCHEMA.UPPERCASE_TABLE
+            SET
+                ID = %s,
+                NAME = %s
+            WHERE
+                ID = %s
+            """
         )
         assert params == (1, "Alice", 1)

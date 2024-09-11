@@ -1,7 +1,7 @@
 import datetime
-import textwrap
 
 from snowman.query import update
+from snowman.query.minify import minify
 from your.database.schema import User
 
 query, params = (
@@ -18,7 +18,7 @@ query, params = (
     )
 ).build()
 
-expected = textwrap.dedent(
+expected = minify(
     """
     UPDATE
         DATABASE.SCHEMA.USER
@@ -27,7 +27,7 @@ expected = textwrap.dedent(
     WHERE
         NAME IN (%s) AND AGE > %s AND CREATED_AT >= %s
     """,
-).strip()
+)
 
 assert query == expected
 assert params == ("Jane Doe", ["Jane", "Doe"], 18, datetime.datetime(2001, 1, 1))
