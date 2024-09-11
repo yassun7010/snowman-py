@@ -48,14 +48,17 @@ pub fn generate_pydantic_table(
         "@snowman.table(\"{}\", \"{}\", \"{}\")\n",
         table.database_name, table.schema_name, table.table_name,
     ));
+    let table_class_name = pydantic_options.make_class_name(&table.table_name);
+    let schema_module_name = table.schema_module();
     pydantic_schema.push_str(&format!(
-        "class {}(snowman.Table[\"_{}.{}\", \"_{}.{}\", \"_{}.{}\"]):\n",
-        pydantic_options.make_class_name(&table.table_name),
-        table.schema_module(),
+        "class {}(snowman.Table[\"{}\", \"_{}.{}\", \"_{}.{}\", \"_{}.{}\"]):\n",
+        table_class_name,
+        table_class_name,
+        schema_module_name,
         column_accessor_options.make_class_name(&table.table_name),
-        table.schema_module(),
+        schema_module_name,
         insert_typeddict_options.make_class_name(&table.table_name),
-        table.schema_module(),
+        schema_module_name,
         update_typeddict_options.make_class_name(&table.table_name)
     ));
     if let Some(comment) = &table.comment {
