@@ -72,7 +72,7 @@ class TestSelectQueryBuilder:
         with snowflake_connection.cursor() as cursor:
             snowman.query.truncate(RealUser).execute(cursor)
             snowman.query.insert.into(RealUser).values(real_user).execute(cursor)
-            users = select().from_(RealUser).execute(cursor).fetchall()
+            users: list[User] = select().from_(RealUser).execute(cursor).fetchall()
 
             assert users == [real_user]
 
@@ -87,7 +87,7 @@ class TestSelectQueryBuilder:
         with snowflake_connection.cursor() as cursor:
             snowman.query.truncate(RealUser).execute(cursor)
             snowman.query.insert.into(RealUser).values(real_user).execute(cursor)
-            users = select().from_(RealUser).execute(cursor).fetchmany()
+            users: list[User] = select().from_(RealUser).execute(cursor).fetchmany()
 
             assert users == [real_user]
 
@@ -102,7 +102,7 @@ class TestSelectQueryBuilder:
         with snowflake_connection.cursor() as cursor:
             snowman.query.truncate(RealUser).execute(cursor)
             snowman.query.insert.into(RealUser).values(real_user).execute(cursor)
-            user = select().from_(RealUser).execute(cursor).fetchone()
+            user: User | None = select().from_(RealUser).execute(cursor).fetchone()
 
             assert user == real_user
 
@@ -116,6 +116,6 @@ class TestSelectQueryBuilder:
 
         with snowflake_connection.cursor() as cursor:
             snowman.query.truncate(RealUser).execute(cursor)
-            user = select().from_(RealUser).execute(cursor).fetchone()
+            user: User | None = select().from_(RealUser).execute(cursor).fetchone()
 
             assert user is None
