@@ -7,11 +7,12 @@ from snowman.query.builder.condition.condition import Condition
 from snowman.query.to_sql import OperationWithParams
 
 if TYPE_CHECKING:
-    from snowman.query.column import Column
+    from snowman.query.column import Column, GenericColumnName
+    from snowman.relation.table import GenericTable
 
 
 class IsNotCondition(Condition):
-    def __init__(self, base: "Column[PyType]"):
+    def __init__(self, base: "Column[GenericTable, GenericColumnName,PyType]"):
         self._base = base
 
     @override

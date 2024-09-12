@@ -1,12 +1,13 @@
 from typing import assert_type
 
+from conftest import User
 from snowman.query.builder.condition.group_condition import GroupCondition
-from snowman.query.column import Column
+from snowman.query.expression import column as c
 
 
 class TestGroupCondition:
-    def test_group_condition(self, int_column: Column[int]):
-        condition = GroupCondition(int_column == 1)
+    def test_group_condition(self):
+        condition = GroupCondition(c(User).id == 1)
         sql = condition.to_sql()
 
         assert_type(condition, GroupCondition)
