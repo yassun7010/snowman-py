@@ -68,6 +68,7 @@ class TestSelectQueryBuilderBuild:
             .where(lambda c: c.self.id > 18)
             .order.by(lambda c: c.self.name)
             .limit(5)
+            .offset(10)
             .build()
         )
 
@@ -83,9 +84,11 @@ class TestSelectQueryBuilderBuild:
                 name
             LIMIT
                 %s
+            OFFSET
+                %s
             """
         )
-        assert params == (18, 5)
+        assert params == (18, 5, 10)
 
 
 @pytest.mark.skipif(**REAL_TEST_IS_DESABLED)
@@ -162,6 +165,7 @@ class TestSelectQueryBuilderExecute:
                 .where(lambda c: c.self.id == 1)
                 .order.by(lambda c: c.self.id)
                 .limit(1)
+                .offset(0)
                 .execute(cursor)
                 .fetchone()
             )
