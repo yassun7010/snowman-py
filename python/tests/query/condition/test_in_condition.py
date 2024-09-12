@@ -11,7 +11,7 @@ class TestInCondition:
         sql = condition.to_sql()
 
         assert_type(condition, InCondition)
-        assert sql.condition == "id IN (%s)"
+        assert sql.operation == "id IN (%s)"
         assert sql.params == ([1, 2],)
 
     @pytest.mark.parametrize("value", [1, None])

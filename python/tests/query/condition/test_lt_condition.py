@@ -12,7 +12,7 @@ class TestLtCondition:
         sql = condition.to_sql()
 
         assert_type(condition, LtCondition)
-        assert sql.condition == "id < %s"
+        assert sql.operation == "id < %s"
         assert sql.params == (1,)
 
     def test_lt_condition_type_miss_match(self, int_column: Column[int]):
