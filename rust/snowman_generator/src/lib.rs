@@ -78,6 +78,8 @@ pub fn generate_type_checking(inner_code: &str) -> String {
 pub async fn generate_schema_python_typehint(
     tables: &[Table],
     views: &[View],
+    database_schema: &DatabaseSchema,
+    pydantic_options: &PydanticOptions,
     column_accessor_options: &ColumnAccessorOptions,
     insert_typeddict_options: &InsertTypedDictOptions,
     update_typeddict_options: &UpdateTypedDictOptions,
@@ -85,6 +87,7 @@ pub async fn generate_schema_python_typehint(
     let src = if tables.is_empty() && views.is_empty() {
         generate_module_docs().to_string()
     } else {
+        let schema_module_name = database_schema.schema_module();
         itertools::join(
             [
                 generate_module_docs(),
@@ -98,8 +101,11 @@ pub async fn generate_schema_python_typehint(
                     .sorted()
                     .collect::<Vec<&str>>(),
                 ),
-                &generate_column_accessors(tables, column_accessor_options),
-                &generate_column_accessors(views, column_accessor_options),
+                &generate_type_checking(&format!(
+                    "from . import {schema_module_name} as {schema_module_name}\n"
+                )),
+                &generate_column_accessors(tables, pydantic_options, column_accessor_options),
+                &generate_column_accessors(views, pydantic_options, column_accessor_options),
                 &generate_insert_typeddicts(tables, insert_typeddict_options),
                 &generate_update_typeddicts(tables, update_typeddict_options),
             ],
