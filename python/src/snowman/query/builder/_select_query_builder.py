@@ -186,7 +186,7 @@ class SelectFromWhereOrderQueryBuilder(
                     GenericUpdateColumnTypedDict,
                 ]
             ],
-            Sequence[Column[Any]] | Column[Any],
+            Sequence[Column[GenericTable, Any, Any]] | Column[GenericTable, Any, Any],
         ],
         /,
     ) -> "SelectFromWhereOrderByQueryBuilder[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
@@ -194,7 +194,8 @@ class SelectFromWhereOrderQueryBuilder(
     @overload
     def by(
         self,
-        condition: Sequence[Column[Any]] | Column[Any],
+        condition: Sequence[Column[GenericTable, Any, Any]]
+        | Column[GenericTable, Any, Any],
         /,
     ) -> "SelectFromWhereOrderByQueryBuilder[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
 
@@ -217,10 +218,10 @@ class SelectFromWhereOrderQueryBuilder(
                     GenericUpdateColumnTypedDict,
                 ]
             ],
-            Sequence[Column[Any]] | Column[Any],
+            Sequence[Column[GenericTable, Any, Any]] | Column[GenericTable, Any, Any],
         ]
-        | Sequence[Column[Any]]
-        | Column[Any]
+        | Sequence[Column[GenericTable, Any, Any]]
+        | Column[GenericTable, Any, Any]
         | str,
         params: Sequence[Any] | None = None,
         /,

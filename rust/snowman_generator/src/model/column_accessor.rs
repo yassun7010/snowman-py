@@ -1,6 +1,8 @@
 use convert_case::{Case, Casing};
 use snowman_connector::schema::Table;
 
+use crate::{PydanticOptions, ToPythonModule};
+
 #[derive(Debug, Clone)]
 pub struct ColumnAccessorOptions {
     pub model_name_prefix: Option<String>,
@@ -33,20 +35,30 @@ pub fn get_column_accessor_modules() -> Vec<&'static str> {
     vec!["typing", "snowman", "dataclasses"]
 }
 
-pub fn generate_column_accessors(tables: &[Table], options: &ColumnAccessorOptions) -> String {
+pub fn generate_column_accessors(
+    tables: &[Table],
+    pydantic_options: &PydanticOptions,
+    column_accessor_options: &ColumnAccessorOptions,
+) -> String {
     tables
         .iter()
-        .map(|table| generate_column_accessor(table, options))
+        .map(|table| generate_column_accessor(table, pydantic_options, column_accessor_options))
         .collect::<Vec<String>>()
         .join("\n\n")
 }
 
-pub fn generate_column_accessor(table: &Table, options: &ColumnAccessorOptions) -> String {
+pub fn generate_column_accessor(
+    table: &Table,
+    pydantic_options: &PydanticOptions,
+    column_accessor_options: &ColumnAccessorOptions,
+) -> String {
     let mut text = String::new();
+    let schema_module_name = table.schema_module();
+    let table_class_name = pydantic_options.make_class_name(&table.table_name);
+    let accessor_class_name = column_accessor_options.make_class_name(&table.table_name);
 
     text.push_str(&format!(
-        "@dataclasses.dataclass(init=False, frozen=True, eq=False, order=False)\nclass {}:",
-        options.make_class_name(&table.table_name)
+        "@dataclasses.dataclass(init=False, frozen=True, eq=False, order=False)\nclass {accessor_class_name}:",
     ));
 
     if table.columns.is_empty() {
@@ -58,10 +70,9 @@ pub fn generate_column_accessor(table: &Table, options: &ColumnAccessorOptions) 
         if column.is_nullable {
             data_type.push_str(" | None");
         }
+        let column_name = column.column_name.to_case(Case::Snake);
         text.push_str(&format!(
-            "\n    {}: snowman.Column[{}]\n",
-            column.column_name.to_case(Case::Snake),
-            data_type
+            "\n    {column_name}: snowman.Column[\"{schema_module_name}.{table_class_name}\", typing.Literal[\"{column_name}\"], {data_type}]\n",
         ));
         if let Some(comment) = column.comment.as_ref() {
             if !comment.is_empty() {

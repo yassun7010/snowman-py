@@ -26,11 +26,15 @@ class InsertQueryBuilder:
     """
     Insert records into a table.
 
-    >>> from typing import TypedDict
+    >>> from typing import TypedDict, Literal
     >>> import pydantic
     >>> from snowman.query import insert
     >>> from snowman.query.column import Column
     >>>
+    >>> class _UserColumnsAccessor(TypedDict):
+    ...     id: Column["User", Literal["id"], int]
+    ...     name: Column["User", Literal["age"], str]
+    ...
     >>> class _UserInsertColumns(TypedDict):
     ...     id: int
     ...     name: str
@@ -38,10 +42,6 @@ class InsertQueryBuilder:
     >>> class _UserUpdateColumns(TypedDict, total=False):
     ...     id: int
     ...     name: str
-    ...
-    >>> class _UserColumnsAccessor(TypedDict):
-    ...     id: Column[int]
-    ...     name: Column[str]
     ...
     >>> @snowman.table("database", "schema", "users")
     ... class User(

@@ -10,19 +10,26 @@ import typing
 
 import snowman
 
+if typing.TYPE_CHECKING:
+    from . import schema as schema
+
 
 @dataclasses.dataclass(init=False, frozen=True, eq=False, order=False)
 class _UserColumnAccessor:
-    id: snowman.Column[snowman.datatype.INTEGER]
+    id: snowman.Column["schema.User", typing.Literal["id"], snowman.datatype.INTEGER]
     """User ID"""
 
-    name: snowman.Column[snowman.datatype.TEXT]
+    name: snowman.Column["schema.User", typing.Literal["name"], snowman.datatype.TEXT]
     """User Name"""
 
-    age: snowman.Column[snowman.datatype.INTEGER | None]
+    age: snowman.Column[
+        "schema.User", typing.Literal["age"], snowman.datatype.INTEGER | None
+    ]
     """User Age"""
 
-    created_at: snowman.Column[snowman.datatype.TIMESTAMP_TZ]
+    created_at: snowman.Column[
+        "schema.User", typing.Literal["created_at"], snowman.datatype.TIMESTAMP_TZ
+    ]
     """Created At"""
 
 

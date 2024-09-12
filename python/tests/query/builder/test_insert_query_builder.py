@@ -90,15 +90,17 @@ class TestInsertQuery:
                 database.schema.users
             (
                 id,
-                name
+                name,
+                age
             )
             VALUES (
+                %s,
                 %s,
                 %s
             )
             """
         )
-        assert params == (1, "Alice")
+        assert params == (1, "Alice", None)
 
     def test_insert_into_query_execute_many_build(self, user: User):
         values = [user, user]
@@ -110,15 +112,17 @@ class TestInsertQuery:
                 database.schema.users
             (
                 id,
-                name
+                name,
+                age
             )
             VALUES (
+                %s,
                 %s,
                 %s
             )
             """
         )
-        assert params == ((1, "Alice"), (1, "Alice"))
+        assert params == ((1, "Alice", None), (1, "Alice", None))
 
     def test_insert_into_query_overwrite_execute_build(self, user: User):
         query, params = snowman.query.insert.overwrite.into(User).values(user).build()
@@ -129,15 +133,17 @@ class TestInsertQuery:
                 database.schema.users
             (
                 id,
-                name
+                name,
+                age
             )
             VALUES (
+                %s,
                 %s,
                 %s
             )
             """
         )
-        assert params == (1, "Alice")
+        assert params == (1, "Alice", None)
 
     @pytest.mark.skipif(**PANDAS_NOT_INSTALLED)
     def test_insert_into_query_build_use_dataframe(self):
@@ -205,15 +211,17 @@ class TestInsertQueryUpperCaseTable:
                 DATABASE.SCHEMA.UPPERCASE_TABLE
             (
                 ID,
-                NAME
+                NAME,
+                AGE
             )
             VALUES (
+                %s,
                 %s,
                 %s
             )
             """
         )
-        assert params == (1, "Alice")
+        assert params == (1, "Alice", None)
 
     def test_insert_into_query_execute_many_build(
         self, uppercase_table: UpperCaseTable
@@ -227,15 +235,17 @@ class TestInsertQueryUpperCaseTable:
                 DATABASE.SCHEMA.UPPERCASE_TABLE
             (
                 ID,
-                NAME
+                NAME,
+                AGE
             )
             VALUES (
+                %s,
                 %s,
                 %s
             )
             """
         )
-        assert params == ((1, "Alice"), (1, "Alice"))
+        assert params == ((1, "Alice", None), (1, "Alice", None))
 
     def test_insert_into_query_overwrite_execute_build(
         self, uppercase_table: UpperCaseTable
@@ -252,12 +262,14 @@ class TestInsertQueryUpperCaseTable:
                 DATABASE.SCHEMA.UPPERCASE_TABLE
             (
                 ID,
-                NAME
+                NAME,
+                AGE
             )
             VALUES (
+                %s,
                 %s,
                 %s
             )
             """
         )
-        assert params == (1, "Alice")
+        assert params == (1, "Alice", None)

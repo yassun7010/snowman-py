@@ -73,6 +73,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         generate_schema_python_typehint(
             &tables,
             &[],
+            &database_schema,
+            &Default::default(),
             &Default::default(),
             &Default::default(),
             &Default::default(),

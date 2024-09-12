@@ -1,16 +1,17 @@
 from typing_extensions import override
 
 from snowman._generic import PyType
-from snowman.query.column import Column
+from snowman.query.column import Column, GenericColumnName
 from snowman.query.to_sql import OperationWithParams, ToSql
+from snowman.relation.table import GenericTable
 
 
 class OrderItem(ToSql):
     pass
 
 
-class ColumnOrderItem(Column[PyType], OrderItem):
-    def __init__(self, column: Column[PyType]):
+class ColumnOrderItem(Column[GenericTable, GenericColumnName, PyType], OrderItem):
+    def __init__(self, column: Column[GenericTable, GenericColumnName, PyType]):
         self._column = column
 
     @property

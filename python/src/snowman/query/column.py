@@ -1,4 +1,14 @@
-from typing import TYPE_CHECKING, Any, Generic, Sequence, Type, cast, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Generic,
+    LiteralString,
+    Sequence,
+    Type,
+    TypeVar,
+    cast,
+    overload,
+)
 
 from pydantic.fields import FieldInfo
 
@@ -31,7 +41,10 @@ if TYPE_CHECKING:
     )
 
 
-class Column(Generic[PyType]):
+GenericColumnName = TypeVar("GenericColumnName", bound=LiteralString)
+
+
+class Column(Generic[GenericTable, GenericColumnName, PyType]):
     def __init__(
         self,
         data_type: Type[PyType],
@@ -49,14 +62,14 @@ class Column(Generic[PyType]):
         self._column_name = column_name
 
     @property
-    def is_(self) -> "ColumnIs[PyType]":
+    def is_(self) -> "ColumnIs[GenericTable, GenericColumnName, PyType]":
         return ColumnIs(self)
 
     def in_(self, values: Sequence[PyType], /) -> InCondition:
         return InCondition(self, values)
 
     @property
-    def not_(self) -> "ColumnNot[PyType]":
+    def not_(self) -> "ColumnNot[GenericTable, GenericColumnName, PyType]":
         return ColumnNot(self)
 
     @overload
@@ -138,7 +151,7 @@ class _InternalColumnAccessor:
     ):
         self._table = table
 
-    def __getattr__(self, key: str) -> Column[Any]:
+    def __getattr__(self, key: str) -> Column[Any, Any, Any]:
         field: FieldInfo = self._table.model_fields[key]
         return Column(
             cast(type, field.annotation),
@@ -149,7 +162,7 @@ class _InternalColumnAccessor:
         )
 
 
-class ColumnIs(Generic[PyType]):
+class ColumnIs(Generic[GenericTable, GenericColumnName, PyType]):
     """
     A class for using the IS operator
 
@@ -162,7 +175,7 @@ class ColumnIs(Generic[PyType]):
         ```
     """
 
-    def __init__(self, column: Column[PyType]):
+    def __init__(self, column: Column[GenericTable, GenericColumnName, PyType]):
         self._column = column
 
     @property
@@ -187,7 +200,7 @@ class ColumnIsNot(Generic[PyType]):
         ```
     """
 
-    def __init__(self, column: Column[PyType]):
+    def __init__(self, column: Column[GenericTable, GenericColumnName, PyType]):
         self._column = column
 
     @property
@@ -195,7 +208,7 @@ class ColumnIsNot(Generic[PyType]):
         return IsNotCondition(self._column)
 
 
-class ColumnNot(Generic[PyType]):
+class ColumnNot(Generic[GenericTable, GenericColumnName, PyType]):
     """
     A class for using the NOT operator
 
@@ -205,7 +218,7 @@ class ColumnNot(Generic[PyType]):
         ```
     """
 
-    def __init__(self, column: Column[PyType]):
+    def __init__(self, column: Column[GenericTable, GenericColumnName, PyType]):
         self._column = column
 
     def in_(self, values: Sequence[PyType], /) -> NotInCondition:

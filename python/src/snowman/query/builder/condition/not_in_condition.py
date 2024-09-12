@@ -5,11 +5,16 @@ from snowman.query.builder.condition.condition import Condition
 from snowman.query.to_sql import OperationWithParams
 
 if TYPE_CHECKING:
-    from snowman.query.column import Column
+    from snowman.query.column import Column, GenericColumnName
+    from snowman.relation.table import GenericTable
 
 
 class NotInCondition(Condition):
-    def __init__(self, base: "Column[PyType]", values: Sequence[PyType]):
+    def __init__(
+        self,
+        base: "Column[GenericTable, GenericColumnName, PyType]",
+        values: Sequence[PyType],
+    ):
         self._base = base
         self._values = values
 

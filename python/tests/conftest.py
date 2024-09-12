@@ -1,6 +1,14 @@
 import os
 from dataclasses import dataclass
-from typing import Annotated, Final, LiteralString, TypedDict, cast
+from typing import (
+    Annotated,
+    Final,
+    Literal,
+    LiteralString,
+    NotRequired,
+    TypedDict,
+    cast,
+)
 
 import pydantic
 import pytest
@@ -83,24 +91,28 @@ def mock_turu_snowflake_connection(
 
 @dataclass
 class _UserColumnsAccessor:
-    id: Column[int]
-    name: Column[str]
+    id: Column["User", Literal["id"], int]
+    name: Column["User", Literal["name"], str]
+    age: Column["User", Literal["age"], int | None]
 
 
 class _UserInsertColumns(TypedDict):
     id: int
     name: str
+    age: NotRequired[int | None]
 
 
 class _UserUpdateColumns(TypedDict, total=False):
     id: int
     name: str
+    age: int | None
 
 
 @snowman.table("database", "schema", "users")
 class User(Table["User", _UserColumnsAccessor, _UserInsertColumns, _UserUpdateColumns]):
     id: int
     name: str
+    age: int | None = None
 
 
 @pytest.fixture
@@ -120,6 +132,7 @@ class UpperCaseTable(
 
     id: Annotated[int, Field(alias="ID")]
     name: Annotated[str, Field(alias="NAME")]
+    age: Annotated[int | None, Field(alias="AGE")] = None
 
 
 @pytest.fixture
@@ -135,6 +148,14 @@ if REAL_TEST_ENABLED:
         cast(LiteralString, os.environ["REAL_TEST_USER_TABLE_NAME"]),
     )
     class RealUser(User):
+        """
+        A user table used in automatic tests that actually access Snowflake 🧪
+
+        By setting the `REAL_TEST_USER_DATABASE_NAME`, `REAL_TEST_USER_SCHEMA_NAME`,
+        and `REAL_TEST_USER_TABLE_NAME` environment variables,
+        you can specify where to use in automatic tests.
+        """
+
         pass
 
     @pytest.fixture
@@ -144,8 +165,8 @@ if REAL_TEST_ENABLED:
 
 @dataclass
 class _CompanyAccessColumns:
-    id: Column[int]
-    name: Column[str]
+    id: Column["Company", Literal["id"], int]
+    name: Column["Company", Literal["name"], str]
 
 
 class _CompanyInsertColumns(TypedDict):
@@ -173,25 +194,3 @@ def company() -> Company:
     company = Company(id=1, name="Apple")
 
     return company
-
-
-@pytest.fixture
-def int_column() -> Column[int]:
-    return Column(
-        int,
-        database_name=User.__database_name__,
-        schema_name=User.__schema_name__,
-        table_name=User.__table_name__,
-        column_name="id",
-    )
-
-
-@pytest.fixture
-def int_nullable_column() -> Column[int | None]:
-    return Column(
-        int | None,  # type: ignore[valid-type]
-        database_name=User.__database_name__,
-        schema_name=User.__schema_name__,
-        table_name=User.__table_name__,
-        column_name="id",
-    )
