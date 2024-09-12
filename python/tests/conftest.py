@@ -148,6 +148,14 @@ if REAL_TEST_ENABLED:
         cast(LiteralString, os.environ["REAL_TEST_USER_TABLE_NAME"]),
     )
     class RealUser(User):
+        """
+        A user table used in automatic tests that actually access Snowflake 🧪
+
+        By setting the `REAL_TEST_USER_DATABASE_NAME`, `REAL_TEST_USER_SCHEMA_NAME`,
+        and `REAL_TEST_USER_TABLE_NAME` environment variables,
+        you can specify where to use in automatic tests.
+        """
+
         pass
 
     @pytest.fixture
