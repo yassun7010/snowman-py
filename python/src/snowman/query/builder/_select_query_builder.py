@@ -64,6 +64,7 @@ class SelectFinalQueryBuilder(
         where_params: Sequence[Any] | None = None,
         order_by_condition: str | None = None,
         order_by_params: Sequence[Any] | None = None,
+        offset: int | None = None,
         limit: int | None = None,
     ):
         self._table = table
@@ -71,8 +72,8 @@ class SelectFinalQueryBuilder(
         self._where_params = tuple(where_params) if where_params else ()
         self._order_by_condition = order_by_condition
         self._order_by_params = tuple(order_by_params) if order_by_params else ()
+        self._offset = offset
         self._limit = limit
-        self._limit_params = (limit,) if limit is not None else ()
 
     @override
     def build(self) -> QueryWithParams:
@@ -82,18 +83,22 @@ class SelectFinalQueryBuilder(
         order_by_clause = (
             f" ORDER BY {self._order_by_condition}" if self._order_by_condition else ""
         )
-        limit_clause = " LIMIT %s" if self._limit else ""
+        limit_clause = " LIMIT %s" if self._limit is not None else ""
+        limit_params = (self._limit,) if self._limit is not None else ()
+        offset_clause = " OFFSET %s" if self._offset is not None else ""
+        offset_params = (self._offset,) if self._offset is not None else ()
 
         query = (
             f"SELECT * FROM {full_table_name(self._table)}"
             + where_clause
             + order_by_clause
             + limit_clause
+            + offset_clause
         )
 
         return QueryWithParams(
             query,
-            self._where_params + self._order_by_params + self._limit_params,
+            self._where_params + self._order_by_params + limit_params + offset_params,
         )
 
     @override
@@ -103,6 +108,53 @@ class SelectFinalQueryBuilder(
         query, params = self.build()
 
         return SelectCursor(execute(cursor, query, params), self._table)
+
+
+class SelectFromWhereOrderByLimitQueryBuilder(
+    SelectFinalQueryBuilder[
+        GenericTable,
+        GenericColumnAccessor,
+        GenericInsertColumnTypedDict,
+        GenericUpdateColumnTypedDict,
+    ]
+):
+    def __init__(
+        self,
+        table: Type[
+            Table[
+                GenericTable,
+                GenericColumnAccessor,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+        ],
+        where_condition: str | None = None,
+        where_params: Sequence[Any] | None = None,
+        order_by_condition: str | None = None,
+        order_by_params: Sequence[Any] | None = None,
+        limit: int | None = None,
+    ):
+        super().__init__(
+            table,
+            where_condition=where_condition,
+            where_params=where_params,
+            order_by_condition=order_by_condition,
+            order_by_params=order_by_params,
+            limit=limit,
+        )
+
+    def offset(
+        self, offset: int | None
+    ) -> "SelectFinalQueryBuilder[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+        return SelectFinalQueryBuilder(
+            self._table,
+            where_condition=self._where_condition,
+            where_params=self._where_params,
+            order_by_condition=self._order_by_condition,
+            order_by_params=self._order_by_params,
+            limit=self._limit,
+            offset=offset,
+        )
 
 
 class SelectFromWhereOrderByQueryBuilder(
@@ -137,9 +189,9 @@ class SelectFromWhereOrderByQueryBuilder(
         )
 
     def limit(
-        self, limit: int
-    ) -> "SelectFinalQueryBuilder[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
-        return SelectFinalQueryBuilder(
+        self, limit: int | None
+    ) -> "SelectFromWhereOrderByLimitQueryBuilder[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+        return SelectFromWhereOrderByLimitQueryBuilder(
             self._table,
             where_condition=self._where_condition,
             where_params=self._where_params,
