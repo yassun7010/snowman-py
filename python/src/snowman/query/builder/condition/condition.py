@@ -1,20 +1,13 @@
-from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, NamedTuple
+from typing import TYPE_CHECKING
+
+from snowman.query.to_sql import ToSql
 
 if TYPE_CHECKING:
     from snowman.query.builder.condition.and_condition import AndCondition
     from snowman.query.builder.condition.or_condition import OrCondition
 
 
-class ConditionWithParams(NamedTuple):
-    condition: str
-    params: tuple[Any, ...]
-
-
-class Condition(ABC):
-    @abstractmethod
-    def to_sql(self) -> ConditionWithParams: ...
-
+class Condition(ToSql):
     def and_(self, other: "Condition") -> "AndCondition":
         from snowman.query.builder.condition.and_condition import AndCondition
 

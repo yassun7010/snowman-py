@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING
 from typing_extensions import override
 
 from snowman._generic import PyType
-from snowman.query.builder.condition.condition import Condition, ConditionWithParams
+from snowman.query.builder.condition.condition import Condition
+from snowman.query.to_sql import OperationWithParams
 
 if TYPE_CHECKING:
     from snowman.query.column import Column
@@ -14,5 +15,5 @@ class IsNotCondition(Condition):
         self._base = base
 
     @override
-    def to_sql(self) -> ConditionWithParams:
-        return ConditionWithParams(condition=f"{self._base} IS NOT NULL", params=())
+    def to_sql(self) -> OperationWithParams:
+        return OperationWithParams(operation=f"{self._base} IS NOT NULL", params=())

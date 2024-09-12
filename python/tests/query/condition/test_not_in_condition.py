@@ -11,7 +11,7 @@ class TestNotInCondition:
         sql = condition.to_sql()
 
         assert_type(condition, NotInCondition)
-        assert sql.condition == "id NOT IN (%s)"
+        assert sql.operation == "id NOT IN (%s)"
         assert sql.params == ([1, 2],)
 
     @pytest.mark.parametrize("value", [1, None])

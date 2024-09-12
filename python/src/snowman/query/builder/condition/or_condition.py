@@ -1,6 +1,7 @@
 from typing_extensions import override
 
-from snowman.query.builder.condition.condition import Condition, ConditionWithParams
+from snowman.query.builder.condition.condition import Condition
+from snowman.query.to_sql import OperationWithParams
 
 
 class OrCondition(Condition):
@@ -9,10 +10,10 @@ class OrCondition(Condition):
         self._right = right
 
     @override
-    def to_sql(self) -> ConditionWithParams:
+    def to_sql(self) -> OperationWithParams:
         left = self._left.to_sql()
         right = self._right.to_sql()
-        return ConditionWithParams(
-            f"{left.condition} OR {right.condition}",
+        return OperationWithParams(
+            f"{left.operation} OR {right.operation}",
             left.params + right.params,
         )

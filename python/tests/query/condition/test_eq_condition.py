@@ -12,7 +12,7 @@ class TestEqCondition:
         sql = condition.to_sql()
 
         assert_type(condition, EqCondition)
-        assert sql.condition == "id = %s"
+        assert sql.operation == "id = %s"
         assert sql.params == (1,)
 
     def test_eq_condition_type_miss_match(self, int_column: Column[int]):
