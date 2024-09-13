@@ -10,13 +10,14 @@ from snowman.relation.table import (
     GenericUpdateColumnTypedDict,
     Table,
 )
+from snowman.relation.table_like import TableLike
 
 
-def full_table_name(table: Type[Table]) -> str:
+def full_table_name(table: Type[TableLike]) -> str:
     return f"{table.__database_name__}.{table.__schema_name__}.{table.__table_name__}"
 
 
-def table_column_names(table: Type[Table]) -> list[str]:
+def table_column_names(table: Type[TableLike]) -> list[str]:
     if issubclass(table, BaseModel):
         return [
             field.alias if field.alias else name

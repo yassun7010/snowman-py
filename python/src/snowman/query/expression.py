@@ -4,10 +4,10 @@ from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericOrderItemAccessor,
-    GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
 )
+from snowman.relation.table_like import GenericTableLike
 from snowman.relation.view import View
 
 from .builder.condition.condition import Condition
@@ -23,7 +23,7 @@ def group(condition: Condition) -> GroupCondition:
 def column(
     table: Type[
         Table[
-            GenericTable,
+            GenericTableLike,
             GenericColumnAccessor,
             GenericOrderItemAccessor,
             GenericInsertColumnTypedDict,
@@ -46,7 +46,7 @@ def column(
 def order(
     table: Type[
         Table[
-            GenericTable,
+            GenericTableLike,
             GenericColumnAccessor,
             GenericOrderItemAccessor,
             GenericInsertColumnTypedDict,

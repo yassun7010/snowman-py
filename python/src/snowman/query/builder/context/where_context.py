@@ -7,10 +7,11 @@ from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericOrderItemAccessor,
-    GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
 )
+from snowman.relation.table_like import GenericTableLike
+from snowman.relation.view import View
 
 
 class WhereContext(Generic[GenericColumnAccessor]):
@@ -18,11 +19,15 @@ class WhereContext(Generic[GenericColumnAccessor]):
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
+            ]
+            | View[
+                GenericColumnAccessor,
+                GenericOrderItemAccessor,
             ]
         ],
     ) -> None:
@@ -32,7 +37,7 @@ class WhereContext(Generic[GenericColumnAccessor]):
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
