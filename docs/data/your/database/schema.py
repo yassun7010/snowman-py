@@ -21,6 +21,7 @@ class User(
     snowman.Table[
         "User",
         "_schema._UserColumnAccessor",
+        "_schema._UserOrderItemAccessor",
         "_schema._UserInsertTypedDict",
         "_schema._UserUpdateTypedDict",
     ]

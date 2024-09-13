@@ -12,6 +12,7 @@ from snowman.relation import full_table_name
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
+    GenericOrderItemAccessor,
     GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
@@ -24,6 +25,7 @@ class UpdateStatement(
     Generic[
         GenericTable,
         GenericColumnAccessor,
+        GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
     ]
@@ -34,6 +36,7 @@ class UpdateStatement(
             Table[
                 GenericTable,
                 GenericColumnAccessor,
+                GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
@@ -49,11 +52,12 @@ class UpdateStatement(
         fields: Table[
             GenericTable,
             GenericColumnAccessor,
+            GenericOrderItemAccessor,
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,
         ]
         | GenericUpdateColumnTypedDict,
-    ) -> "UpdateSetQueryBuilder[GenericTable, GenericColumnAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+    ) -> "UpdateSetQueryBuilder[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         return UpdateSetQueryBuilder(self._table, fields)
 
 
@@ -61,6 +65,7 @@ class UpdateSetQueryBuilder(
     Generic[
         GenericTable,
         GenericColumnAccessor,
+        GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
     ]
@@ -71,6 +76,7 @@ class UpdateSetQueryBuilder(
             Table[
                 GenericTable,
                 GenericColumnAccessor,
+                GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
@@ -78,6 +84,7 @@ class UpdateSetQueryBuilder(
         columns: Table[
             GenericTable,
             GenericColumnAccessor,
+            GenericOrderItemAccessor,
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,
         ]
@@ -145,6 +152,7 @@ class UpdateSetWhereQueryBuidler(
     Generic[
         GenericTable,
         GenericColumnAccessor,
+        GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
     ],
@@ -155,6 +163,7 @@ class UpdateSetWhereQueryBuidler(
             Table[
                 GenericTable,
                 GenericColumnAccessor,
+                GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]

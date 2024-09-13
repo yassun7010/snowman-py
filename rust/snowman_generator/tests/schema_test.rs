@@ -73,7 +73,7 @@ if typing.TYPE_CHECKING:
 
 # TABLE: DATABASE.SCHEMA.USER
 @snowman.table("DATABASE", "SCHEMA", "USER")
-class User(snowman.Table["User", "_schema._UserColumnAccessor", "_schema._UserInsertTypedDict", "_schema._UserUpdateTypedDict"]):
+class User(snowman.Table["User", "_schema._UserColumnAccessor", "_schema._UserOrderItemAccessor", "_schema._UserInsertTypedDict", "_schema._UserUpdateTypedDict"]):
     """User Table"""
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
@@ -138,7 +138,7 @@ if typing.TYPE_CHECKING:
 
 # TABLE: DATABASE.SCHEMA.USER
 @snowman.table("DATABASE", "SCHEMA", "USER")
-class User(snowman.Table["User", "_schema._UserColumnAccessor", "_schema._UserInsertTypedDict", "_schema._UserUpdateTypedDict"]):
+class User(snowman.Table["User", "_schema._UserColumnAccessor", "_schema._UserOrderItemAccessor", "_schema._UserInsertTypedDict", "_schema._UserUpdateTypedDict"]):
     """User Table"""
     model_config = pydantic.ConfigDict(populate_by_name=True)
 

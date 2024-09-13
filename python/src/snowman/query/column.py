@@ -26,6 +26,7 @@ from snowman.query.builder.condition.not_in_condition import NotInCondition
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
+    GenericOrderItemAccessor,
     GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
@@ -143,10 +144,11 @@ class _InternalColumnAccessor:
             Table[
                 GenericTable,
                 GenericColumnAccessor,
+                GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
-            | View[GenericColumnAccessor]
+            | View[GenericColumnAccessor, GenericOrderItemAccessor]
         ],
     ):
         self._table = table

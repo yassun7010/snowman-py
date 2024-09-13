@@ -18,6 +18,7 @@ from pydantic import Field
 from pytest_mock import MockFixture
 from snowman._features import USE_TURU
 from snowman.query.column import Column
+from snowman.query.order_item import ColumnOrderItem
 from snowman.relation.table import Table
 from turu.snowflake.features import USE_PANDAS, USE_PYARROW
 
@@ -90,10 +91,17 @@ def mock_turu_snowflake_connection(
 
 
 @dataclass
-class _UserColumnsAccessor:
+class _UserColumnAccessor:
     id: Column["User", Literal["id"], int]
     name: Column["User", Literal["name"], str]
     age: Column["User", Literal["age"], int | None]
+
+
+@dataclass
+class _UserOrderItemAccessor:
+    id: ColumnOrderItem["User", Literal["id"], int]
+    name: ColumnOrderItem["User", Literal["name"], str]
+    age: ColumnOrderItem["User", Literal["age"], int | None]
 
 
 class _UserInsertColumns(TypedDict):
@@ -109,7 +117,15 @@ class _UserUpdateColumns(TypedDict, total=False):
 
 
 @snowman.table("database", "schema", "users")
-class User(Table["User", _UserColumnsAccessor, _UserInsertColumns, _UserUpdateColumns]):
+class User(
+    Table[
+        "User",
+        _UserColumnAccessor,
+        _UserOrderItemAccessor,
+        _UserInsertColumns,
+        _UserUpdateColumns,
+    ]
+):
     id: int
     name: str
     age: int | None = None
@@ -125,7 +141,11 @@ def user() -> User:
 @snowman.table("DATABASE", "SCHEMA", "UPPERCASE_TABLE")
 class UpperCaseTable(
     Table[
-        "UpperCaseTable", _UserColumnsAccessor, _UserInsertColumns, _UserUpdateColumns
+        "UpperCaseTable",
+        _UserColumnAccessor,
+        _UserOrderItemAccessor,
+        _UserInsertColumns,
+        _UserUpdateColumns,
     ]
 ):
     model_config = pydantic.ConfigDict(populate_by_name=True)
@@ -164,9 +184,15 @@ if REAL_TEST_ENABLED:
 
 
 @dataclass
-class _CompanyAccessColumns:
+class _CompanyColumnAccessor:
     id: Column["Company", Literal["id"], int]
     name: Column["Company", Literal["name"], str]
+
+
+@dataclass
+class _CompanyOrderItemAccessor:
+    id: ColumnOrderItem["Company", Literal["id"], int]
+    name: ColumnOrderItem["Company", Literal["name"], str]
 
 
 class _CompanyInsertColumns(TypedDict):
@@ -182,7 +208,11 @@ class _CompanyUpdateColumns(TypedDict, total=False):
 @snowman.table("database", "schema", "companies")
 class Company(
     Table[
-        "Company", _CompanyAccessColumns, _CompanyInsertColumns, _CompanyUpdateColumns
+        "Company",
+        _CompanyColumnAccessor,
+        _CompanyOrderItemAccessor,
+        _CompanyInsertColumns,
+        _CompanyUpdateColumns,
     ]
 ):
     id: int

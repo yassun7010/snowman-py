@@ -1,6 +1,5 @@
-use crate::model::pydantic::PydanticOptions;
 use crate::traits::ToPythonModule;
-use crate::ColumnAccessorOptions;
+use crate::ModelOptions;
 use snowman_connector::schema::View;
 use snowman_connector::Parameters;
 
@@ -8,21 +7,19 @@ use super::pydantic::generate_column;
 
 pub fn generate_pydantic_views(
     views: &[View],
-    pydantic_options: &PydanticOptions,
-    column_accessor_options: &ColumnAccessorOptions,
+    model_options: &ModelOptions,
     params: &Parameters,
 ) -> String {
     views
         .iter()
-        .map(|view| generate_pydantic_view(view, pydantic_options, column_accessor_options, params))
+        .map(|view| generate_pydantic_view(view, model_options, params))
         .collect::<Vec<String>>()
         .join("\n\n")
 }
 
 pub fn generate_pydantic_view(
     view: &View,
-    pydantic_options: &PydanticOptions,
-    column_accessor_options: &ColumnAccessorOptions,
+    model_options: &ModelOptions,
     params: &Parameters,
 ) -> String {
     let mut pydantic_schema = String::new();
@@ -37,9 +34,13 @@ pub fn generate_pydantic_view(
     ));
     pydantic_schema.push_str(&format!(
         "class {}(snowman.View[\"_{}.{}\"]):\n",
-        pydantic_options.make_class_name(&view.table_name),
+        model_options
+            .pydantic_options
+            .make_class_name(&view.table_name),
         view.schema_module(),
-        column_accessor_options.make_class_name(&view.table_name)
+        model_options
+            .column_accessor_options
+            .make_class_name(&view.table_name)
     ));
     if let Some(comment) = &view.comment {
         if !comment.is_empty() {

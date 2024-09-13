@@ -70,16 +70,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Pydantic Model Code.
     std::fs::write(
         output_dir.join("your/database/_schema.py"),
-        generate_schema_python_typehint(
-            &tables,
-            &[],
-            &database_schema,
-            &Default::default(),
-            &Default::default(),
-            &Default::default(),
-            &Default::default(),
-        )
-        .await?,
+        generate_schema_python_typehint(&tables, &[], &database_schema, &Default::default())
+            .await?,
     )?;
 
     std::fs::write(

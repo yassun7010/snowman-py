@@ -1,29 +1,42 @@
+from typing import Any, Generic, Type, cast
+
+from pydantic.fields import FieldInfo
 from typing_extensions import override
 
 from snowman._generic import PyType
 from snowman.query.column import Column, GenericColumnName
 from snowman.query.to_sql import OperationWithParams, ToSql
-from snowman.relation.table import GenericTable
+from snowman.relation.table import (
+    GenericColumnAccessor,
+    GenericInsertColumnTypedDict,
+    GenericOrderItemAccessor,
+    GenericTable,
+    GenericUpdateColumnTypedDict,
+    Table,
+)
+from snowman.relation.view import View
 
 
-class OrderItem(ToSql):
+class OrderItem(Generic[GenericTable, GenericColumnName, PyType], ToSql):
     pass
 
 
-class ColumnOrderItem(Column[GenericTable, GenericColumnName, PyType], OrderItem):
+class ColumnOrderItem(
+    OrderItem[GenericTable, GenericColumnName, PyType],
+):
     def __init__(self, column: Column[GenericTable, GenericColumnName, PyType]):
         self._column = column
 
     @property
-    def asc(self) -> "AscOrderItem":
+    def asc(self) -> "AscOrderItem[GenericTable, GenericColumnName, PyType]":
         return AscOrderItem(self)
 
     @property
-    def desc(self) -> "DescOrderItem":
+    def desc(self) -> "DescOrderItem[GenericTable, GenericColumnName, PyType]":
         return DescOrderItem(self)
 
     @property
-    def nulls(self) -> "NullsOrderItem":
+    def nulls(self) -> "NullsOrderItem[GenericTable, GenericColumnName, PyType]":
         return NullsOrderItem(self)
 
     @override
@@ -33,13 +46,19 @@ class ColumnOrderItem(Column[GenericTable, GenericColumnName, PyType], OrderItem
             params=(),
         )
 
+    def __str__(self) -> str:
+        return str(self._column)
 
-class AscOrderItem(OrderItem):
-    def __init__(self, order_item: OrderItem):
+    def __repr__(self) -> str:
+        return repr(self._column)
+
+
+class AscOrderItem(OrderItem[GenericTable, GenericColumnName, PyType]):
+    def __init__(self, order_item: OrderItem[GenericTable, GenericColumnName, PyType]):
         self._order_item = order_item
 
     @property
-    def nulls(self) -> "NullsOrderItem":
+    def nulls(self) -> "NullsOrderItem[GenericTable, GenericColumnName, PyType]":
         return NullsOrderItem(self)
 
     @override
@@ -51,12 +70,12 @@ class AscOrderItem(OrderItem):
         )
 
 
-class DescOrderItem(OrderItem):
-    def __init__(self, order_item: OrderItem):
+class DescOrderItem(OrderItem[GenericTable, GenericColumnName, PyType]):
+    def __init__(self, order_item: OrderItem[GenericTable, GenericColumnName, PyType]):
         self._order_item = order_item
 
     @property
-    def nulls(self) -> "NullsOrderItem":
+    def nulls(self) -> "NullsOrderItem[GenericTable, GenericColumnName, PyType]":
         return NullsOrderItem(self)
 
     @override
@@ -68,20 +87,20 @@ class DescOrderItem(OrderItem):
         )
 
 
-class NullsOrderItem:
+class NullsOrderItem(Generic[GenericTable, GenericColumnName, PyType]):
     def __init__(self, item: OrderItem):
         self._item = item
 
     @property
-    def first(self) -> "NullsFirstOrderItem":
+    def first(self) -> "NullsFirstOrderItem[GenericTable, GenericColumnName, PyType]":
         return NullsFirstOrderItem(self._item)
 
     @property
-    def last(self) -> "NullsLastOrderItem":
+    def last(self) -> "NullsLastOrderItem[GenericTable, GenericColumnName, PyType]":
         return NullsLastOrderItem(self._item)
 
 
-class NullsFirstOrderItem(OrderItem):
+class NullsFirstOrderItem(OrderItem[GenericTable, GenericColumnName, PyType]):
     def __init__(self, item: OrderItem):
         self._item = item
 
@@ -94,7 +113,7 @@ class NullsFirstOrderItem(OrderItem):
         )
 
 
-class NullsLastOrderItem(NullsOrderItem, OrderItem):
+class NullsLastOrderItem(OrderItem[GenericTable, GenericColumnName, PyType]):
     def __init__(self, item: OrderItem):
         self._item = item
 
@@ -105,4 +124,40 @@ class NullsLastOrderItem(NullsOrderItem, OrderItem):
         return OperationWithParams(
             operation=f"{operation} NULLS LAST",
             params=params,
+        )
+
+
+class _InternalOrderItemAccessor:
+    """
+    An internal implementation class for accessing column information.
+
+    On the editor, this class behaves as GenericColumnAccessor,
+    but this class is called when accessing properties.
+    """
+
+    def __init__(
+        self,
+        table: Type[
+            Table[
+                GenericTable,
+                GenericColumnAccessor,
+                GenericOrderItemAccessor,
+                GenericInsertColumnTypedDict,
+                GenericUpdateColumnTypedDict,
+            ]
+            | View[GenericColumnAccessor, GenericOrderItemAccessor]
+        ],
+    ):
+        self._table = table
+
+    def __getattr__(self, key: str) -> OrderItem[Any, Any, Any]:
+        field: FieldInfo = self._table.model_fields[key]
+        return ColumnOrderItem(
+            Column(
+                cast(type, field.annotation),
+                database_name=self._table.__database_name__,
+                schema_name=self._table.__schema_name__,
+                table_name=self._table.__table_name__,
+                column_name=field.alias if field.alias else key,
+            )
         )

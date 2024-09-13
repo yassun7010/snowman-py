@@ -11,6 +11,7 @@ from . import datatype as datatype
 from . import pydantic as pydantic
 from . import query as query
 from .query.column import Column as Column
+from .query.order_item import ColumnOrderItem as ColumnOrderItem
 from .relation.table import Table as Table
 from .relation.table import table as table
 from .relation.view import View as View
