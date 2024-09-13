@@ -47,6 +47,7 @@ dev-dependencies = [
     "griffe>=0.45.3",
     "griffe-inherited-docstrings>=1.0.0",
     "mkdocs-awesome-pages-plugin>=2.9.2",
+    "mypy>=1.11.2",
 ]
 
 [tool.hatch.metadata]
@@ -58,7 +59,9 @@ packages = ["src/snowman"]
 [tool.rye.scripts]
 format = "rye format"
 lint = "rye lint --fix"
-typecheck = "pyright python/src/** python/tests/** docs/data/**"
+typecheck-pyright = "pyright python/src/** python/tests/** docs/data/**"
+typecheck-mypy = "mypy python/ docs/"
+typecheck = { chain = ["typecheck-pyright", "typecheck-mypy"] }
 test = "rye test"
 ci = { chain = ["format", "lint", "typecheck", "test"] }
 generate-sample-model = "cargo run --bin generate_sample_model docs/data"
@@ -70,3 +73,6 @@ docs-publish = "mkdocs gh-deploy --force"
 filterwarnings = ["ignore::DeprecationWarning:snowflake"]
 addopts = "--doctest-modules"
 norecursedirs = ["site", "examples"]
+
+[tool.mypy]
+disable_error_code = ["assert-type"]
