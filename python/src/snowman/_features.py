@@ -24,7 +24,7 @@ try:
     from turu.core.tag import Delete, Insert, Truncate, Update
     from turu.core.tag import Tag as TuruTag
 
-    TuruSnowflakeCursor = turu.snowflake.Cursor
+    TuruSnowflakeCursor = turu.snowflake.Cursor  # type: ignore
     USE_TURU = True
     Tag = TuruTag  # type: ignore
     InsertTag = Insert  # type: ignore
@@ -34,20 +34,20 @@ try:
 
 
 except ImportError:
-    TuruSnowflakeCursor = SnowflakeCursor
+    TuruSnowflakeCursor = SnowflakeCursor  # type: ignore
     USE_TURU = False
 
-    class Tag:
+    class Tag:  # type: ignore
         pass
 
-    class InsertTag(Tag, Generic[GenericTable]):
+    class InsertTag(Tag, Generic[GenericTable]):  # type: ignore
         pass
 
-    class UpdateTag(Tag, Generic[GenericTable]):
+    class UpdateTag(Tag, Generic[GenericTable]):  # type: ignore
         pass
 
-    class DeleteTag(Tag, Generic[GenericTable]):
+    class DeleteTag(Tag, Generic[GenericTable]):  # type: ignore
         pass
 
-    class TruncateTag(Tag, Generic[GenericTable]):
+    class TruncateTag(Tag, Generic[GenericTable]):  # type: ignore
         pass

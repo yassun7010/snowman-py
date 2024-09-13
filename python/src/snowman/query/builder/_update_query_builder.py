@@ -179,7 +179,11 @@ class UpdateSetWhereQueryBuidler(
             columns.model_dump(exclude_unset=True, by_alias=True)
             if isinstance(columns, BaseModel)
             else {
-                (table.model_fields[k].alias if table.model_fields[k].alias else k): v
+                (
+                    cast(str, table.model_fields[k].alias)
+                    if table.model_fields[k].alias is not None
+                    else k
+                ): v
                 for k, v in columns.items()
             },
         )
