@@ -27,10 +27,10 @@ from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericOrderItemAccessor,
-    GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
 )
+from snowman.relation.table_like import GenericTableLike
 from snowman.relation.view import View
 
 if TYPE_CHECKING:
@@ -41,11 +41,10 @@ if TYPE_CHECKING:
         UseIsNotInsteadOfNe,
     )
 
-
 GenericColumnName = TypeVar("GenericColumnName", bound=LiteralString)
 
 
-class Column(Generic[GenericTable, GenericColumnName, PyType]):
+class Column(Generic[GenericTableLike, GenericColumnName, PyType]):
     def __init__(
         self,
         data_type: Type[PyType],
@@ -63,14 +62,14 @@ class Column(Generic[GenericTable, GenericColumnName, PyType]):
         self._column_name = column_name
 
     @property
-    def is_(self) -> "ColumnIs[GenericTable, GenericColumnName, PyType]":
+    def is_(self) -> "ColumnIs[GenericTableLike, GenericColumnName, PyType]":
         return ColumnIs(self)
 
     def in_(self, values: Sequence[PyType], /) -> InCondition:
         return InCondition(self, values)
 
     @property
-    def not_(self) -> "ColumnNot[GenericTable, GenericColumnName, PyType]":
+    def not_(self) -> "ColumnNot[GenericTableLike, GenericColumnName, PyType]":
         return ColumnNot(self)
 
     @overload  # type: ignore
@@ -142,7 +141,7 @@ class _InternalColumnAccessor:
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
@@ -164,7 +163,7 @@ class _InternalColumnAccessor:
         )
 
 
-class ColumnIs(Generic[GenericTable, GenericColumnName, PyType]):
+class ColumnIs(Generic[GenericTableLike, GenericColumnName, PyType]):
     """
     A class for using the IS operator
 
@@ -177,7 +176,7 @@ class ColumnIs(Generic[GenericTable, GenericColumnName, PyType]):
         ```
     """
 
-    def __init__(self, column: Column[GenericTable, GenericColumnName, PyType]):
+    def __init__(self, column: Column[GenericTableLike, GenericColumnName, PyType]):
         self._column = column
 
     @property
@@ -202,7 +201,7 @@ class ColumnIsNot(Generic[PyType]):
         ```
     """
 
-    def __init__(self, column: Column[GenericTable, GenericColumnName, PyType]):
+    def __init__(self, column: Column[GenericTableLike, GenericColumnName, PyType]):
         self._column = column
 
     @property
@@ -210,7 +209,7 @@ class ColumnIsNot(Generic[PyType]):
         return IsNotCondition(self._column)
 
 
-class ColumnNot(Generic[GenericTable, GenericColumnName, PyType]):
+class ColumnNot(Generic[GenericTableLike, GenericColumnName, PyType]):
     """
     A class for using the NOT operator
 
@@ -220,7 +219,7 @@ class ColumnNot(Generic[GenericTable, GenericColumnName, PyType]):
         ```
     """
 
-    def __init__(self, column: Column[GenericTable, GenericColumnName, PyType]):
+    def __init__(self, column: Column[GenericTableLike, GenericColumnName, PyType]):
         self._column = column
 
     def in_(self, values: Sequence[PyType], /) -> NotInCondition:

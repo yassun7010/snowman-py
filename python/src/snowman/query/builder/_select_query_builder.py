@@ -12,10 +12,11 @@ from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericOrderItemAccessor,
-    GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
 )
+from snowman.relation.table_like import GenericTableLike
+from snowman.relation.view import View
 
 from ._builder import QueryBuilder, QueryWithParams, execute
 
@@ -28,24 +29,28 @@ class SelectQueryBuilder:
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
+            | View[
+                GenericColumnAccessor,
+                GenericOrderItemAccessor,
+            ]
         ],
         /,
-    ) -> "SelectFromQueryBuilder[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+    ) -> "SelectFromQueryBuilder[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         return SelectFromQueryBuilder(table)
 
 
 class SelectFinalQueryBuilder(
     QueryBuilder[
-        "SelectCursor[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]"
+        "SelectCursor[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]"
     ],
     Generic[
-        GenericTable,
+        GenericTableLike,
         GenericColumnAccessor,
         GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
@@ -56,11 +61,15 @@ class SelectFinalQueryBuilder(
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
+            ]
+            | View[
+                GenericColumnAccessor,
+                GenericOrderItemAccessor,
             ]
         ],
         *,
@@ -108,7 +117,7 @@ class SelectFinalQueryBuilder(
     @override
     def execute(
         self, cursor: Cursor
-    ) -> "SelectCursor[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+    ) -> "SelectCursor[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         query, params = self.build()
 
         return SelectCursor(execute(cursor, query, params), self._table)
@@ -116,7 +125,7 @@ class SelectFinalQueryBuilder(
 
 class SelectFromWhereOrderByLimitQueryBuilder(
     SelectFinalQueryBuilder[
-        GenericTable,
+        GenericTableLike,
         GenericColumnAccessor,
         GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
@@ -127,11 +136,15 @@ class SelectFromWhereOrderByLimitQueryBuilder(
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
+            ]
+            | View[
+                GenericColumnAccessor,
+                GenericOrderItemAccessor,
             ]
         ],
         where_condition: str | None = None,
@@ -151,7 +164,7 @@ class SelectFromWhereOrderByLimitQueryBuilder(
 
     def offset(
         self, offset: int | None
-    ) -> "SelectFinalQueryBuilder[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+    ) -> "SelectFinalQueryBuilder[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         return SelectFinalQueryBuilder(
             self._table,
             where_condition=self._where_condition,
@@ -165,7 +178,7 @@ class SelectFromWhereOrderByLimitQueryBuilder(
 
 class SelectFromWhereOrderByQueryBuilder(
     SelectFinalQueryBuilder[
-        GenericTable,
+        GenericTableLike,
         GenericColumnAccessor,
         GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
@@ -176,11 +189,15 @@ class SelectFromWhereOrderByQueryBuilder(
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
+            ]
+            | View[
+                GenericColumnAccessor,
+                GenericOrderItemAccessor,
             ]
         ],
         where_condition: str | None = None,
@@ -198,7 +215,7 @@ class SelectFromWhereOrderByQueryBuilder(
 
     def limit(
         self, limit: int | None
-    ) -> "SelectFromWhereOrderByLimitQueryBuilder[GenericTable, GenericColumnAccessor,  GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+    ) -> "SelectFromWhereOrderByLimitQueryBuilder[GenericTableLike, GenericColumnAccessor,  GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         return SelectFromWhereOrderByLimitQueryBuilder(
             self._table,
             where_condition=self._where_condition,
@@ -211,7 +228,7 @@ class SelectFromWhereOrderByQueryBuilder(
 
 class SelectFromWhereOrderQueryBuilder(
     Generic[
-        GenericTable,
+        GenericTableLike,
         GenericColumnAccessor,
         GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
@@ -222,11 +239,15 @@ class SelectFromWhereOrderQueryBuilder(
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
+            ]
+            | View[
+                GenericColumnAccessor,
+                GenericOrderItemAccessor,
             ]
         ],
         where_condition: str | None = None,
@@ -242,26 +263,26 @@ class SelectFromWhereOrderQueryBuilder(
         condition: Callable[
             [
                 OrderByContext[
-                    GenericTable,
+                    GenericTableLike,
                     GenericColumnAccessor,
                     GenericOrderItemAccessor,
                     GenericInsertColumnTypedDict,
                     GenericUpdateColumnTypedDict,
                 ]
             ],
-            Sequence[OrderItem[GenericTable, Any, Any]]
-            | OrderItem[GenericTable, Any, Any],
+            Sequence[OrderItem[GenericTableLike, Any, Any]]
+            | OrderItem[GenericTableLike, Any, Any],
         ],
         /,
-    ) -> "SelectFromWhereOrderByQueryBuilder[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
+    ) -> "SelectFromWhereOrderByQueryBuilder[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
 
     @overload
     def by(
         self,
-        condition: Sequence[OrderItem[GenericTable, Any, Any]]
-        | OrderItem[GenericTable, Any, Any],
+        condition: Sequence[OrderItem[GenericTableLike, Any, Any]]
+        | OrderItem[GenericTableLike, Any, Any],
         /,
-    ) -> "SelectFromWhereOrderByQueryBuilder[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
+    ) -> "SelectFromWhereOrderByQueryBuilder[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
 
     @overload
     def by(
@@ -269,29 +290,29 @@ class SelectFromWhereOrderQueryBuilder(
         condition: str,
         params: Sequence[Any] | None = None,
         /,
-    ) -> "SelectFromWhereOrderByQueryBuilder[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
+    ) -> "SelectFromWhereOrderByQueryBuilder[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
 
     def by(
         self,
         condition: Callable[
             [
                 OrderByContext[
-                    GenericTable,
+                    GenericTableLike,
                     GenericColumnAccessor,
                     GenericOrderItemAccessor,
                     GenericInsertColumnTypedDict,
                     GenericUpdateColumnTypedDict,
                 ]
             ],
-            Sequence[OrderItem[GenericTable, Any, Any]]
-            | OrderItem[GenericTable, Any, Any],
+            Sequence[OrderItem[GenericTableLike, Any, Any]]
+            | OrderItem[GenericTableLike, Any, Any],
         ]
-        | Sequence[OrderItem[GenericTable, Any, Any]]
-        | OrderItem[GenericTable, Any, Any]
+        | Sequence[OrderItem[GenericTableLike, Any, Any]]
+        | OrderItem[GenericTableLike, Any, Any]
         | str,
         params: Sequence[Any] | None = None,
         /,
-    ) -> "SelectFromWhereOrderByQueryBuilder[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+    ) -> "SelectFromWhereOrderByQueryBuilder[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         if callable(condition):
             condition = condition(OrderByContext(self._table))
 
@@ -319,7 +340,7 @@ class SelectFromWhereOrderQueryBuilder(
 
 class SelectFromWhereQueryBuilder(
     SelectFromWhereOrderByQueryBuilder[
-        GenericTable,
+        GenericTableLike,
         GenericColumnAccessor,
         GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
@@ -330,11 +351,15 @@ class SelectFromWhereQueryBuilder(
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
+            ]
+            | View[
+                GenericColumnAccessor,
+                GenericOrderItemAccessor,
             ]
         ],
         where_condition: str | None = None,
@@ -349,7 +374,7 @@ class SelectFromWhereQueryBuilder(
     @property
     def order(
         self,
-    ) -> "SelectFromWhereOrderQueryBuilder[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+    ) -> "SelectFromWhereOrderQueryBuilder[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         return SelectFromWhereOrderQueryBuilder(
             self._table,
             where_condition=self._where_condition,
@@ -359,7 +384,7 @@ class SelectFromWhereQueryBuilder(
 
 class SelectFromQueryBuilder(
     SelectFromWhereQueryBuilder[
-        GenericTable,
+        GenericTableLike,
         GenericColumnAccessor,
         GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
@@ -370,11 +395,15 @@ class SelectFromQueryBuilder(
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
+            ]
+            | View[
+                GenericColumnAccessor,
+                GenericOrderItemAccessor,
             ]
         ],
     ):
@@ -385,14 +414,14 @@ class SelectFromQueryBuilder(
         self,
         condition: Callable[[WhereContext[GenericColumnAccessor]], Condition],
         /,
-    ) -> "SelectFromWhereQueryBuilder[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
+    ) -> "SelectFromWhereQueryBuilder[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
 
     @overload
     def where(
         self,
         condition: Condition,
         /,
-    ) -> "SelectFromWhereQueryBuilder[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
+    ) -> "SelectFromWhereQueryBuilder[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
 
     @overload
     def where(
@@ -400,7 +429,7 @@ class SelectFromQueryBuilder(
         condition: str,
         params: Sequence[Any] | None = None,
         /,
-    ) -> "SelectFromWhereQueryBuilder[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
+    ) -> "SelectFromWhereQueryBuilder[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]": ...
 
     def where(
         self,
@@ -409,7 +438,7 @@ class SelectFromQueryBuilder(
         | str,
         params: Sequence[Any] | None = None,
         /,
-    ) -> "SelectFromWhereQueryBuilder[GenericTable, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
+    ) -> "SelectFromWhereQueryBuilder[GenericTableLike, GenericColumnAccessor, GenericOrderItemAccessor, GenericInsertColumnTypedDict, GenericUpdateColumnTypedDict]":
         if callable(condition):
             condition, params = condition(WhereContext(self._table)).to_sql()
         elif isinstance(condition, Condition):
@@ -424,7 +453,7 @@ class SelectFromQueryBuilder(
 
 class SelectCursor(
     Generic[
-        GenericTable,
+        GenericTableLike,
         GenericColumnAccessor,
         GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
@@ -436,11 +465,15 @@ class SelectCursor(
         cursor: Cursor,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
+            ]
+            | View[
+                GenericColumnAccessor,
+                GenericOrderItemAccessor,
             ]
         ],
     ):
@@ -451,47 +484,47 @@ class SelectCursor(
     def rowcount(self) -> int | None:
         return self._cursor.rowcount
 
-    def fetchall(self) -> list[GenericTable]:
+    def fetchall(self) -> list[GenericTableLike]:
         return [
-            cast(GenericTable, _map_row(self._table, row))
+            cast(GenericTableLike, _map_row(self._table, row))
             for row in self._cursor.fetchall()
         ]
 
-    def fetchmany(self, size: int | None = None) -> list[GenericTable]:
+    def fetchmany(self, size: int | None = None) -> list[GenericTableLike]:
         return [
-            cast(GenericTable, _map_row(self._table, row))
+            cast(GenericTableLike, _map_row(self._table, row))
             for row in self._cursor.fetchmany(size)
         ]
 
-    def fetchone(self) -> GenericTable | None:
+    def fetchone(self) -> GenericTableLike | None:
         row = self._cursor.fetchone()
 
         if row is None or len(row) == 0:
             return None
 
         return cast(
-            GenericTable,
+            GenericTableLike,
             _map_row(self._table, row),
         )
 
     def __iter__(self):
         return self
 
-    def __next__(self) -> GenericTable:
+    def __next__(self) -> GenericTableLike:
         row = self._cursor.fetchone()
 
         if row is None:
             raise StopIteration
 
         return cast(
-            GenericTable,
+            GenericTableLike,
             _map_row(self._table, row),
         )
 
 
-def _map_row(row_type: Type[GenericTable], row: Any) -> GenericTable:
+def _map_row(row_type: Type[GenericTableLike], row: Any) -> GenericTableLike:
     return cast(
-        GenericTable,
+        GenericTableLike,
         row_type.model_validate(
             {key: data for key, data in zip(row_type.model_fields.keys(), row)}
         ),

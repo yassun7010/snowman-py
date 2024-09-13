@@ -5,15 +5,16 @@ from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericOrderItemAccessor,
-    GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
 )
+from snowman.relation.table_like import GenericTableLike
+from snowman.relation.view import View
 
 
 class OrderByContext(
     Generic[
-        GenericTable,
+        GenericTableLike,
         GenericColumnAccessor,
         GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
@@ -24,11 +25,15 @@ class OrderByContext(
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
+            ]
+            | View[
+                GenericColumnAccessor,
+                GenericOrderItemAccessor,
             ]
         ],
     ) -> None:
@@ -38,11 +43,15 @@ class OrderByContext(
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
+            ]
+            | View[
+                GenericColumnAccessor,
+                GenericOrderItemAccessor,
             ]
         ],
     ) -> GenericOrderItemAccessor:

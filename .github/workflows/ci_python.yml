@@ -20,8 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: eifinger/setup-rye@v2
-        with:
-          enable-cache: true
+        # with:
+        #   enable-cache: true
       - run: rye format --check
       - run: rye lint
       - run: rye test

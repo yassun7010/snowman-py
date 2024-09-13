@@ -8,11 +8,11 @@ from snowman.query.to_sql import OperationWithParams
 
 if TYPE_CHECKING:
     from snowman.query.column import Column, GenericColumnName
-    from snowman.relation.table import GenericTable
+    from snowman.relation.table_like import GenericTableLike
 
 
 class IsCondition(Condition):
-    def __init__(self, base: "Column[GenericTable, GenericColumnName, PyType]"):
+    def __init__(self, base: "Column[GenericTableLike, GenericColumnName, PyType]"):
         self._base = base
 
     @override

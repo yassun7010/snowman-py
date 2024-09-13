@@ -1,6 +1,6 @@
 import pytest
 import snowman.query
-from conftest import REAL_TEST_IS_DESABLED, User
+from conftest import REAL_TEST_IS_DESABLED, User, UserView
 from snowflake.connector.connection import SnowflakeConnection
 from snowman.query import select
 from snowman.query.minify import minify
@@ -149,6 +149,35 @@ class TestSelectQueryBuilderBuild:
         query, params = (
             select()
             .from_(User)
+            .where(lambda c: c.self.id > 18)
+            .order.by(lambda c: c.self.name.asc.nulls.first)
+            .limit(5)
+            .offset(10)
+            .build()
+        )
+
+        assert query == minify(
+            """
+            SELECT
+                *
+            FROM
+                database.schema.users
+            WHERE
+                id > %s
+            ORDER BY
+                name ASC NULLS FIRST
+            LIMIT
+                %s
+            OFFSET
+                %s
+            """
+        )
+        assert params == (18, 5, 10)
+
+    def test_select_with_multiple_conditions_on_view(self):
+        query, params = (
+            select()
+            .from_(UserView)
             .where(lambda c: c.self.id > 18)
             .order.by(lambda c: c.self.name.asc.nulls.first)
             .limit(5)

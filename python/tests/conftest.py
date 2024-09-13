@@ -20,6 +20,7 @@ from snowman._features import USE_TURU
 from snowman.query.column import Column
 from snowman.query.order_item import ColumnOrderItem
 from snowman.relation.table import Table
+from snowman.relation.view import View
 from turu.snowflake.features import USE_PANDAS, USE_PYARROW
 
 if USE_TURU:
@@ -124,6 +125,18 @@ class User(
         _UserOrderItemAccessor,
         _UserInsertColumns,
         _UserUpdateColumns,
+    ]
+):
+    id: int
+    name: str
+    age: int | None = None
+
+
+@snowman.view("database", "schema", "users")
+class UserView(
+    View[
+        _UserColumnAccessor,
+        _UserOrderItemAccessor,
     ]
 ):
     id: int

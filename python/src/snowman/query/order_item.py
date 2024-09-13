@@ -10,33 +10,33 @@ from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
     GenericOrderItemAccessor,
-    GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
 )
+from snowman.relation.table_like import GenericTableLike
 from snowman.relation.view import View
 
 
-class OrderItem(Generic[GenericTable, GenericColumnName, PyType], ToSql):
+class OrderItem(Generic[GenericTableLike, GenericColumnName, PyType], ToSql):
     pass
 
 
 class ColumnOrderItem(
-    OrderItem[GenericTable, GenericColumnName, PyType],
+    OrderItem[GenericTableLike, GenericColumnName, PyType],
 ):
-    def __init__(self, column: Column[GenericTable, GenericColumnName, PyType]):
+    def __init__(self, column: Column[GenericTableLike, GenericColumnName, PyType]):
         self._column = column
 
     @property
-    def asc(self) -> "AscOrderItem[GenericTable, GenericColumnName, PyType]":
+    def asc(self) -> "AscOrderItem[GenericTableLike, GenericColumnName, PyType]":
         return AscOrderItem(self)
 
     @property
-    def desc(self) -> "DescOrderItem[GenericTable, GenericColumnName, PyType]":
+    def desc(self) -> "DescOrderItem[GenericTableLike, GenericColumnName, PyType]":
         return DescOrderItem(self)
 
     @property
-    def nulls(self) -> "NullsOrderItem[GenericTable, GenericColumnName, PyType]":
+    def nulls(self) -> "NullsOrderItem[GenericTableLike, GenericColumnName, PyType]":
         return NullsOrderItem(self)
 
     @override
@@ -53,12 +53,14 @@ class ColumnOrderItem(
         return repr(self._column)
 
 
-class AscOrderItem(OrderItem[GenericTable, GenericColumnName, PyType]):
-    def __init__(self, order_item: OrderItem[GenericTable, GenericColumnName, PyType]):
+class AscOrderItem(OrderItem[GenericTableLike, GenericColumnName, PyType]):
+    def __init__(
+        self, order_item: OrderItem[GenericTableLike, GenericColumnName, PyType]
+    ):
         self._order_item = order_item
 
     @property
-    def nulls(self) -> "NullsOrderItem[GenericTable, GenericColumnName, PyType]":
+    def nulls(self) -> "NullsOrderItem[GenericTableLike, GenericColumnName, PyType]":
         return NullsOrderItem(self)
 
     @override
@@ -70,12 +72,14 @@ class AscOrderItem(OrderItem[GenericTable, GenericColumnName, PyType]):
         )
 
 
-class DescOrderItem(OrderItem[GenericTable, GenericColumnName, PyType]):
-    def __init__(self, order_item: OrderItem[GenericTable, GenericColumnName, PyType]):
+class DescOrderItem(OrderItem[GenericTableLike, GenericColumnName, PyType]):
+    def __init__(
+        self, order_item: OrderItem[GenericTableLike, GenericColumnName, PyType]
+    ):
         self._order_item = order_item
 
     @property
-    def nulls(self) -> "NullsOrderItem[GenericTable, GenericColumnName, PyType]":
+    def nulls(self) -> "NullsOrderItem[GenericTableLike, GenericColumnName, PyType]":
         return NullsOrderItem(self)
 
     @override
@@ -87,20 +91,22 @@ class DescOrderItem(OrderItem[GenericTable, GenericColumnName, PyType]):
         )
 
 
-class NullsOrderItem(Generic[GenericTable, GenericColumnName, PyType]):
+class NullsOrderItem(Generic[GenericTableLike, GenericColumnName, PyType]):
     def __init__(self, item: OrderItem):
         self._item = item
 
     @property
-    def first(self) -> "NullsFirstOrderItem[GenericTable, GenericColumnName, PyType]":
+    def first(
+        self,
+    ) -> "NullsFirstOrderItem[GenericTableLike, GenericColumnName, PyType]":
         return NullsFirstOrderItem(self._item)
 
     @property
-    def last(self) -> "NullsLastOrderItem[GenericTable, GenericColumnName, PyType]":
+    def last(self) -> "NullsLastOrderItem[GenericTableLike, GenericColumnName, PyType]":
         return NullsLastOrderItem(self._item)
 
 
-class NullsFirstOrderItem(OrderItem[GenericTable, GenericColumnName, PyType]):
+class NullsFirstOrderItem(OrderItem[GenericTableLike, GenericColumnName, PyType]):
     def __init__(self, item: OrderItem):
         self._item = item
 
@@ -113,7 +119,7 @@ class NullsFirstOrderItem(OrderItem[GenericTable, GenericColumnName, PyType]):
         )
 
 
-class NullsLastOrderItem(OrderItem[GenericTable, GenericColumnName, PyType]):
+class NullsLastOrderItem(OrderItem[GenericTableLike, GenericColumnName, PyType]):
     def __init__(self, item: OrderItem):
         self._item = item
 
@@ -139,7 +145,7 @@ class _InternalOrderItemAccessor:
         self,
         table: Type[
             Table[
-                GenericTable,
+                GenericTableLike,
                 GenericColumnAccessor,
                 GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
