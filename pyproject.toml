@@ -59,8 +59,8 @@ packages = ["src/snowman"]
 [tool.rye.scripts]
 format = "rye format"
 lint = "rye lint --fix"
-typecheck-pyright = "pyright python/src/** python/tests/** docs/data/**"
-typecheck-mypy = "mypy python/ docs/"
+typecheck-pyright = "pyright python/src/** python/tests/** docs/data/** examples/**"
+typecheck-mypy = "mypy python/ docs/ examples/"
 typecheck = { chain = ["typecheck-pyright", "typecheck-mypy"] }
 test = "rye test"
 ci = { chain = ["format", "lint", "typecheck", "test"] }
