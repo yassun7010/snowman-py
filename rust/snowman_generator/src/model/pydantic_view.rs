@@ -33,13 +33,17 @@ pub fn generate_pydantic_view(
         view.database_name, view.schema_name, view.table_name,
     ));
     pydantic_schema.push_str(&format!(
-        "class {}(snowman.View[\"_{}.{}\"]):\n",
+        "class {}(snowman.View[\"_{}.{}\", \"_{}.{}\"]):\n",
         model_options
             .pydantic_options
             .make_class_name(&view.table_name),
-        view.schema_module(),
+        &view.schema_module(),
         model_options
             .column_accessor_options
+            .make_class_name(&view.table_name),
+        &view.schema_module(),
+        model_options
+            .order_item_accessor_options
             .make_class_name(&view.table_name)
     ));
     if let Some(comment) = &view.comment {
