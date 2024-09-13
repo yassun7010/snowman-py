@@ -3,6 +3,7 @@ from typing import Type, cast
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
+    GenericOrderItemAccessor,
     GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
@@ -12,6 +13,7 @@ from snowman.relation.view import View
 from .builder.condition.condition import Condition
 from .builder.condition.group_condition import GroupCondition
 from .column import _InternalColumnAccessor
+from .order_item import _InternalOrderItemAccessor
 
 
 def group(condition: Condition) -> GroupCondition:
@@ -23,10 +25,11 @@ def column(
         Table[
             GenericTable,
             GenericColumnAccessor,
+            GenericOrderItemAccessor,
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,
         ]
-        | View[GenericColumnAccessor]
+        | View[GenericColumnAccessor, GenericOrderItemAccessor]
     ],
 ) -> GenericColumnAccessor:
     """
@@ -38,3 +41,26 @@ def column(
         ```
     """
     return cast(GenericColumnAccessor, _InternalColumnAccessor(table))
+
+
+def order(
+    table: Type[
+        Table[
+            GenericTable,
+            GenericColumnAccessor,
+            GenericOrderItemAccessor,
+            GenericInsertColumnTypedDict,
+            GenericUpdateColumnTypedDict,
+        ]
+        | View[GenericColumnAccessor, GenericOrderItemAccessor]
+    ],
+) -> GenericOrderItemAccessor:
+    """
+    Extract column information from the table.
+
+    #### Usage:
+        ```python
+        repr(column(User).id) == "database.schema.users.id"
+        ```
+    """
+    return cast(GenericOrderItemAccessor, _InternalOrderItemAccessor(table))

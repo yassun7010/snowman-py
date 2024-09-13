@@ -1,6 +1,8 @@
 use convert_case::{Case, Casing};
 use snowman_connector::schema::Table;
 
+use crate::ModelOptions;
+
 #[derive(Debug, Clone)]
 pub struct UpdateTypedDictOptions {
     pub model_name_prefix: Option<String>,
@@ -33,20 +35,22 @@ pub fn get_update_typeddict_modules() -> Vec<&'static str> {
     vec!["typing", "snowman"]
 }
 
-pub fn generate_update_typeddicts(tables: &[Table], options: &UpdateTypedDictOptions) -> String {
+pub fn generate_update_typeddicts(tables: &[Table], model_options: &ModelOptions) -> String {
     tables
         .iter()
-        .map(|table| generate_update_typeddict(table, options))
+        .map(|table| generate_update_typeddict(table, model_options))
         .collect::<Vec<String>>()
         .join("\n\n")
 }
 
-pub fn generate_update_typeddict(table: &Table, options: &UpdateTypedDictOptions) -> String {
+pub fn generate_update_typeddict(table: &Table, model_options: &ModelOptions) -> String {
     let mut text = String::new();
 
     text.push_str(&format!(
         "class {}(typing.TypedDict):",
-        options.make_class_name(&table.table_name)
+        model_options
+            .update_typeddict_options
+            .make_class_name(&table.table_name)
     ));
 
     if table.columns.is_empty() {

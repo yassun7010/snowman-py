@@ -12,6 +12,7 @@ from snowman.query.builder._update_query_builder import UpdateStatement
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
+    GenericOrderItemAccessor,
     GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
@@ -28,6 +29,7 @@ def update(
         Table[
             GenericTable,
             GenericColumnAccessor,
+            GenericOrderItemAccessor,
             GenericInsertColumnTypedDict,
             GenericUpdateColumnTypedDict,
         ]

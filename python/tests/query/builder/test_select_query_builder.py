@@ -55,18 +55,102 @@ class TestSelectQueryBuilderBuild:
         )
         assert params == ()
 
+    def test_select_with_order_by_desc(self):
+        query, params = (
+            select().from_(User).order.by(lambda c: c.self.name.desc).build()
+        )
+
+        assert query == minify(
+            """
+            SELECT
+                *
+            FROM
+                database.schema.users
+            ORDER BY
+                name DESC
+            """
+        )
+        assert params == ()
+
+    def test_select_with_order_by_nulls_first(self):
+        query, params = (
+            select().from_(User).order.by(lambda c: [c.self.name.nulls.first]).build()
+        )
+
+        assert query == minify(
+            """
+            SELECT
+                *
+            FROM
+                database.schema.users
+            ORDER BY
+                name NULLS FIRST
+            """
+        )
+        assert params == ()
+
+    def test_select_with_order_by_asc_nulls_first(self):
+        query, params = (
+            select()
+            .from_(User)
+            .order.by(
+                lambda c: [
+                    c.self.name.asc.nulls.first,
+                ]
+            )
+            .build()
+        )
+
+        assert query == minify(
+            """
+            SELECT
+                *
+            FROM
+                database.schema.users
+            ORDER BY
+                name ASC NULLS FIRST
+            """
+        )
+        assert params == ()
+
+    def test_select_with_order_by_multi_items(self):
+        query, params = (
+            select()
+            .from_(User)
+            .order.by(
+                lambda c: [
+                    c.self.name.asc.nulls.first,
+                    c.self.age.desc,
+                ]
+            )
+            .build()
+        )
+
+        assert query == minify(
+            """
+            SELECT
+                *
+            FROM
+                database.schema.users
+            ORDER BY
+                name ASC NULLS FIRST,
+                age DESC
+            """
+        )
+        assert params == ()
+
     def test_select_with_limit(self):
         query, params = select().from_(User).limit(10).build()
 
         assert query == "SELECT * FROM database.schema.users LIMIT %s"
         assert params == (10,)
 
-    def test_select_with_multiple_conditions(self, user: User):
+    def test_select_with_multiple_conditions(self):
         query, params = (
             select()
             .from_(User)
             .where(lambda c: c.self.id > 18)
-            .order.by(lambda c: c.self.name)
+            .order.by(lambda c: c.self.name.asc.nulls.first)
             .limit(5)
             .offset(10)
             .build()
@@ -81,7 +165,7 @@ class TestSelectQueryBuilderBuild:
             WHERE
                 id > %s
             ORDER BY
-                name
+                name ASC NULLS FIRST
             LIMIT
                 %s
             OFFSET
@@ -163,7 +247,7 @@ class TestSelectQueryBuilderExecute:
                 select()
                 .from_(RealUser)
                 .where(lambda c: c.self.id == 1)
-                .order.by(lambda c: c.self.id)
+                .order.by(lambda c: c.self.id.asc.nulls.first)
                 .limit(1)
                 .offset(0)
                 .execute(cursor)

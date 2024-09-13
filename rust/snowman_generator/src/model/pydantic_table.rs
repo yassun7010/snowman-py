@@ -1,6 +1,5 @@
-use crate::model::pydantic::PydanticOptions;
 use crate::traits::ToPythonModule;
-use crate::{ColumnAccessorOptions, InsertTypedDictOptions, UpdateTypedDictOptions};
+use crate::ModelOptions;
 use snowman_connector::schema::Table;
 use snowman_connector::Parameters;
 
@@ -8,34 +7,19 @@ use super::pydantic::generate_column;
 
 pub fn generate_pydantic_tables(
     tables: &[Table],
-    pydantic_options: &PydanticOptions,
-    column_accessor_options: &ColumnAccessorOptions,
-    insert_typeddict_options: &InsertTypedDictOptions,
-    update_typeddict_options: &UpdateTypedDictOptions,
+    model_options: &ModelOptions,
     params: &Parameters,
 ) -> String {
     tables
         .iter()
-        .map(|table| {
-            generate_pydantic_table(
-                table,
-                pydantic_options,
-                column_accessor_options,
-                insert_typeddict_options,
-                update_typeddict_options,
-                params,
-            )
-        })
+        .map(|table| generate_pydantic_table(table, model_options, params))
         .collect::<Vec<String>>()
         .join("\n\n")
 }
 
 pub fn generate_pydantic_table(
     table: &Table,
-    pydantic_options: &PydanticOptions,
-    column_accessor_options: &ColumnAccessorOptions,
-    insert_typeddict_options: &InsertTypedDictOptions,
-    update_typeddict_options: &UpdateTypedDictOptions,
+    model_options: &ModelOptions,
     params: &Parameters,
 ) -> String {
     let mut pydantic_schema = String::new();
@@ -48,18 +32,25 @@ pub fn generate_pydantic_table(
         "@snowman.table(\"{}\", \"{}\", \"{}\")\n",
         table.database_name, table.schema_name, table.table_name,
     ));
-    let table_class_name = pydantic_options.make_class_name(&table.table_name);
+    let table_class_name = model_options
+        .pydantic_options
+        .make_class_name(&table.table_name);
     let schema_module_name = table.schema_module();
+    let column_accessor_class_name = model_options
+        .column_accessor_options
+        .make_class_name(&table.table_name);
+    let order_item_accessor_class_name = model_options
+        .order_item_accessor_options
+        .make_class_name(&table.table_name);
+    let insert_typeddict_class_name = model_options
+        .insert_typeddict_options
+        .make_class_name(&table.table_name);
+    let update_typeddict_class_name = model_options
+        .update_typeddict_options
+        .make_class_name(&table.table_name);
+
     pydantic_schema.push_str(&format!(
-        "class {}(snowman.Table[\"{}\", \"_{}.{}\", \"_{}.{}\", \"_{}.{}\"]):\n",
-        table_class_name,
-        table_class_name,
-        schema_module_name,
-        column_accessor_options.make_class_name(&table.table_name),
-        schema_module_name,
-        insert_typeddict_options.make_class_name(&table.table_name),
-        schema_module_name,
-        update_typeddict_options.make_class_name(&table.table_name)
+        "class {table_class_name}(snowman.Table[\"{table_class_name}\", \"_{schema_module_name}.{column_accessor_class_name}\", \"_{schema_module_name}.{order_item_accessor_class_name}\", \"_{schema_module_name}.{insert_typeddict_class_name}\", \"_{schema_module_name}.{update_typeddict_class_name}\"]):\n",
     ));
     if let Some(comment) = &table.comment {
         if !comment.is_empty() {

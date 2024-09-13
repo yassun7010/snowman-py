@@ -29,6 +29,10 @@ GenericColumnAccessor = TypeVar(
     "GenericColumnAccessor",
 )
 
+GenericOrderItemAccessor = TypeVar(
+    "GenericOrderItemAccessor",
+)
+
 GenericInsertColumnTypedDict = TypeVar(
     "GenericInsertColumnTypedDict",
     bound=InsertColumnTypedDict,
@@ -45,6 +49,7 @@ class Table(
     Generic[
         _GenericTable,
         GenericColumnAccessor,
+        GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
     ],

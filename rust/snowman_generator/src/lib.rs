@@ -14,6 +14,8 @@ pub use model::insert_typeddict::{
     generate_insert_typeddict, generate_insert_typeddicts, get_insert_typeddict_modules,
     InsertTypedDictOptions,
 };
+use model::order_item_accessor::get_order_item_accessor_modules;
+pub use model::order_item_accessor::{generate_order_item_accessors, OrderItemAccessorOptions};
 pub use model::pydantic::{get_pydantic_modules, PydanticOptions};
 pub use model::pydantic_table::{generate_pydantic_table, generate_pydantic_tables};
 pub use model::pydantic_view::{generate_pydantic_view, generate_pydantic_views};
@@ -29,6 +31,7 @@ pub use traits::{ToPython, ToPythonModule, ToSQL};
 #[derive(Default)]
 pub struct ModelOptions {
     pub column_accessor_options: ColumnAccessorOptions,
+    pub order_item_accessor_options: OrderItemAccessorOptions,
     pub insert_typeddict_options: InsertTypedDictOptions,
     pub update_typeddict_options: UpdateTypedDictOptions,
     pub pydantic_options: PydanticOptions,
@@ -79,10 +82,7 @@ pub async fn generate_schema_python_typehint(
     tables: &[Table],
     views: &[View],
     database_schema: &DatabaseSchema,
-    pydantic_options: &PydanticOptions,
-    column_accessor_options: &ColumnAccessorOptions,
-    insert_typeddict_options: &InsertTypedDictOptions,
-    update_typeddict_options: &UpdateTypedDictOptions,
+    model_options: &ModelOptions,
 ) -> Result<String, crate::Error> {
     let src = if tables.is_empty() && views.is_empty() {
         generate_module_docs().to_string()
@@ -94,6 +94,7 @@ pub async fn generate_schema_python_typehint(
                 &generate_import_modules(
                     &itertools::chain!(
                         get_column_accessor_modules(),
+                        get_order_item_accessor_modules(),
                         get_insert_typeddict_modules(),
                         get_update_typeddict_modules(),
                     )
@@ -104,10 +105,12 @@ pub async fn generate_schema_python_typehint(
                 &generate_type_checking(&format!(
                     "from . import {schema_module_name} as {schema_module_name}\n"
                 )),
-                &generate_column_accessors(tables, pydantic_options, column_accessor_options),
-                &generate_column_accessors(views, pydantic_options, column_accessor_options),
-                &generate_insert_typeddicts(tables, insert_typeddict_options),
-                &generate_update_typeddicts(tables, update_typeddict_options),
+                &generate_column_accessors(tables, model_options),
+                &generate_order_item_accessors(tables, model_options),
+                &generate_order_item_accessors(views, model_options),
+                &generate_column_accessors(views, model_options),
+                &generate_insert_typeddicts(tables, model_options),
+                &generate_update_typeddicts(tables, model_options),
             ],
             "\n",
         )
@@ -143,20 +146,8 @@ pub async fn generate_schema_python_code(
                 &generate_type_checking(&format!(
                     "from . import _{schema_module_name} as _{schema_module_name}\n"
                 )),
-                &generate_pydantic_tables(
-                    tables,
-                    &model_options.pydantic_options,
-                    &model_options.column_accessor_options,
-                    &model_options.insert_typeddict_options,
-                    &model_options.update_typeddict_options,
-                    params,
-                ),
-                &generate_pydantic_views(
-                    views,
-                    &model_options.pydantic_options,
-                    &model_options.column_accessor_options,
-                    params,
-                ),
+                &generate_pydantic_tables(tables, model_options, params),
+                &generate_pydantic_views(views, model_options, params),
             ],
             "\n",
         )

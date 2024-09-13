@@ -9,6 +9,7 @@ from snowman.relation import full_table_name, table_column_names, table_columns_
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
+    GenericOrderItemAccessor,
     GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
@@ -29,11 +30,15 @@ class InsertQueryBuilder:
     >>> from typing import TypedDict, Literal
     >>> import pydantic
     >>> from snowman.query import insert
-    >>> from snowman.query.column import Column
+    >>> from snowman import Column, ColumnOrderItem
     >>>
-    >>> class _UserColumnsAccessor(TypedDict):
+    >>> class _UserColumnAccessor(TypedDict):
     ...     id: Column["User", Literal["id"], int]
     ...     name: Column["User", Literal["age"], str]
+    ...
+    >>> class _UserOrderItemAccessor(TypedDict):
+    ...     id: ColumnOrderItem["User", Literal["id"], int]
+    ...     name: ColumnOrderItem["User", Literal["age"], str]
     ...
     >>> class _UserInsertColumns(TypedDict):
     ...     id: int
@@ -45,7 +50,7 @@ class InsertQueryBuilder:
     ...
     >>> @snowman.table("database", "schema", "users")
     ... class User(
-    ...     snowman.Table["User", "_UserColumnsAccessor", "_UserInsertColumns", "_UserUpdateColumns"]
+    ...     snowman.Table["User", "_UserColumnAccessor", "_UserOrderItemAccessor", "_UserInsertColumns", "_UserUpdateColumns"]
     ... ):
     ...     id: int
     ...     name: str
@@ -72,6 +77,7 @@ class InsertQueryBuilder:
             Table[
                 GenericTable,
                 GenericColumnAccessor,
+                GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
@@ -91,6 +97,7 @@ class InsertOverwriteQueryBuilder:
             Table[
                 GenericTable,
                 GenericColumnAccessor,
+                GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]

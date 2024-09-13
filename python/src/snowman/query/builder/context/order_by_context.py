@@ -1,9 +1,10 @@
 from typing import Generic, Type
 
-from snowman.query.expression import column
+from snowman.query.expression import order
 from snowman.relation.table import (
     GenericColumnAccessor,
     GenericInsertColumnTypedDict,
+    GenericOrderItemAccessor,
     GenericTable,
     GenericUpdateColumnTypedDict,
     Table,
@@ -14,6 +15,7 @@ class OrderByContext(
     Generic[
         GenericTable,
         GenericColumnAccessor,
+        GenericOrderItemAccessor,
         GenericInsertColumnTypedDict,
         GenericUpdateColumnTypedDict,
     ]
@@ -24,6 +26,7 @@ class OrderByContext(
             Table[
                 GenericTable,
                 GenericColumnAccessor,
+                GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
@@ -37,13 +40,14 @@ class OrderByContext(
             Table[
                 GenericTable,
                 GenericColumnAccessor,
+                GenericOrderItemAccessor,
                 GenericInsertColumnTypedDict,
                 GenericUpdateColumnTypedDict,
             ]
         ],
-    ) -> GenericColumnAccessor:
-        return column(table)
+    ) -> GenericOrderItemAccessor:
+        return order(table)
 
     @property
-    def self(self) -> GenericColumnAccessor:
-        return column(self._table)
+    def self(self) -> GenericOrderItemAccessor:
+        return order(self._table)

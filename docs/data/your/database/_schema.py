@@ -33,6 +33,29 @@ class _UserColumnAccessor:
     """Created At"""
 
 
+@dataclasses.dataclass(init=False, frozen=True, eq=False, order=False)
+class _UserOrderItemAccessor:
+    id: snowman.ColumnOrderItem[
+        "schema.User", typing.Literal["id"], snowman.datatype.INTEGER
+    ]
+    """User ID"""
+
+    name: snowman.ColumnOrderItem[
+        "schema.User", typing.Literal["name"], snowman.datatype.TEXT
+    ]
+    """User Name"""
+
+    age: snowman.ColumnOrderItem[
+        "schema.User", typing.Literal["age"], snowman.datatype.INTEGER | None
+    ]
+    """User Age"""
+
+    created_at: snowman.ColumnOrderItem[
+        "schema.User", typing.Literal["created_at"], snowman.datatype.TIMESTAMP_TZ
+    ]
+    """Created At"""
+
+
 class _UserInsertTypedDict(typing.TypedDict):
     id: snowman.datatype.INTEGER
     """User ID"""

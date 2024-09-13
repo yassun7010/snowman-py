@@ -1,7 +1,7 @@
 use convert_case::{Case, Casing};
 use snowman_connector::schema::Table;
 
-use crate::{PydanticOptions, ToPythonModule};
+use crate::{ModelOptions, ToPythonModule};
 
 #[derive(Debug, Clone)]
 pub struct ColumnAccessorOptions {
@@ -35,27 +35,23 @@ pub fn get_column_accessor_modules() -> Vec<&'static str> {
     vec!["typing", "snowman", "dataclasses"]
 }
 
-pub fn generate_column_accessors(
-    tables: &[Table],
-    pydantic_options: &PydanticOptions,
-    column_accessor_options: &ColumnAccessorOptions,
-) -> String {
+pub fn generate_column_accessors(tables: &[Table], model_options: &ModelOptions) -> String {
     tables
         .iter()
-        .map(|table| generate_column_accessor(table, pydantic_options, column_accessor_options))
+        .map(|table| generate_column_accessor(table, model_options))
         .collect::<Vec<String>>()
         .join("\n\n")
 }
 
-pub fn generate_column_accessor(
-    table: &Table,
-    pydantic_options: &PydanticOptions,
-    column_accessor_options: &ColumnAccessorOptions,
-) -> String {
+pub fn generate_column_accessor(table: &Table, model_options: &ModelOptions) -> String {
     let mut text = String::new();
     let schema_module_name = table.schema_module();
-    let table_class_name = pydantic_options.make_class_name(&table.table_name);
-    let accessor_class_name = column_accessor_options.make_class_name(&table.table_name);
+    let table_class_name = model_options
+        .pydantic_options
+        .make_class_name(&table.table_name);
+    let accessor_class_name = model_options
+        .column_accessor_options
+        .make_class_name(&table.table_name);
 
     text.push_str(&format!(
         "@dataclasses.dataclass(init=False, frozen=True, eq=False, order=False)\nclass {accessor_class_name}:",

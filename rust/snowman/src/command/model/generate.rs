@@ -122,10 +122,7 @@ async fn write_schema_py(
                 &infomation_schema.tables,
                 &infomation_schema.views,
                 database_schema,
-                &model_options.pydantic_options,
-                &model_options.column_accessor_options,
-                &model_options.insert_typeddict_options,
-                &model_options.update_typeddict_options,
+                model_options,
             )
             .await?
             .as_bytes(),
