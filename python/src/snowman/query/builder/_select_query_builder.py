@@ -466,7 +466,7 @@ class SelectCursor(
     def fetchone(self) -> GenericTable | None:
         row = self._cursor.fetchone()
 
-        if row is None:
+        if row is None or len(row) == 0:
             return None
 
         return cast(
