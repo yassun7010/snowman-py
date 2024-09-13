@@ -2,7 +2,7 @@
 
 Snowman provides a query builder that maintains the syntax of SQL.
 You can generate `INSERT` / `UPDATE` / `DELETE` / `TRUNCATE` queries, but
-it does not currently support complex query syntax like `SELECT`.
+it does not currently official support complex query syntax like `SELECT`.
 
 !!! tip
     The query builder is based on simple rules.
@@ -20,6 +20,25 @@ it does not currently support complex query syntax like `SELECT`.
     In other words, it uses `%s` to embed parameters, not `%(name)s`.
 
 ## Builder Examples
+### Select Query
+
+🚧 **This is a draft.** This interface is subject to disruptive changes. 🚧
+
+With the current Python features, it is not possible to write complex queries that include only specific fields or table joins in a type-safe manner.
+`SELECT` is an experimental feature, and may be implemented in the future, but it is believed that Python Type Hint evolution is necessary for that.
+
+=== "Execute"
+    !!! example
+        ```python
+        --8<-- "docs/data/select_query.py"
+        ```
+
+=== "Build"
+    !!! example
+        ```python
+        --8<-- "docs/data/select_query_build.py"
+        ```
+
 ### Insert Query
 
 === "Execute"

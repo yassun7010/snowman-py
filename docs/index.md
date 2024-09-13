@@ -31,6 +31,16 @@ Snowman provides two main features:
     ```
 
 ???+ note "Query Builder"
+    === "SELECT"
+        🚧 **This is a draft.** 🚧 
+
+        It does not support complex queries that include only specific fields or table joins.
+
+        !!! example
+            ```python
+            --8<-- "docs/data/select_query.py"
+            ```
+
     === "INSERT"
         !!! example
             ```python
