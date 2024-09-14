@@ -36,8 +36,8 @@ class ColumnOrderItem(
         return DescOrderItem(self)
 
     @property
-    def nulls(self) -> "NullsOrderItem[GenericTableLike, GenericColumnName, PyType]":
-        return NullsOrderItem(self)
+    def nulls(self) -> "NullsOrder[GenericTableLike, GenericColumnName, PyType]":
+        return NullsOrder(self)
 
     @override
     def to_sql(self) -> OperationWithParams:
@@ -60,8 +60,8 @@ class AscOrderItem(OrderItem[GenericTableLike, GenericColumnName, PyType]):
         self._order_item = order_item
 
     @property
-    def nulls(self) -> "NullsOrderItem[GenericTableLike, GenericColumnName, PyType]":
-        return NullsOrderItem(self)
+    def nulls(self) -> "NullsOrder[GenericTableLike, GenericColumnName, PyType]":
+        return NullsOrder(self)
 
     @override
     def to_sql(self) -> OperationWithParams:
@@ -79,8 +79,8 @@ class DescOrderItem(OrderItem[GenericTableLike, GenericColumnName, PyType]):
         self._order_item = order_item
 
     @property
-    def nulls(self) -> "NullsOrderItem[GenericTableLike, GenericColumnName, PyType]":
-        return NullsOrderItem(self)
+    def nulls(self) -> "NullsOrder[GenericTableLike, GenericColumnName, PyType]":
+        return NullsOrder(self)
 
     @override
     def to_sql(self) -> OperationWithParams:
@@ -91,7 +91,7 @@ class DescOrderItem(OrderItem[GenericTableLike, GenericColumnName, PyType]):
         )
 
 
-class NullsOrderItem(Generic[GenericTableLike, GenericColumnName, PyType]):
+class NullsOrder(Generic[GenericTableLike, GenericColumnName, PyType]):
     def __init__(self, item: OrderItem):
         self._item = item
 
