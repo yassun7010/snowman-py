@@ -25,7 +25,9 @@ expected = minify(
     SET
         NAME = %s
     WHERE
-        NAME IN (%s) AND AGE > %s AND CREATED_AT >= %s
+        NAME IN (%s)
+        AND AGE > %s
+        AND CREATED_AT >= %s
     """,
 )
 
