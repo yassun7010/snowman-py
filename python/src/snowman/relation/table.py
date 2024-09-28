@@ -8,7 +8,7 @@ from typing import (
     TypeVar,
 )
 
-from pydantic import BaseModel
+import pydantic
 
 
 class AccessColumnTypedDict(TypedDict):
@@ -45,7 +45,7 @@ GenericUpdateColumnTypedDict = TypeVar(
 
 
 class Table(
-    BaseModel,
+    pydantic.BaseModel,
     Generic[
         _GenericTable,
         GenericColumnAccessor,
@@ -68,6 +68,8 @@ class Table(
     __access_columns__: Type[GenericColumnAccessor] | None = None
     __insert_columns__: Type[GenericInsertColumnTypedDict] | None = None
     __update_columns__: Type[GenericUpdateColumnTypedDict] | None = None
+
+    model_config = pydantic.ConfigDict(populate_by_name=True)
 
 
 GenericTable = TypeVar("GenericTable", bound=Table)

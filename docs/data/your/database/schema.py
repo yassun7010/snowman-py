@@ -28,8 +28,6 @@ class User(
 ):
     """User Table"""
 
-    model_config = pydantic.ConfigDict(populate_by_name=True)
-
     id: typing.Annotated[
         snowman.datatype.INTEGER, pydantic.Field(title="User ID", alias="ID")
     ]

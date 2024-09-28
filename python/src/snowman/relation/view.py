@@ -1,11 +1,13 @@
 from typing import Callable, ClassVar, Generic, LiteralString, Type, TypeVar
 
-from pydantic import BaseModel
+import pydantic
 
 from snowman.relation.table import GenericColumnAccessor, GenericOrderItemAccessor
 
 
-class View(BaseModel, Generic[GenericColumnAccessor, GenericOrderItemAccessor]):
+class View(
+    pydantic.BaseModel, Generic[GenericColumnAccessor, GenericOrderItemAccessor]
+):
     """
     Base class for view definition.
     """
@@ -18,6 +20,8 @@ class View(BaseModel, Generic[GenericColumnAccessor, GenericOrderItemAccessor]):
 
     # NOTE: This field exists only for type definition and is not accessed at runtime.
     __access_columns__: Type[GenericColumnAccessor] | None = None
+
+    model_config = pydantic.ConfigDict(populate_by_name=True)
 
 
 GenericView = TypeVar("GenericView", bound=View)

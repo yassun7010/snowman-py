@@ -52,8 +52,6 @@ pub fn generate_pydantic_view(
         }
     }
 
-    pydantic_schema.push_str("    model_config = pydantic.ConfigDict(populate_by_name=True)\n");
-
     for column in &view.columns {
         pydantic_schema.push_str(&format!("\n    {}", generate_column(column, params)));
 
