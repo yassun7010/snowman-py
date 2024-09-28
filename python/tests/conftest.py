@@ -10,7 +10,6 @@ from typing import (
     cast,
 )
 
-import pydantic
 import pytest
 import snowflake.connector.cursor
 import snowman
@@ -161,8 +160,6 @@ class UpperCaseTable(
         _UserUpdateColumns,
     ]
 ):
-    model_config = pydantic.ConfigDict(populate_by_name=True)
-
     id: Annotated[int, Field(alias="ID")]
     name: Annotated[str, Field(alias="NAME")]
     age: Annotated[int | None, Field(alias="AGE")] = None

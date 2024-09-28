@@ -75,7 +75,6 @@ if typing.TYPE_CHECKING:
 @snowman.table("DATABASE", "SCHEMA", "USER")
 class User(snowman.Table["User", "_schema._UserColumnAccessor", "_schema._UserOrderItemAccessor", "_schema._UserInsertTypedDict", "_schema._UserUpdateTypedDict"]):
     """User Table"""
-    model_config = pydantic.ConfigDict(populate_by_name=True)
 
     id: typing.Annotated[snowman.datatype.INTEGER, pydantic.Field(title="User ID", alias="ID"),]
     """User ID"""
@@ -140,7 +139,6 @@ if typing.TYPE_CHECKING:
 @snowman.table("DATABASE", "SCHEMA", "USER")
 class User(snowman.Table["User", "_schema._UserColumnAccessor", "_schema._UserOrderItemAccessor", "_schema._UserInsertTypedDict", "_schema._UserUpdateTypedDict"]):
     """User Table"""
-    model_config = pydantic.ConfigDict(populate_by_name=True)
 
 "#
         .strip_prefix('\n')
